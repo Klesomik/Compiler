@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "Parser.hpp"
 #include "Headers//Stream.hpp"
-#include "BinaryNode.hpp"
+#include "Headers//BinaryNode.hpp"
 
 BinaryNode <Token>& NewGetN (Stream <Token>& example);
 BinaryNode <Token>& NewGetP (Stream <Token>& example);
