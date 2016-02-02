@@ -1,7 +1,7 @@
 #include <cstdio>
 #include "Parser.hpp"
 #include "Headers//Stream.hpp"
-#include "Headers//BinaryNode.hpp"
+#include "BinaryNode.hpp"
 
 BinaryNode <Token>& NewGetN (Stream <Token>& example);
 BinaryNode <Token>& NewGetP (Stream <Token>& example);
@@ -19,7 +19,7 @@ BinaryNode <Token>& NewGetE (Stream <Token>& example);
 
 BinaryNode <Token>& NewGetN (Stream <Token>& example)
 {
-    BinaryNode <Token> value ();
+    BinaryNode <Token> value;
 
     bool first = false;
     if (example.check () && example[example.place ()].type_ == Digit)
@@ -38,20 +38,20 @@ BinaryNode <Token>& NewGetN (Stream <Token>& example)
 
 BinaryNode <Token>& NewGetP (Stream <Token>& example)
 {
-    BinaryNode <Token> value ();
+    BinaryNode <Token> value;
 
     if (example.check () && example[example.place ()].type_ == Sub)
     {
         example++;
 
-        //value = -NewGetP (example);
+        //value = -NewGetP (example); *-1
     }
 
     else if (example.check () && example[example.place ()].type_ == Start)
     {
         example++;
 
-        value.copy (NewGetE (example));
+        value.move (NewGetE (example));
 
         if (example.check () && example[example.place ()].type_ != Finish) throw "forget ')'";
 
@@ -60,7 +60,7 @@ BinaryNode <Token>& NewGetP (Stream <Token>& example)
 
     else
     {
-        value.copy (NewGetN (example));
+        value.move (NewGetN (example));
     }
 
     return value;
@@ -68,8 +68,8 @@ BinaryNode <Token>& NewGetP (Stream <Token>& example)
 
 BinaryNode <Token>& NewGetT (Stream <Token>& example)
 {
-    BinaryNode <Token> value ();
-                       value.copy (NewGetP (example));
+    BinaryNode <Token> value;
+                       value.move (NewGetP (example));
 
     while (example.check () && (example[example.place ()].type_ == Mul || example[example.place ()].type_ == Div))
     {
@@ -78,8 +78,8 @@ BinaryNode <Token>& NewGetT (Stream <Token>& example)
         example++;
 
         BinaryNode <Token> operation ({ sign, 0 });
-        operation.insertLeft  (value);
-        operation.insertRight (NewGetP (example));
+                           operation.insertLeft  (value);
+                           operation.insertRight (NewGetP (example));
 
         value.move (operation);
     }
@@ -89,8 +89,8 @@ BinaryNode <Token>& NewGetT (Stream <Token>& example)
 
 BinaryNode <Token>& NewGetE (Stream <Token>& example)
 {
-    BinaryNode <Token> value ();
-                       value.copy (NewGetT (example));
+    BinaryNode <Token> value;
+                       value.move (NewGetT (example));
 
     while (example.check () && (example[example.place ()].type_ == Add || example[example.place ()].type_ == Sub))
     {
@@ -99,8 +99,8 @@ BinaryNode <Token>& NewGetE (Stream <Token>& example)
         example++;
 
         BinaryNode <Token> operation ({ sign, 0 });
-        operation.insertLeft  (value);
-        operation.insertRight (NewGetT (example));
+                           operation.insertLeft  (value);
+                           operation.insertRight (NewGetT (example));
 
         value.move (operation);
     }

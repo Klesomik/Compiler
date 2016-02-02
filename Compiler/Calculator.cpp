@@ -7,7 +7,7 @@
 #include "Headers//Vector.hpp"
 #include "Headers//Stream.hpp"
 #include "Parser.hpp"
-#include "Headers//BinaryNode.hpp"
+#include "BinaryNode.hpp"
 #include "GetLib.hpp"
 #include "NewGetLib.hpp"
 
@@ -35,16 +35,16 @@ int main ()
 
         FILE* asm_txt = fopen ("Asm.txt",  "w");
 
-        BinaryNode <Token> root ();
-                           root.copy (NewGetE (code));
+        BinaryNode <Token> root;
+                           root.move (NewGetE (code));
 
-        printf ("Result = %d\n", CreateAsm (root, asm_txt));
+        //printf ("Result = %d\n", CreateAsm (root, asm_txt));
 
         fprintf (asm_txt, "eof;\n");
 
         fclose (asm_txt);
 
-        N::DotDump (root, "EX1");
+        DotDump (root, "EX1");
     }
     catch (const char* message)
     {
@@ -70,7 +70,7 @@ void Scan (Vector <char>& tmp)
     }
 }
 
-int CreateAsm (BinaryNode <Token>& current, FILE* write)
+/*int CreateAsm (BinaryNode <Token>& current, FILE* write)
 {
     if (current.key ().type_ == Add)
     {
@@ -118,4 +118,4 @@ int CreateAsm (BinaryNode <Token>& current, FILE* write)
 
         return current.key ().value_;
     }
-}
+}*/
