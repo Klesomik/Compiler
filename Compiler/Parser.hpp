@@ -40,6 +40,8 @@ struct Token
     Token (int  token);
     Token (char token);
     Token (int typeVal, int valueVal);
+
+    std::ostream& operator << (std::ostream& os);
 };
 
 //}==============================================================================
@@ -64,9 +66,9 @@ Token :: Token (int typeVal, int valueVal):
     value_ (valueVal)
     {}
 
-std::ostream& operator << (std::ostream& os, Token const &m)
+std::ostream& Token :: operator << (std::ostream& os)
 {
-    return os << m.type_ << " " << m.value_;
+    return os << type_ << " " << value_;
 }
 
 void SkipSpace (Stream <char>& example);

@@ -1,11 +1,12 @@
 #include <cstdio>
+#include <cassert>
+#include <cstring>
+#include <iostream>
 
 class FileStream
 {
     private:
         FILE* stream_;
-
-        size_t pos_;
 
     public:
         FileStream (const char*       name, const char* type);
@@ -19,29 +20,32 @@ class FileStream
         void open  ();
         void close ();
 
-        FILE*&  stream () const;
-        size_t&    pos () const;
-        size_t&   size () const;
+        const FILE*  stream ();
+        const size_t&   pos ();
+        const size_t&  size ();
 };
 
 FileStream :: FileStream (const char* name, const char* type):
-    stream_ (fopen (name, type),
+    stream_ (fopen (name, type)),
     pos_    (0)
-    { assert (stream); }
+    { assert (stream_); }
 
 FileStream :: FileStream (const std::string name, const char* type):
-    stream_ (fopen (name.c_str (), type),
+    stream_ (fopen (name.c_str (), type)),
     pos_    (0)
     {}
 
 FileStream :: ~FileStream ()
 {
-    fclose (stream_);
+    if (stream_)
+    {
+        fclose (stream_);
+                stream_ = nullptr;
+    }
 }
 
 void FileStream :: seek (const size_t example)
 {
-    pos_ = example;
 }
 
 bool FileStream :: eof ()
@@ -49,17 +53,34 @@ bool FileStream :: eof ()
     return feof (stream_);
 }
 
-FILE*& FileStream :: stream () const
+void FileStream :: open  ()
+{
+    if (!stream_)
+}
+
+void FileStream :: close ()
+{
+    if (stream)
+}
+
+const FILE* FileStream :: stream ()
 {
     return stream_;
 }
 
-size_t& FileStream :: pos () const
+const size_t& FileStream :: pos ()
 {
-    return pos_;
 }
 
-size_t& FileStream :: size () const
+const size_t& FileStream :: size ()
 {
-    return filelength (fileno (stream_);
+    size_t tmp = 0;
+
+    fseek (stream_, 0, SEEK_END);
+
+    tmp = ftell (stream_);
+
+    fseek (stream_, 0, SEEK_SET);
+
+    return tmp;
 }

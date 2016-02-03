@@ -192,22 +192,6 @@ BinaryNode <Data_T>& GetFirst (BinaryNode <Data_T>* example)
     return example;
 }
 
-template <typename Data_T>
-BinaryNode <Data_T>& Convert (BinaryNode <Data_T>* example)
-{
-    BinaryNode <Data_T> tmp (example -> key ());
-
-    tmp.parent = example -> parent ();
-    tmp.left   = example ->   left ();
-    tmp.right  = example ->  right ();
-
-    example -> parent () = nullptr;
-    example -> left   () = nullptr;
-    example -> right  () = nullptr;
-
-    return tmp;
-}
-
 string BtInf (const int value, bool dot /* = false */)
 {
     char tmp[5] = "";
