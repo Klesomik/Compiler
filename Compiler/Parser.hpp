@@ -64,6 +64,11 @@ Token :: Token (int typeVal, int valueVal):
     value_ (valueVal)
     {}
 
+std::ostream& operator << (std::ostream& os, Token const &m)
+{
+    return os << m.type_ << " " << m.value_;
+}
+
 void SkipSpace (Stream <char>& example);
 void Parser    (Stream <char>& example, Stream <Token>& code);
 

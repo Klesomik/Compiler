@@ -16,6 +16,9 @@ class FileStream
         void seek (const size_t example);
         bool eof ();
 
+        void open  ();
+        void close ();
+
         FILE*&  stream () const;
         size_t&    pos () const;
         size_t&   size () const;

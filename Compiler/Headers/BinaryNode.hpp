@@ -324,9 +324,22 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: copy (const BinaryNode <Data_T>& fro
 template <typename Data_T>
 BinaryNode <Data_T>& BinaryNode <Data_T> :: move (BinaryNode <Data_T>& from)
 {
+    from.dump ();
+
     OK_BINARYNODE
 
-    (*this) = from;
+    delete  left_;
+    delete right_;
+
+    key_    = from.key_;
+
+    left_   = from.left_;
+              from.left_ -> parent_ = this;
+              from.left_ = nullptr;
+
+    right_  = from.right_;
+              from.right_ -> parent_ = this;
+              from.right_ = nullptr;
 
     OK_BINARYNODE
 
@@ -373,15 +386,42 @@ bool BinaryNode <Data_T> :: ok ()
 template <typename Data_T>
 void BinaryNode <Data_T> :: dump ()
 {
+    int mode = -1;
+
+    #if defined (DEBUG_BINARYNODE)
+
+        #undef DEBUG_BINARYNODE
+
+        mode = 0;
+
+    #elif defined (RELEASE_BINARYNODE)
+
+        #undef RELEASE_BINARYNODE
+
+        mode = 1;
+
+    #endif
+
     printf ("\n=============DUMP=============\n");
 
     printf ("BinaryNode (%s) [this = %p][", ok()? "ok" : "ERROR", this);
     std::cout << "key = " << key_ << "]\n";
 
-    printf("    prev = %p;\n", parent_);
-    printf("    left = %p; right = %p;\n", left_, right_);
+    printf ("    parent = %p;\n", parent_);
+    printf ("      left = %p;\n",   left_);
+    printf ("     right = %p;\n",  right_);
 
-    printf("==============================\n\n");
+    printf ("==============================\n\n");
+
+    if (mode)
+    {
+        #define RELEASE_BINARYNODE
+    }
+
+    else
+    {
+        #define DEBUG_BINARYNODE
+    }
 }
 
 //===============================================================================
