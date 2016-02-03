@@ -1,4 +1,3 @@
-#include "TXLib.h"
 #include "Parser.hpp"
 #include "FrontEnd.hpp"
 #include "BackEnd.hpp"

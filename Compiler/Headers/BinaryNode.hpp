@@ -324,22 +324,35 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: copy (const BinaryNode <Data_T>& fro
 template <typename Data_T>
 BinaryNode <Data_T>& BinaryNode <Data_T> :: move (BinaryNode <Data_T>& from)
 {
-    from.dump ();
-
     OK_BINARYNODE
 
-    delete  left_;
-    delete right_;
+    if (left_)
+    {
+        left_ -> parent_ = nullptr;
+        left_            = nullptr;
+    }
 
-    key_    = from.key_;
+    if (right_)
+    {
+        right_ -> parent_ = nullptr;
+        right_            = nullptr;
+    }
 
-    left_   = from.left_;
-              from.left_ -> parent_ = this;
-              from.left_ = nullptr;
+    key_ = from.key_;
 
-    right_  = from.right_;
-              from.right_ -> parent_ = this;
-              from.right_ = nullptr;
+    if (from.left_)
+    {
+        left_ = from.left_;
+                from.left_ -> parent_ = this;
+                from.left_ = nullptr;
+    }
+
+    if (from.right_)
+    {
+        right_ = from.right_;
+                 from.right_ -> parent_ = this;
+                 from.right_ = nullptr;
+    }
 
     OK_BINARYNODE
 
