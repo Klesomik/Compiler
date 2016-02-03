@@ -3,10 +3,10 @@
 #include "Headers//Stream.hpp"
 #include "Headers//BinaryNode.hpp"
 
-BinaryNode <Token>& NewGetN (Stream <Token>& example);
-BinaryNode <Token>& NewGetP (Stream <Token>& example);
-BinaryNode <Token>& NewGetT (Stream <Token>& example);
-BinaryNode <Token>& NewGetE (Stream <Token>& example);
+void NewGetN (BinaryNode <Token>& current, Stream <Token>& example);
+void NewGetP (BinaryNode <Token>& current, Stream <Token>& example);
+void NewGetT (BinaryNode <Token>& current, Stream <Token>& example);
+void NewGetE (BinaryNode <Token>& current, Stream <Token>& example);
 
 //{
 
@@ -17,26 +17,22 @@ BinaryNode <Token>& NewGetE (Stream <Token>& example);
 
 //}
 
-BinaryNode <Token>& NewGetN (Stream <Token>& example)
+void NewGetN (BinaryNode <Token>& current, Stream <Token>& example)
 {
-    BinaryNode <Token> value;
-
     bool first = false;
     if (example.check () && example[example.place ()].type_ == Digit)
     {
         first = true;
 
-        value.key () = example[example.place ()].value_;
+        current.key () = example[example.place ()].value_;
 
         example++;
     }
 
     if (!first) throw "expected integer";
-
-    return value;
 }
 
-BinaryNode <Token>& NewGetP (Stream <Token>& example)
+void NewGetP (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
 
@@ -51,7 +47,7 @@ BinaryNode <Token>& NewGetP (Stream <Token>& example)
     {
         example++;
 
-        value.move (NewGetE (example));
+        NewGetE (value, example);
 
         if (example.check () && example[example.place ()].type_ != Finish) throw "forget ')'";
 
@@ -60,16 +56,16 @@ BinaryNode <Token>& NewGetP (Stream <Token>& example)
 
     else
     {
-        value.move (NewGetN (example));
+        NewGetN (value, example);
     }
 
-    return value;
+    current.move (value);
 }
 
-BinaryNode <Token>& NewGetT (Stream <Token>& example)
+void NewGetT (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
-                       value.move (NewGetP (example));
+    NewGetP (value, example);
 
     while (example.check () && (example[example.place ()].type_ == Mul || example[example.place ()].type_ == Div))
     {
@@ -79,18 +75,20 @@ BinaryNode <Token>& NewGetT (Stream <Token>& example)
 
         BinaryNode <Token> operation ({ sign, 0 });
                            operation.insertLeft  (value);
-                           operation.insertRight (NewGetP (example));
+
+                           NewGetP (value, example);
+                           operation.insertRight (value);
 
         value.move (operation);
     }
 
-    return value;
+    current.move (value);
 }
 
-BinaryNode <Token>& NewGetE (Stream <Token>& example)
+void NewGetE (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
-                       value.move (NewGetT (example));
+    NewGetT (value, example);
 
     while (example.check () && (example[example.place ()].type_ == Add || example[example.place ()].type_ == Sub))
     {
@@ -100,10 +98,12 @@ BinaryNode <Token>& NewGetE (Stream <Token>& example)
 
         BinaryNode <Token> operation ({ sign, 0 });
                            operation.insertLeft  (value);
-                           operation.insertRight (NewGetT (example));
+
+                           NewGetT (value, example);
+                           operation.insertRight (value);
 
         value.move (operation);
     }
 
-    return value;
+    current.move (value);
 }

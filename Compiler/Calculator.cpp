@@ -21,7 +21,7 @@ int main ()
         Parser (example, code);
 
         BinaryNode <Token> root;
-                           root.move (NewGetE (code));
+        NewGetE (root, code);
 
         //printf ("Result = %d\n", CreateAsm (root, asm_txt));
 
