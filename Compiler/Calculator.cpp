@@ -23,6 +23,12 @@ int main ()
         BinaryNode <Token> root;
         NewGetE (root, code);
 
+        FILE* asm_txt = fopen ("Data.txt", "w");
+
+        CreateAsm (root, asm_txt);
+
+        fclose (asm_txt);
+
         //printf ("Result = %d\n", CreateAsm (root, asm_txt));
 
         //DotDump (root, "EX1.dot");
@@ -43,7 +49,7 @@ void Scan (Vector <char>& tmp)
 {
     while (true)
     {
-        char symbol = getchar ();
+        char symbol = (char) getchar ();
 
         if (symbol == '\n') break;
 

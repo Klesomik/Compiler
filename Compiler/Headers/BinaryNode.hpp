@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cassert>
 #include "Dotter.h"
+#include "Wrapper.hpp"
 
 //}==============================================================================
 
@@ -85,8 +86,6 @@ class BinaryNode
         /*const*/ BinaryNode* parent ();
         /*const*/ BinaryNode* right  ();
         /*const*/ BinaryNode* left   ();
-
-        friend BinaryNode <Data_T>& Convert (BinaryNode <Data_T>* example);
 };
 
 //}==============================================================================
@@ -118,11 +117,12 @@ BinaryNode <Data_T> :: BinaryNode (BinaryNode <Data_T>& from):
     left_   (from.left_),
     right_  (from.right_)
     {
-        OK_BINARYNODE
-
         from.parent_ = nullptr;
         from.left_   = nullptr;
         from.right_  = nullptr;
+
+        if (left_)  left_  -> parent_ = this;
+        if (right_) right_ -> parent_ = this;
 
         OK_BINARYNODE
     }

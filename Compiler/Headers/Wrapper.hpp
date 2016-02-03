@@ -1,5 +1,5 @@
-#ifndef SPEAKER_HPP_INCLUDED
-    #define SPEAKER_HPP_INCLUDED
+#ifndef WRAPPER_HPP_INCLUDED
+    #define WRAPPER_HPP_INCLUDED
 
 //Include
 //{==============================================================================
@@ -22,16 +22,16 @@
 
 struct Wrapper
 {
-    string message_; //char* !
+    char message_[1000];
 
-    Wrapper (const string& file, const string& function, const size_t line);
+    Wrapper (const char* file, const char* function, const size_t line);
 };
 
 //}==============================================================================
 
-Wrapper :: Wrapper (const string& file, const string& function, const size_t line)
+Wrapper :: Wrapper (const char* file, const char* function, const size_t line)
 {
     throw message_;
 }
 
-#endif /* SPEAKER_HPP_INCLUDED */
+#endif /* WRAPPER_HPP_INCLUDED */
