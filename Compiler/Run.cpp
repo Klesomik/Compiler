@@ -1,16 +1,15 @@
 #include "Parser.hpp"
-#include "FrontEnd.hpp"
 #include "BackEnd.hpp"
 
 using namespace std;
 
 void Scan (Vector <char>& tmp);
 
-int main ()
+int main (int argc, char* argv[])
 {
     try
     {
-        printf ("This program creates instance tree and calculate result.\nPlease, put instance: ");
+        printf ("Deer: ");
 
         Vector <char> tmp;
         Scan (tmp);
@@ -56,3 +55,13 @@ void Scan (Vector <char>& tmp)
         tmp.push_back (symbol);
     }
 }
+
+//Function for scan files
+//{==============================================================================
+
+inline void Hello_Boa () { printf ("Input name of Boa file: "); cin >> InIt.Boa; }
+inline void Hello_Fix () { printf ("Input name of Fix file: "); cin >> InIt.Fix; }
+inline void Hello_Asm () { printf ("Input name of Asm file: "); cin >> InIt.Asm; }
+
+//}==============================================================================
+

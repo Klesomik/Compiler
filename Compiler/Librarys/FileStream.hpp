@@ -13,8 +13,8 @@ class FileStream
         FileStream& operator = (FileStream &from);
 
     public:
-        FileStream (const char*       name, const char* type);
-        FileStream (const std::string name, const char* type);
+        FileStream (const char*       name, const char* mode);
+        FileStream (const std::string name, const char* mode);
 
         ~FileStream ();
 
@@ -27,12 +27,12 @@ class FileStream
         size_t size ();
 };
 
-FileStream :: FileStream (const char* name, const char* type):
-    stream_ (fopen (name, type))
+FileStream :: FileStream (const char* name, const char* mode):
+    stream_ (fopen (name, mode))
     { assert (stream_); }
 
-FileStream :: FileStream (const std::string name, const char* type):
-    stream_ (fopen (name.c_str (), type))
+FileStream :: FileStream (const std::string name, const char* mode):
+    stream_ (fopen (name.c_str (), mode))
     { assert (stream_); }
 
 FileStream :: ~FileStream ()

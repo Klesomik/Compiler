@@ -3,10 +3,11 @@
 #include "Headers//Stream.hpp"
 #include "Headers//BinaryNode.hpp"
 
-void NewGetN (BinaryNode <Token>& current, Stream <Token>& example);
-void NewGetP (BinaryNode <Token>& current, Stream <Token>& example);
-void NewGetT (BinaryNode <Token>& current, Stream <Token>& example);
-void NewGetE (BinaryNode <Token>& current, Stream <Token>& example);
+void GetNumber (BinaryNode <Token>& current, Stream <Token>& example);
+void GetP (BinaryNode <Token>& current, Stream <Token>& example);
+void GetT (BinaryNode <Token>& current, Stream <Token>& example);
+void GetE (BinaryNode <Token>& current, Stream <Token>& example);
+void GetOparator ();
 
 //{
 
@@ -17,7 +18,7 @@ void NewGetE (BinaryNode <Token>& current, Stream <Token>& example);
 
 //}
 
-void NewGetN (BinaryNode <Token>& current, Stream <Token>& example)
+void GetN (BinaryNode <Token>& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type_ == Digit)
@@ -32,7 +33,7 @@ void NewGetN (BinaryNode <Token>& current, Stream <Token>& example)
     if (!first) throw "expected integer";
 }
 
-void NewGetP (BinaryNode <Token>& current, Stream <Token>& example)
+void GetP (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
 
@@ -62,7 +63,7 @@ void NewGetP (BinaryNode <Token>& current, Stream <Token>& example)
     current.move (value);
 }
 
-void NewGetT (BinaryNode <Token>& current, Stream <Token>& example)
+void GetT (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
     NewGetP (value, example);
@@ -85,7 +86,7 @@ void NewGetT (BinaryNode <Token>& current, Stream <Token>& example)
     current.move (value);
 }
 
-void NewGetE (BinaryNode <Token>& current, Stream <Token>& example)
+void GetE (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
     NewGetT (value, example);
