@@ -4,7 +4,9 @@ int main ()
 {
     FileStream example ("Data.txt", "r");
 
-    std::cout << example.size ();
+    Stream <char> tmp;
+
+    example.convert (tmp);
 
     return 0;
 }
