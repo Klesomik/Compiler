@@ -17,23 +17,19 @@ class FileStream
         void seek (const size_t example);
         bool eof ();
 
-        void open  ();
-        void close ();
+        std::string& string ();
 
         const FILE*  stream ();
-        const size_t&   pos ();
-        const size_t&  size ();
+        const size_t   size ();
 };
 
 FileStream :: FileStream (const char* name, const char* type):
-    stream_ (fopen (name, type)),
-    pos_    (0)
+    stream_ (fopen (name, type))
     { assert (stream_); }
 
 FileStream :: FileStream (const std::string name, const char* type):
-    stream_ (fopen (name.c_str (), type)),
-    pos_    (0)
-    {}
+    stream_ (fopen (name.c_str (), type))
+    { assert (stream_); }
 
 FileStream :: ~FileStream ()
 {
@@ -53,26 +49,12 @@ bool FileStream :: eof ()
     return feof (stream_);
 }
 
-void FileStream :: open  ()
-{
-    if (!stream_)
-}
-
-void FileStream :: close ()
-{
-    if (stream)
-}
-
 const FILE* FileStream :: stream ()
 {
     return stream_;
 }
 
-const size_t& FileStream :: pos ()
-{
-}
-
-const size_t& FileStream :: size ()
+const size_t FileStream :: size ()
 {
     size_t tmp = 0;
 
