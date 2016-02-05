@@ -5,7 +5,7 @@ using namespace std;
 
 void Scan (Vector <char>& tmp);
 
-int main (int argc, char* argv[])
+int main (int argc, const char* argv[])
 {
     try
     {

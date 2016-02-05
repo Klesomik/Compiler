@@ -15,6 +15,14 @@
 
 #define THROW Wrapper ();
 
+#define CATCH(message)\
+printf ("\n==========THROW==========\n");\
+\
+std::cout << message;\
+printf ("Message was caught at %s\n", __FUNCTION__);\
+\
+printf ("=========================\n\n");
+
 //__PRETTY_FUNCTION__
 //__VA_ARGS__
 //__DATE__

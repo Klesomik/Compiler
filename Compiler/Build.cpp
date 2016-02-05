@@ -1,17 +1,24 @@
-#include "Parser.hpp"
-#include "FrontEnd.hpp"
+#include "LexicialAnalyzer.hpp"
+#include "SyntaxAnalyzer.hpp"
+#include "Compiler.hpp"
+#include "Assembler.hpp"
 
-inline void Hello_C () { printf ("Input name of C file: "); cin >> InIt.Boa; }
+inline void Hello_C (string& example) { printf ("Input name of C file: "); cin >> example; }
 
-int main (int argc, char* argv[])
+int main (int argc, const char* argv[])
 {
     try
     {
-        string name;
+        string C_name;
+        Hello_C (C_name);
 
-        FileStream source ();
+        FileStream C_File (C_name, "r");
     }
     catch (const char* message)
+    {
+        CATCH(message)
+    }
+    catch (...)
     {
     }
 
