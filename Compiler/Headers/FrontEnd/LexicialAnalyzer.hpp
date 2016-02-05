@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstring>
 #include <map>
-#include "Headers//Stream.hpp"
+#include "..//..//Librarys//Stream.hpp"
 
 using namespace std;
 
@@ -18,7 +18,8 @@ enum Operations
     Mul,
     Div,
     Start,
-    Finish
+    Finish,
+    Equal
 };
 
 map <flag, int> Table = { { '+',    Add },
@@ -26,7 +27,8 @@ map <flag, int> Table = { { '+',    Add },
                           { '*',    Mul },
                           { '/',    Div },
                           { '(',  Start },
-                          { ')', Finish } };
+                          { ')', Finish },
+                          { '=',  Equal } };
 
 //{==============================================================================
 

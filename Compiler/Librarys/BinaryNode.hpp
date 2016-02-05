@@ -11,7 +11,7 @@
 #include <iostream>
 #include <cassert>
 #include "Dotter.h"
-#include "Wrapper.hpp"
+#include "Debug.hpp"
 
 //}==============================================================================
 

@@ -1,13 +1,13 @@
 #include <cstdio>
-#include "Parser.hpp"
-#include "Headers//Stream.hpp"
-#include "Headers//BinaryNode.hpp"
+#include "LexicialAnalyzer.hpp"
+#include "..//..//Librarys//Stream.hpp"
+#include "..//..//Librarys//BinaryNode.hpp"
 
-void GetNumber (BinaryNode <Token>& current, Stream <Token>& example);
+void GetN (BinaryNode <Token>& current, Stream <Token>& example);
 void GetP (BinaryNode <Token>& current, Stream <Token>& example);
 void GetT (BinaryNode <Token>& current, Stream <Token>& example);
 void GetE (BinaryNode <Token>& current, Stream <Token>& example);
-void GetOparator ();
+void GetO (BinaryNode <Token>& current, Stream <Token>& example);
 
 //{
 
@@ -30,7 +30,7 @@ void GetN (BinaryNode <Token>& current, Stream <Token>& example)
         example++;
     }
 
-    if (!first) throw "expected integer";
+    if (!first) THROW ("expected integer");
 }
 
 void GetP (BinaryNode <Token>& current, Stream <Token>& example)
@@ -41,23 +41,23 @@ void GetP (BinaryNode <Token>& current, Stream <Token>& example)
     {
         example++;
 
-        //value = -NewGetP (example); *-1
+        //value = -GetP (example); *-1
     }
 
     else if (example.check () && example[example.place ()].type_ == Start)
     {
         example++;
 
-        NewGetE (value, example);
+        GetE (value, example);
 
-        if (example.check () && example[example.place ()].type_ != Finish) throw "forget ')'";
+        if (example.check () && example[example.place ()].type_ != Finish) THROW ("forget ')'");
 
         example++;
     }
 
     else
     {
-        NewGetN (value, example);
+        GetN (value, example);
     }
 
     current.move (value);
@@ -66,7 +66,7 @@ void GetP (BinaryNode <Token>& current, Stream <Token>& example)
 void GetT (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
-    NewGetP (value, example);
+    GetP (value, example);
 
     while (example.check () && (example[example.place ()].type_ == Mul || example[example.place ()].type_ == Div))
     {
@@ -77,7 +77,7 @@ void GetT (BinaryNode <Token>& current, Stream <Token>& example)
         BinaryNode <Token> operation ({ sign, 0 });
                            operation.insertLeft  (value);
 
-                           NewGetP (value, example);
+                           GetP (value, example);
                            operation.insertRight (value);
 
         value.move (operation);
@@ -89,7 +89,7 @@ void GetT (BinaryNode <Token>& current, Stream <Token>& example)
 void GetE (BinaryNode <Token>& current, Stream <Token>& example)
 {
     BinaryNode <Token> value;
-    NewGetT (value, example);
+    GetT (value, example);
 
     while (example.check () && (example[example.place ()].type_ == Add || example[example.place ()].type_ == Sub))
     {
@@ -100,7 +100,30 @@ void GetE (BinaryNode <Token>& current, Stream <Token>& example)
         BinaryNode <Token> operation ({ sign, 0 });
                            operation.insertLeft  (value);
 
-                           NewGetT (value, example);
+                           GetT (value, example);
+                           operation.insertRight (value);
+
+        value.move (operation);
+    }
+
+    current.move (value);
+}
+
+void GetO (BinaryNode <Token>& current, Stream <Token>& example)
+{
+    BinaryNode <Token> value;
+    GetE (value, example);
+
+    while (example.check () && example[example.place ()].type_ == Equal)
+    {
+        int sign = example[example.place ()].type_;
+
+        example++;
+
+        BinaryNode <Token> operation ({ sign, 0 });
+                           operation.insertLeft  (value);
+
+                           GetE (value, example);
                            operation.insertRight (value);
 
         value.move (operation);

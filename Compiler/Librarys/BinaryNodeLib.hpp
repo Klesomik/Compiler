@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "..//Parser.hpp"
+#include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
 
 using namespace std;
 
