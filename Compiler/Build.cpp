@@ -22,6 +22,8 @@ int main (int argc, const char* argv[])
 {
     try
     {
+        //TRY
+
         string C_name;
         Hello_C (C_name);
 
@@ -36,10 +38,13 @@ int main (int argc, const char* argv[])
         }
 
         Stream <Token> code;
+
         Parser (example, code);
 
         BinaryNode <Token> root;
-        GetE (root, code);
+        GetO (root, code);
+
+        DotDump (root, "EX1.dot");
 
         FILE* asm_txt = fopen ("Data.txt", "w");
 

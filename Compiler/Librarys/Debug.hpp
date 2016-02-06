@@ -14,22 +14,29 @@
 //Define
 //{==============================================================================
 
-#define TRY ErrorDump tmp; tmp.Try (__FILE__, __PRETTY_FUNCTION__, __LINE__);
+//#define TRY\
+//ErrorDump tmp;\
+//tmp.Try (__FILE__, __PRETTY_FUNCTION__, __LINE__);
 
 #define THROW(message)\
+{\
+ErrorDump tmp;\
 tmp.Catch (__FILE__, __PRETTY_FUNCTION__, __LINE__);\
-tmp.Wrapper (message);
+tmp.Wrapper (message);\
+}
 
 #define CATCH(message)\
+{\
 printf ("\n==========ERROR==========\n");\
 \
 std::cout << message << "\n";\
-printf ("Message was caught at\n);\
+printf ("Message was caught at\n");\
 printf ("   FILE: %s\n", __FILE__);\
 printf ("   FUNC: %s\n", __FUNCTION__);\
 printf ("   LINE: %d\n", __LINE__);\
 \
-printf ("=========================\n\n");
+printf ("=========================\n\n");\
+}
 
 //__VA_ARGS__
 //__DATE__
@@ -43,13 +50,15 @@ struct Log
 
 struct ErrorDump
 {
-    char*  file_try;
-    char*  function_try;
+    const char*  file_try;
+    const char*  function_try;
     size_t line_try;
 
-    char*  file_catch;
-    char*  function_catch;
+    const char*  file_catch;
+    const char*  function_catch;
     size_t line_catch;
+
+    char message[2048];
 
     ErrorDump ();
 
@@ -65,7 +74,8 @@ ErrorDump :: ErrorDump ():
     line_try       (),
     file_catch     (),
     function_catch (),
-    line_catch     ()
+    line_catch     (),
+    message        ()
     {}
 
 void ErrorDump :: Try (const char* set_file_try, const char* set_function_try, const size_t set_line_try)
@@ -84,15 +94,13 @@ void ErrorDump :: Catch (const char* set_file_catch, const char* set_function_ca
 
 void ErrorDump :: Wrapper (const char* label)
 {
-    char message[2048];
-
     size_t indent = 0;
 
     indent += sprintf (message + indent, "Message was threw at\n");
 
-    indent += sprintf (message + indent, "  FILE: %s\n", file);
-    indent += sprintf (message + indent, "  FUNC: %s\n", function);
-    indent += sprintf (message + indent, "  LINE: %d\n", line);
+    indent += sprintf (message + indent, "  FILE: %s\n", file_try);
+    indent += sprintf (message + indent, "  FUNC: %s\n", function_try);
+    indent += sprintf (message + indent, "  LINE: %d\n", line_try);
 
     indent += sprintf (message + indent, "%s\n", label);
 

@@ -3,7 +3,7 @@ void CreateAsmTree (BinaryNode <Token>* current, FILE* write);
 
 void CreateAsm     (BinaryNode <Token>& current, FILE* write)
 {
-     if (current.key ().type_ == Add)
+    if (current.key ().type_ == Add)
     {
         CreateAsmTree (current.left  (), write);
         CreateAsmTree (current.right (), write);
@@ -43,10 +43,26 @@ void CreateAsm     (BinaryNode <Token>& current, FILE* write)
         return;
     }
 
-    else
+    else if (current.key ().type_ == Equal)
+    {
+        CreateAsmTree (current.left  (), write);
+        CreateAsmTree (current.right (), write);
+
+        char del = '%';
+        fprintf (write, "pop %c%d;\n", del, current.key ().value_);
+
+        return;
+    }
+
+    else if (current.key ().type_ == Digit)
     {
         fprintf (write, "push %d;\n", current.key ().value_);
 
+        return;
+    }
+
+    else if (current.key ().type_ == Var)
+    {
         return;
     }
 }
@@ -93,10 +109,26 @@ void CreateAsmTree (BinaryNode <Token>* current, FILE* write)
         return;
     }
 
-    else
+    else if (current -> key ().type_ == Equal)
+    {
+        CreateAsmTree (current -> left  (), write);
+        CreateAsmTree (current -> right (), write);
+
+        char del = '%';
+        fprintf (write, "pop %c%d;\n", del, current -> key ().value_);
+
+        return;
+    }
+
+    else if (current -> key ().type_ == Digit)
     {
         fprintf (write, "push %d;\n", current -> key ().value_);
 
+        return;
+    }
+
+    else if (current -> key ().type_ == Var)
+    {
         return;
     }
 }

@@ -133,7 +133,7 @@ void DotDump (BinaryNode <Data_T>& root, const string& file_name)
 
     string title (BtInf (root.key (), true));
 
-    #ifdef DEBUG_BINARYNODE
+    /*#ifdef DEBUG_BINARYNODE
 
         char extra[640] = "";
 
@@ -163,7 +163,7 @@ void GrowTree (BinaryNode <Data_T>* current, const size_t number)
 
     string title (BtInf (current -> key (), true));
 
-    #ifdef DEBUG_BINARYNODE
+    /*#ifdef DEBUG_BINARYNODE
 
         char extra[640] = "";
 
@@ -248,6 +248,16 @@ string BtInf (const Token value, bool dot /* = false */)
             sprintf (tmp, "%d\n", value.value_);
         }
 
+        else if (value.type_ == 1)
+        {
+            dtNodeStyle ().fontcolor ("darkgreen")
+                          .color     ("darkgreen")
+                          .fillcolor ("#98FF66");
+
+
+            sprintf (tmp, "var_%d\n", value.value_);
+        }
+
         else
         {
             dtNodeStyle ().fontcolor ("red")
@@ -256,10 +266,11 @@ string BtInf (const Token value, bool dot /* = false */)
 
             switch (value.type_)
             {
-                case Add: { sprintf (tmp, "+\n"); break; }
-                case Sub: { sprintf (tmp, "-\n"); break; }
-                case Mul: { sprintf (tmp, "*\n"); break; }
-                case Div: { sprintf (tmp, "/\n"); break; }
+                case Add:   { sprintf (tmp, "+\n"); break; }
+                case Sub:   { sprintf (tmp, "-\n"); break; }
+                case Mul:   { sprintf (tmp, "*\n"); break; }
+                case Div:   { sprintf (tmp, "/\n"); break; }
+                case Equal: { sprintf (tmp, "=\n"); break; }
 
                 default: break;
             }

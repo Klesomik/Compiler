@@ -1,9 +1,11 @@
 #include <cstdio>
 #include "LexicialAnalyzer.hpp"
+#include "..//..//Librarys//Debug.hpp"
 #include "..//..//Librarys//Stream.hpp"
 #include "..//..//Librarys//BinaryNode.hpp"
 
 void GetN (BinaryNode <Token>& current, Stream <Token>& example);
+void GetW (BinaryNode <Token>& current, Stream <Token>& example);
 void GetP (BinaryNode <Token>& current, Stream <Token>& example);
 void GetT (BinaryNode <Token>& current, Stream <Token>& example);
 void GetE (BinaryNode <Token>& current, Stream <Token>& example);
@@ -11,10 +13,12 @@ void GetO (BinaryNode <Token>& current, Stream <Token>& example);
 
 //{
 
+// O = E | E = E
 // E = T | T + T | T - T
 // T = P | P + P | P - P
 // P = N | (E)   | -P
-// N = {0; 1; 2; 3; 4; 5; 6; 7; 8; 9}
+// N = ['0'-'9']
+// W = ['a'-'z']
 
 //}
 
@@ -25,12 +29,27 @@ void GetN (BinaryNode <Token>& current, Stream <Token>& example)
     {
         first = true;
 
-        current.key () = example[example.place ()].value_;
+        current.key () = example[example.place ()];
 
         example++;
     }
 
     if (!first) THROW ("expected integer");
+}
+
+void GetW (BinaryNode <Token>& current, Stream <Token>& example)
+{
+    bool first = false;
+    if (example.check () && example[example.place ()].type_ == Var)
+    {
+        first = true;
+
+        current.key () = example[example.place ()];
+
+        example++;
+    }
+
+    if (!first) THROW ("expected name of variable");
 }
 
 void GetP (BinaryNode <Token>& current, Stream <Token>& example)
@@ -48,11 +67,16 @@ void GetP (BinaryNode <Token>& current, Stream <Token>& example)
     {
         example++;
 
-        GetE (value, example);
+        GetO (value, example);
 
-        if (example.check () && example[example.place ()].type_ != Finish) THROW ("forget ')'");
+        if (example.check () && example[example.place ()].type_ != Finish) THROW ("forgot ')'");
 
         example++;
+    }
+
+    else if (example.check () && example[example.place ()].type_ == Var)
+    {
+        GetW (value, example);
     }
 
     else

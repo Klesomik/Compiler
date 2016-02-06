@@ -13,6 +13,7 @@ typedef unsigned char flag;
 enum Operations
 {
     Digit = 0,
+    Var,
     Add,
     Sub,
     Mul,
@@ -30,6 +31,8 @@ map <flag, int> Table = { { '+',    Add },
                           { ')', Finish },
                           { '=',  Equal } };
 
+Vector <string> Variables;
+
 //{==============================================================================
 
 struct Token
@@ -39,8 +42,9 @@ struct Token
     int value_;
 
     Token ();
-    Token (int  token);
-    Token (char token);
+    Token (int     token);
+    Token (char    token);
+    Token (string& token);
     Token (int typeVal, int valueVal);
 
     std::ostream& operator << (std::ostream& os);
@@ -62,6 +66,31 @@ Token :: Token (char token):
     type_  (Table[token]),
     value_ (0)
     {}
+
+Token :: Token (string& token):
+    type_  (Var),
+    value_ ()
+    {
+        bool first = false;
+        for (size_t i = 0; i < Variables.size (); i++)
+        {
+            if (Variables[i] == token)
+            {
+                value_ = i;
+
+                first = true;
+
+                break;
+            }
+        }
+
+        if (!first)
+        {
+            Variables.push_back (token);
+
+            value_ = Variables.size () - 1;
+        }
+    }
 
 Token :: Token (int typeVal, int valueVal):
     type_  (typeVal),
@@ -91,16 +120,33 @@ void Parser (Stream <char>& example, Stream <Token>& code)
     {
         SkipSpace (example);
 
-        if ('0' <= example[example.place ()] || '9' <= example[example.place ()])
+        if ('0' <= example[example.place ()] && '9' >= example[example.place ()])
         {
             int value = 0;
 
-            while (example.check () && ('0' <= example[example.place ()] || '9' <= example[example.place ()]))
+            while (example.check () && ('0' <= example[example.place ()] && '9' >= example[example.place ()]))
             {
                 char digit = 0;
                 example >> digit;
 
                 value = value * 10 + digit - '0';
+            }
+
+            Token tmp (value);
+
+            code.push_back (tmp);
+        }
+
+        else if ('a' <= example[example.place ()] && 'z' >= example[example.place ()])
+        {
+            string value;
+
+            while (example.check () && ('a' <= example[example.place ()] && 'z' >= example[example.place ()]))
+            {
+                char symbol = 0;
+                example >> symbol;
+
+                value.push_back (symbol);
             }
 
             Token tmp (value);
