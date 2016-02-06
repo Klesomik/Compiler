@@ -56,7 +56,7 @@ int main (int argc, const char* argv[])
     {
         char message[1000];
 
-        sprintf (message, "Unknown error was in %s\n",__PRETTY_FUNCTION__);
+        sprintf (message, "Unknown error was in %s\n", __PRETTY_FUNCTION__);
 
         CATCH (message)
     }
