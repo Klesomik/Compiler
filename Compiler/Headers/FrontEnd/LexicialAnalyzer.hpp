@@ -20,7 +20,12 @@ enum Operations
     Div,
     Start,
     Finish,
-    Equal
+    Equal,
+    Begin,
+    End,
+    EqualEqual,
+    If,
+    Else
 };
 
 map <flag, int> Table = { { '+',    Add },
@@ -29,7 +34,9 @@ map <flag, int> Table = { { '+',    Add },
                           { '/',    Div },
                           { '(',  Start },
                           { ')', Finish },
-                          { '=',  Equal } };
+                          { '=',  Equal },
+                          { '{',  Begin },
+                          { '}',    End } };
 
 Vector <string> Variables;
 
@@ -149,9 +156,46 @@ void Parser (Stream <char>& example, Stream <Token>& code)
                 value.push_back (symbol);
             }
 
-            Token tmp (value);
+            if (value == "if")
+            {
+                Token tmp (If, 0);
 
-            code.push_back (tmp);
+                code.push_back (tmp);
+            }
+
+            else if (value == "else")
+            {
+                Token tmp (Else, 0);
+
+                code.push_back (tmp);
+            }
+
+            else
+            {
+                Token tmp (value);
+
+                code.push_back (tmp);
+            }
+        }
+
+        else if ('=' == example[example.place ()])
+        {
+            char sign = 0;
+            example >> sign;
+
+            if (example.check () && '=' == example[example.place ()])
+            {
+                Token tmp (EqualEqual, 0);
+
+                code.push_back (tmp);
+            }
+
+            else
+            {
+                Token tmp (Equal, 0);
+
+                code.push_back (tmp);
+            }
         }
 
         else

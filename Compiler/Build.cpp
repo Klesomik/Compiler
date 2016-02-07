@@ -10,7 +10,7 @@
 #include "Headers//FrontEnd//LexicialAnalyzer.hpp"
 #include "Headers//FrontEnd//SyntaxAnalyzer.hpp"
 #include "Headers//BackEnd//Compiler.hpp"
-#include "Headers//BackEnd//Assembler.hpp"
+//#include "Headers//BackEnd//Assembler.hpp"
 
 //}==============================================================================
 
@@ -22,7 +22,7 @@ int main (int argc, const char* argv[])
 {
     try
     {
-        TRY
+        //TRY
 
         string C_name;
         Hello_C (C_name);
