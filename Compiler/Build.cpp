@@ -22,7 +22,7 @@ int main (int argc, const char* argv[])
 {
     try
     {
-        //TRY
+        TRY
 
         string C_name;
         Hello_C (C_name);

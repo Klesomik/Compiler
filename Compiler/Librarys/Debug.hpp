@@ -14,9 +14,9 @@
 //Define
 //{==============================================================================
 
-//#define TRY\
-//ErrorDump tmp;\
-//tmp.Try (__FILE__, __PRETTY_FUNCTION__, __LINE__);
+#define TRY\
+ErrorDump tmp;\
+tmp.Try (__FILE__, __PRETTY_FUNCTION__, __LINE__);
 
 #define THROW(message)\
 {\
@@ -38,6 +38,8 @@ printf ("   LINE: %d\n", __LINE__);\
 printf ("=========================\n\n");\
 }
 
+#define return CallStack.push ({ __FILE__, __PRETTY_FUNCTION__, __LINE__ }); return
+
 //__VA_ARGS__
 //__DATE__
 //__TIME__
@@ -47,6 +49,31 @@ printf ("=========================\n\n");\
 struct Log
 {
 };
+
+struct Information
+{
+    const char* file;
+    const char* function;
+    size_t      line;
+
+    Information (const char* set_file, const char* set_function, size_t set_line);
+
+    //std::ostream& operator << (std::ostream& os);
+
+};
+
+Information :: Information (const char* set_file, const char* set_function, size_t set_line):
+    file     (set_file),
+    function (set_function),
+    line     (set_line)
+    {}
+
+/*std::ostream& Information :: operator << (std::ostream& os)
+{
+    return os << file << " " << function << " " << line;
+}*/
+
+stack <Information> CallStack;
 
 struct ErrorDump
 {
@@ -107,6 +134,20 @@ void ErrorDump :: Wrapper (const char* label)
     sprintf (message + indent, "Message was wrapped in Wrapper\n");
 
     throw message;
+}
+
+Vector <ErrorDump>
+
+void PrintCallStack ();
+
+void PrintCallStack ()
+{
+    for (; CallStack.size ();)
+    {
+        cout << CallStack.top ().file << " " << CallStack.top ().function << " " << CallStack.top ().line << "\n";
+
+        CallStack.pop ();
+    }
 }
 
 #endif /* DEBUG_HPP_INCLUDED */

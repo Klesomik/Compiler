@@ -16,7 +16,7 @@ void GetO (BinaryNode <Token>& current, Stream <Token>& example);
 // O = E | E = E
 // E = T | T + T | T - T
 // T = P | P + P | P - P
-// P = N | (E)   | -P
+// P = N | (O)   | -P
 // N = ['0'-'9']
 // W = ['a'-'z']
 
