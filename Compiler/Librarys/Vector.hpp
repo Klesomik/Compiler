@@ -54,7 +54,7 @@ class Vector
      public:
         Vector ();
         Vector (const size_t mySize);
-        Vector (const Vector &from);
+        Vector (const Vector&  from);
         Vector (const size_t mySize, const Data_T value);
 
         ~Vector ();
@@ -150,7 +150,7 @@ Vector <Data_T> :: Vector (const size_t mySize):
 //===============================================================================
 
 template <typename Data_T>
-Vector <Data_T> :: Vector (const Vector &from):
+Vector <Data_T> :: Vector (const Vector& from):
     data_     (),
     capacity_ (),
     size_     ()
@@ -166,11 +166,11 @@ Vector <Data_T> :: Vector (const Vector &from):
 
 template <typename Data_T>
 Vector <Data_T> :: Vector (const size_t mySize, const Data_T value):
-    data_     (nullptr),
+    data_     (new Data_T[capacity_]),
     capacity_ (mySize),
     size_     (mySize)
     {
-        data_ = new Data_T[capacity_];
+        OK_VECT
 
         for (size_t i = 0; i < capacity_; i++) data_[i] = value;
 
@@ -198,8 +198,7 @@ void Vector <Data_T> :: resize (const size_t mySize)
 
     size_ = mySize;
 
-    if (size_ > capacity_)
-        expand ();
+    if (size_ > capacity_) expand ();
 
     OK_VECT
 }
@@ -296,11 +295,7 @@ bool Vector <Data_T> :: empty ()
 {
     OK_VECT
 
-    if (data_ == nullptr)
-        return true;
-
-    else
-        return false;
+    return (size_ == 0);
 }
 
 //===============================================================================
@@ -310,13 +305,10 @@ void Vector <Data_T> :: clear ()
 {
     OK_VECT
 
+    for (size_t i = 0; i < size_; i++) data_[i] = 0;
+
     size_     = 0;
     capacity_ = 0;
-
-    if (data_ != nullptr)
-        delete[] data_;
-
-    data_ = nullptr;
 
     OK_VECT
 }
@@ -434,8 +426,7 @@ Vector <Data_T>& Vector <Data_T> :: operator = (const Vector <Data_T> &from)
     OK_VECT
 
     capacity_ = from.capacity_;
-
-    size_ = from.size_;
+    size_     = from.size_;
 
     data_ = new Data_T[capacity_];
 

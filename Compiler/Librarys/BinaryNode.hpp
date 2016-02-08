@@ -52,14 +52,14 @@ class BinaryNode
     private:
         Data_T key_;
 
-        BinaryNode <Data_T> *parent_;
+        BinaryNode <Data_T>* parent_;
 
-        Vector <BinaryNode <Data_T>> children;
+        Vector <BinaryNode <Data_T>> children_;
 
         bool ok      ();
         void dump    ();
 
-        BinaryNode (BinaryNode <Data_T>& from);
+        BinaryNode                      (BinaryNode <Data_T>& from);
         BinaryNode <Data_T>& operator = (BinaryNode <Data_T>& from);
 
     public:
@@ -86,37 +86,33 @@ class BinaryNode
 
 template <typename Data_T>
 BinaryNode <Data_T> :: BinaryNode ():
-    key_    (),
-    parent_ (nullptr),
-    left_   (nullptr),
-    right_  (nullptr)
+    key_      (),
+    parent_   (nullptr),
+    children_ (nullptr)
     { OK_BINARYNODE }
 
 //===============================================================================
 
 template <typename Data_T>
 BinaryNode <Data_T> :: BinaryNode (const Data_T& value):
-    key_    (value),
-    parent_ (nullptr),
-    left_   (nullptr),
-    right_  (nullptr)
+    key_      (value),
+    parent_   (nullptr),
+    children_ (nullptr)
     { OK_BINARYNODE }
 
 //===============================================================================
 
 template <typename Data_T>
 BinaryNode <Data_T> :: BinaryNode (BinaryNode <Data_T>& from):
-    key_    (from.key_),
-    parent_ (from.parent_),
-    left_   (from.left_),
-    right_  (from.right_)
+    key_      (from.key_),
+    parent_   (from.parent_),
+    children_ (from.children_)
     {
         from.parent_ = nullptr;
-        from.left_   = nullptr;
-        from.right_  = nullptr;
 
-        if (left_)  left_  -> parent_ = this;
-        if (right_) right_ -> parent_ = this;
+        from.children_.fill (nullptr);
+
+        for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
         OK_BINARYNODE
     }
@@ -130,16 +126,13 @@ BinaryNode <Data_T> :: ~BinaryNode ()
 
     if (parent_) parent_ = nullptr;
 
-    if (left_)
+    for (size_t i = 0; i < children_.size (); i++)
     {
-        delete left_;
-               left_ = nullptr;
-    }
-
-    if (right_)
-    {
-        delete right_;
-               right_ = nullptr;
+        if (children_[i])
+        {
+            delete children_[i];
+                   children_[i] = nullptr;
+        }
     }
 }
 
@@ -150,14 +143,12 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& fro
 {
     OK_BINARYNODE
 
-    key_    = from.key_;
-    parent_ = from.parent_;
-    left_   = from.left_;
-    right_  = from.right_;
+    key_      = from.key_;
+    parent_   = from.parent_;
+    children_ = from.children_;
 
     from.parent_ = nullptr;
-    from.left_   = nullptr;
-    from.right_  = nullptr;
+    from.children_.fill (nullptr);
 
     OK_BINARYNODE
 
@@ -167,7 +158,7 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& fro
 //===============================================================================
 
 template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: operator [] (const size_t child)
+/*const*/BinaryNode <Data_T>& BinaryNode <Data_T> :: operator [] (const size_t child)
 {
     OK_BINARYNODE
 
@@ -211,7 +202,7 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: insert (const Data_T& value)
 //===============================================================================
 
 template <typename Data_T>
-/*const*/BinaryNode <Data_T>* BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
+BinaryNode <Data_T>* BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
 {
     OK_BINARYNODE
 
