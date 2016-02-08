@@ -52,7 +52,9 @@ class BinaryNode
     private:
         Data_T key_;
 
-        BinaryNode <Data_T> *parent_, *left_, *right_;
+        BinaryNode <Data_T> *parent_;
+
+        Vector <BinaryNode <Data_T>> children;
 
         bool ok      ();
         void dump    ();
@@ -66,26 +68,18 @@ class BinaryNode
 
         ~BinaryNode ();
 
-        BinaryNode <Data_T>& operator [] (const size_t child);
+        /*const*/BinaryNode <Data_T>* operator [] (const size_t child);
 
-        BinaryNode& insertLeft  ();
-        BinaryNode& insertRight ();
-
-        BinaryNode& insertLeft  (const Data_T& value);
-        BinaryNode& insertRight (const Data_T& value);
-
-        BinaryNode& insertLeft  (BinaryNode <Data_T>& example);
-        BinaryNode& insertRight (BinaryNode <Data_T>& example);
+        BinaryNode& insert ();
+        BinaryNode& insert (const Data_T& value);
+        BinaryNode& insert (BinaryNode <Data_T>& example);
 
         void erase ();
 
         BinaryNode <Data_T>& copy (const BinaryNode <Data_T>& from); //old
         BinaryNode <Data_T>& move (BinaryNode <Data_T>& from);
 
-        Data_T&               key    ();
-        /*const*/ BinaryNode* parent ();
-        /*const*/ BinaryNode* right  ();
-        /*const*/ BinaryNode* left   ();
+        Data_T&  key ();
 };
 
 //}==============================================================================
@@ -176,108 +170,55 @@ template <typename Data_T>
 BinaryNode <Data_T>& BinaryNode <Data_T> :: operator [] (const size_t child)
 {
     OK_BINARYNODE
-    assert (child < 2);
 
-    if (child == 0) return  left;
-    if (child == 1) return right;
+    if (child >= children_.size ())
+    {
+        DO ({ throw "Not found this children"; },
+            { assert (false); })
+    }
+
+    return children_[child];
 }
 
 //===============================================================================
 
 template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insertLeft  ()
+BinaryNode <Data_T>& BinaryNode <Data_T> :: insert  ()
 {
     OK_BINARYNODE
-
-    if (left_) throw "left_";
 
     BinaryNode from = BinaryNode ();
 
     OK_BINARYNODE
 
-    return insertLeft (from);
+    return insert (from);
 }
 
 //===============================================================================
 
 template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insertRight ()
+BinaryNode <Data_T>& BinaryNode <Data_T> :: insert (const Data_T& value)
 {
     OK_BINARYNODE
-
-    if (right_) throw "right_";
-
-    BinaryNode from = BinaryNode ();
-
-    OK_BINARYNODE
-
-    return insertRight (from);
-}
-
-//===============================================================================
-
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insertLeft (const Data_T& value)
-{
-    OK_BINARYNODE
-
-    if (left_) throw "left_";
 
     BinaryNode from (value);
 
     OK_BINARYNODE
 
-    return insertLeft (from);
+    return insert (from);
 }
 
 //===============================================================================
 
 template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insertRight (const Data_T& value)
+/*const*/BinaryNode <Data_T>* BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
 {
     OK_BINARYNODE
-
-    if (right_) throw "right_";
-
-    BinaryNode from (value);
-
-    OK_BINARYNODE
-
-    return insertRight (from);
-}
-
-//===============================================================================
-
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insertLeft (BinaryNode <Data_T>& from)
-{
-    OK_BINARYNODE
-
-    if (left_) throw "left_";
 
     BinaryNode* example = new BinaryNode (from);
 
-    left_ = example;
-            example -> parent_ = this;
-
-    OK_BINARYNODE
-
-    return (*this);
-}
-
-//===============================================================================
-
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insertRight (BinaryNode <Data_T>& from)
-{
-   OK_BINARYNODE
-
-    if (right_) throw "right_";
-
-    BinaryNode* example = new BinaryNode (from);
-
-    right_ = example;
-             example -> parent_ = this;
+    children_.push_back (example);
+                         example -> parent_ = this;
 
     OK_BINARYNODE
 
@@ -445,36 +386,6 @@ Data_T& BinaryNode <Data_T> :: key ()
     OK_BINARYNODE
 
     return key_;
-}
-
-//===============================================================================
-
-template <typename Data_T>
-/*const*/ BinaryNode <Data_T>* BinaryNode <Data_T> :: parent ()
-{
-    OK_BINARYNODE
-
-    return parent_;
-}
-
-//===============================================================================
-
-template <typename Data_T>
-/*const*/ BinaryNode <Data_T>* BinaryNode <Data_T> :: right ()
-{
-    OK_BINARYNODE
-
-    return right_;
-}
-
-//===============================================================================
-
-template <typename Data_T>
-/*const*/ BinaryNode <Data_T>* BinaryNode <Data_T> :: left ()
-{
-    OK_BINARYNODE
-
-    return left_;
 }
 
 #include "BinaryNodeLib.hpp"

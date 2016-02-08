@@ -10,6 +10,7 @@ void GetP (BinaryNode <Token>& current, Stream <Token>& example);
 void GetT (BinaryNode <Token>& current, Stream <Token>& example);
 void GetE (BinaryNode <Token>& current, Stream <Token>& example);
 void GetO (BinaryNode <Token>& current, Stream <Token>& example);
+void GetZ (BinaryNode <Token>& current, Stream <Token>& example);
 
 //{
 
@@ -155,4 +156,50 @@ void GetO (BinaryNode <Token>& current, Stream <Token>& example)
     }
 
     current.move (value);
+}
+
+void GetZ (BinaryNode <Token>* current, Stream <Token>& example)
+{
+    while (example.check ())
+    {
+        if (example[example.place ()].type_ == Begin)
+        {
+            while (example.check () && example[example.place ()].type_ == Begin)
+            {
+                example++;
+
+                GetZ (current, example);
+
+                char end = 0;
+                example >> end;
+
+                if (end != End) THROW ("Expected '}'");
+
+                GetZ (current, example);
+            }
+        }
+
+        else
+        {
+            Vector <char> tmp;
+
+            while (example.check () && example[example.place ()].type_ != EndOfToken)
+            {
+                tmp.push_back (symbol);
+
+                char symbol = 0;
+                example >> symbol;
+            }
+
+            Stream <char> command (tmp);
+
+            BinaryNode <Token> value;
+            GetO (value, command);
+
+            current -> insertLeft  (value);
+            current -> insertRight ();
+
+            GetZ (current -> right (), example);
+        }
+    }
 }

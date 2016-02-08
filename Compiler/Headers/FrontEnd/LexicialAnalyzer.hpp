@@ -23,20 +23,22 @@ enum Operations
     Equal,
     Begin,
     End,
+    EndOfToken,
     EqualEqual,
     If,
     Else
 };
 
-map <flag, int> Table = { { '+',    Add },
-                          { '-',    Sub },
-                          { '*',    Mul },
-                          { '/',    Div },
-                          { '(',  Start },
-                          { ')', Finish },
-                          { '=',  Equal },
-                          { '{',  Begin },
-                          { '}',    End } };
+map <flag, int> Table = { { '+',       Add },
+                          { '-',       Sub },
+                          { '*',       Mul },
+                          { '/',       Div },
+                          { '(',     Start },
+                          { ')',    Finish },
+                          { '=',     Equal },
+                          { '{',     Begin },
+                          { '}',       End },
+                          { ';', EndOfToken} };
 
 Vector <string> Variables;
 
