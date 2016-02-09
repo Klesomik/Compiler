@@ -305,8 +305,6 @@ void Vector <Data_T> :: clear ()
 {
     OK_VECT
 
-    for (size_t i = 0; i < size_; i++) data_[i] = 0;
-
     size_     = 0;
     capacity_ = 0;
 

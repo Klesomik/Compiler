@@ -54,13 +54,20 @@ class BinaryNode
 
         BinaryNode <Data_T>* parent_;
 
-        Vector <BinaryNode <Data_T>> children_;
+        Vector <BinaryNode <Data_T>*> children_;
 
-        bool ok      ();
-        void dump    ();
+        #if !defined (DEBUG_BINARYNODE)
 
-        BinaryNode                      (BinaryNode <Data_T>& from);
-        BinaryNode <Data_T>& operator = (BinaryNode <Data_T>& from);
+            bool ok   ();
+            void dump ();
+
+        #endif
+
+        BinaryNode (BinaryNode <Data_T>& from);
+
+        BinaryNode <Data_T>& operator =  (BinaryNode <Data_T>& from);
+
+        int position (BinaryNode <Data_T>* child); //[]
 
     public:
         BinaryNode ();
@@ -80,6 +87,13 @@ class BinaryNode
         BinaryNode <Data_T>& move (BinaryNode <Data_T>& from);
 
         Data_T&  key ();
+
+        #if defined (DEBUG_BINARYNODE)
+
+            bool ok   ();
+            void dump ();
+
+        #endif
 };
 
 //}==============================================================================
@@ -88,7 +102,7 @@ template <typename Data_T>
 BinaryNode <Data_T> :: BinaryNode ():
     key_      (),
     parent_   (nullptr),
-    children_ (nullptr)
+    children_ ()
     { OK_BINARYNODE }
 
 //===============================================================================
@@ -97,7 +111,7 @@ template <typename Data_T>
 BinaryNode <Data_T> :: BinaryNode (const Data_T& value):
     key_      (value),
     parent_   (nullptr),
-    children_ (nullptr)
+    children_ ()
     { OK_BINARYNODE }
 
 //===============================================================================
@@ -150,6 +164,8 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& fro
     from.parent_ = nullptr;
     from.children_.fill (nullptr);
 
+    for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
+
     OK_BINARYNODE
 
     return (*this);
@@ -158,7 +174,7 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& fro
 //===============================================================================
 
 template <typename Data_T>
-/*const*/BinaryNode <Data_T>& BinaryNode <Data_T> :: operator [] (const size_t child)
+/*const*/BinaryNode <Data_T>* BinaryNode <Data_T> :: operator [] (const size_t child)
 {
     OK_BINARYNODE
 
@@ -168,7 +184,26 @@ template <typename Data_T>
             { assert (false); })
     }
 
+    OK_BINARYNODE
+
     return children_[child];
+}
+
+//===============================================================================
+
+template <typename Data_T>
+int BinaryNode <Data_T> :: position (BinaryNode <Data_T>* child)
+{
+    OK_BINARYNODE
+
+    for (size_t i = 0; i < children_.size (); i++)
+    {
+        if (children_[i] == child) return i;
+    }
+
+    OK_BINARYNODE
+
+    return -1;
 }
 
 //===============================================================================
@@ -202,7 +237,7 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: insert (const Data_T& value)
 //===============================================================================
 
 template <typename Data_T>
-BinaryNode <Data_T>* BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
+BinaryNode <Data_T>& BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
 {
     OK_BINARYNODE
 
@@ -211,6 +246,8 @@ BinaryNode <Data_T>* BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
     children_.push_back (example);
                          example -> parent_ = this;
 
+    from.~BinaryNode ();
+
     OK_BINARYNODE
 
     return (*this);
@@ -218,38 +255,38 @@ BinaryNode <Data_T>* BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
 
 //===============================================================================
 
-template <typename Data_T>
+/*template <typename Data_T>
 void BinaryNode <Data_T> :: erase ()
 {
     OK_BINARYNODE
 
     parent_ = nullptr;
-    left_   = nullptr;
-    right_  = nullptr;
+    children_.fill (nullptr);
 
-    delete parent_;
-    delete left_;
-    delete right_;
+    int number = parent_[this];
+
+    if (number != -1) parent_[number] = nullptr;
+
+    for (size_t i = 0; i < children_.size (); i++) delete children_[i];
 
     OK_BINARYNODE
-}
+}*/
 
 //===============================================================================
 
-template <typename Data_T>
+/*template <typename Data_T>
 BinaryNode <Data_T>& BinaryNode <Data_T> :: copy (const BinaryNode <Data_T>& from)
 {
     OK_BINARYNODE
 
-    BinaryNode <Data_T> current (from.key ());
+    BinaryNode <Data_T> current (from.key_);
 
-    if (from.left  ()) current.insertLeft  (copy (from.left  ()));
-    if (from.rigth ()) current.insertRight (copy (from.right ()));
+    for (size_t i = 0; i < from.children_.size (); i++) current.insert (copy (children_[i]));
 
     OK_BINARYNODE
 
     return current;
-}
+}*/
 
 //===============================================================================
 
@@ -258,33 +295,24 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: move (BinaryNode <Data_T>& from)
 {
     OK_BINARYNODE
 
-    if (left_)
+    for (size_t i = 0; i < children_.size (); i++)
     {
-        left_ -> parent_ = nullptr;
-        left_            = nullptr;
+        children_[i] -> parent_ = nullptr;
+        children_[i]            = nullptr;
     }
 
-    if (right_)
-    {
-        right_ -> parent_ = nullptr;
-        right_            = nullptr;
-    }
+    children_.resize (from.children_.size ());
 
     key_ = from.key_;
 
-    if (from.left_)
+    for (size_t i = 0; i < children_.size (); i++)
     {
-        left_ = from.left_;
-                from.left_ -> parent_ = this;
-                from.left_ = nullptr;
+        children_[i] = from.children_[i];
+                       from.children_[i] -> parent_ = this;
+                       from.children_[i] = nullptr;
     }
 
-    if (from.right_)
-    {
-        right_ = from.right_;
-                 from.right_ -> parent_ = this;
-                 from.right_ = nullptr;
-    }
+    from.children_.clear ();
 
     OK_BINARYNODE
 
@@ -298,27 +326,20 @@ bool BinaryNode <Data_T> :: ok ()
 {
     if (parent_)
     {
-        if (parent_ -> left_ != this && parent_ -> right_ != this)
+        int number = parent_ -> position (this);
+
+        if (number == -1)
         {
             DO ({ throw "parent_ -> left_ != this && parent_ -> right_ != this"; },
                 { return false; })
         }
     }
 
-    if (left_)
+    for (size_t i = 0; i < children_.size (); i++)
     {
-        if (left_ -> parent_ != this)
+        if (children_[i] && (children_[i] -> parent_ != this))
         {
             DO ({ throw "left_ -> parent_ != this"; },
-                { return false; })
-        }
-    }
-
-    if (right_)
-    {
-        if (right_ -> parent_ != this)
-        {
-            DO ({ throw "right_ -> parent_ != this"; },
                 { return false; })
         }
     }
@@ -347,16 +368,29 @@ void BinaryNode <Data_T> :: dump ()
 
     #endif
 
-    printf ("\n=============DUMP=============\n");
+    printf ("\n====================DUMP====================\n");
 
-    printf ("BinaryNode (%s) [this = %p][", ok()? "ok" : "ERROR", this);
-    std::cout << "key = " << key_ << "]\n";
+    printf ("BinaryNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
+    std::cout << "[" << key_ << "];\n";
 
-    printf ("    parent = %p;\n", parent_);
-    printf ("      left = %p;\n",   left_);
-    printf ("     right = %p;\n",  right_);
+    if (parent_)
+    {
+        printf ("   parent = [%p]", parent_);
+        std::cout << "[" << parent_ -> key_ << "];\n";
+    }
 
-    printf ("==============================\n\n");
+    else
+    {
+        printf ("   parent = [%p];\n", parent_);
+    }
+
+    for (size_t i = 0; i < children_.size (); i++)
+    {
+        printf ("   child[%d] = [%p]", i, children_[i]);
+        std::cout << "[" << children_[i] -> key_ << "];\n";
+    }
+
+    printf ("============================================\n\n");
 
     if (mode)
     {
@@ -379,6 +413,6 @@ Data_T& BinaryNode <Data_T> :: key ()
     return key_;
 }
 
-#include "BinaryNodeLib.hpp"
+//#include "BinaryNodeLib.hpp"
 
 #endif /* BINARYNODE_HPP_INCLUDED */
