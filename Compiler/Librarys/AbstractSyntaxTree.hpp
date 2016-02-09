@@ -56,13 +56,6 @@ class BinaryNode
 
         Vector <BinaryNode <Data_T>*> children_;
 
-        #if !defined (DEBUG_BINARYNODE)
-
-            bool ok   ();
-            void dump ();
-
-        #endif
-
         BinaryNode (BinaryNode <Data_T>& from);
 
         BinaryNode <Data_T>& operator =  (BinaryNode <Data_T>& from);
@@ -86,14 +79,21 @@ class BinaryNode
         BinaryNode <Data_T>& copy (const BinaryNode <Data_T>& from); //old
         BinaryNode <Data_T>& move (BinaryNode <Data_T>& from);
 
-        Data_T&  key ();
+        Data_T&                             key ();
+        Vector <BinaryNode <Data_T>*>& children ();
 
         #if defined (DEBUG_BINARYNODE)
 
-            bool ok   ();
-            void dump ();
+            public:
+
+        #else
+
+            private:
 
         #endif
+
+        bool ok   ();
+        void dump ();
 };
 
 //}==============================================================================
@@ -295,11 +295,7 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: move (BinaryNode <Data_T>& from)
 {
     OK_BINARYNODE
 
-    for (size_t i = 0; i < children_.size (); i++)
-    {
-        children_[i] -> parent_ = nullptr;
-        children_[i]            = nullptr;
-    }
+    for (size_t i = 0; i < children_.size (); i++) delete children_[i];
 
     children_.resize (from.children_.size ());
 
@@ -411,6 +407,16 @@ Data_T& BinaryNode <Data_T> :: key ()
     OK_BINARYNODE
 
     return key_;
+}
+
+//===============================================================================
+
+template <typename Data_T>
+Vector <BinaryNode <Data_T>*>& BinaryNode <Data_T> :: children ()
+{
+    OK_BINARYNODE
+
+    return children_;
 }
 
 #include "BinaryNodeLib.hpp"

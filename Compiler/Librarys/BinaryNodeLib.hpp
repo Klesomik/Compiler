@@ -44,7 +44,7 @@ void Check (const char* message)
     #endif /* TEST_BINARYNODE */
 }
 
-BinaryNode <Token>& Read (FILE* scan)
+/*BinaryNode <Token>& Read (FILE* scan)
 {
     static BinaryNode <Token> poison ({ -0xBADBEEF, -0xBADBEEF });
 
@@ -86,9 +86,9 @@ BinaryNode <Token>& Read (FILE* scan)
     }
 
     return current;
-}
+}*/
 
-void Write (BinaryNode <Token>& root, FILE* print)
+/*void Write (BinaryNode <Token>& root, FILE* print)
 {
     fprintf (print, "(");
 
@@ -100,9 +100,9 @@ void Write (BinaryNode <Token>& root, FILE* print)
     WriteTree (root.right (), print);
 
     fprintf (print, ")");
-}
+}*/
 
-void WriteTree (BinaryNode <Token>* current, FILE* print)
+/*void WriteTree (BinaryNode <Token>* current, FILE* print)
 {
     if (!current)
     {
@@ -121,7 +121,7 @@ void WriteTree (BinaryNode <Token>* current, FILE* print)
     WriteTree (current -> right (), print);
 
     fprintf (print, ")");
-}
+}*/
 
 template <typename Data_T>
 void DotDump (BinaryNode <Data_T>& root, const string& file_name)
@@ -147,8 +147,7 @@ void DotDump (BinaryNode <Data_T>& root, const string& file_name)
 
     dtNode (0, title.c_str ());
 
-    GrowTree (root.left  (), 0);
-    GrowTree (root.right (), 0);
+    for (size_t i = 0; i < root.children ().size (); i++) GrowTree (root.children ()[i], 0);
 
     dtEnd ();
 
@@ -180,8 +179,7 @@ void GrowTree (BinaryNode <Data_T>* current, const size_t number)
 
     size_t copy_count = count;
 
-    if (current -> left  ()) GrowTree (current -> left  (), copy_count);
-    if (current -> right ()) GrowTree (current -> right (), copy_count);
+    for (size_t i = 0; i < current -> children ().size (); i++) GrowTree (current -> children ()[i], copy_count);
 }
 
 template <typename Data_T>
