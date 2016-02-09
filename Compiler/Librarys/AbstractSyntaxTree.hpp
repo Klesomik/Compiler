@@ -124,7 +124,7 @@ BinaryNode <Data_T> :: BinaryNode (BinaryNode <Data_T>& from):
     {
         from.parent_ = nullptr;
 
-        from.children_.fill (nullptr);
+        from.children_.clear ();
 
         for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
@@ -162,7 +162,7 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& fro
     children_ = from.children_;
 
     from.parent_ = nullptr;
-    from.children_.fill (nullptr);
+    from.children_.clear ();
 
     for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
@@ -261,7 +261,7 @@ void BinaryNode <Data_T> :: erase ()
     OK_BINARYNODE
 
     parent_ = nullptr;
-    children_.fill (nullptr);
+    children_.clear ();
 
     int number = parent_[this];
 
@@ -413,6 +413,6 @@ Data_T& BinaryNode <Data_T> :: key ()
     return key_;
 }
 
-//#include "BinaryNodeLib.hpp"
+#include "BinaryNodeLib.hpp"
 
 #endif /* BINARYNODE_HPP_INCLUDED */

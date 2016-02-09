@@ -2,7 +2,7 @@
 #include "LexicialAnalyzer.hpp"
 #include "..//..//Librarys//Debug.hpp"
 #include "..//..//Librarys//Stream.hpp"
-#include "..//..//Librarys//BinaryNode.hpp"
+#include "..//..//Librarys//AbstractSyntaxTree.hpp"
 
 void GetN (BinaryNode <Token>& current, Stream <Token>& example);
 void GetW (BinaryNode <Token>& current, Stream <Token>& example);
