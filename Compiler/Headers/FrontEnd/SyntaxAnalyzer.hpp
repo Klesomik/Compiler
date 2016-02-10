@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdio>
 #include "LexicialAnalyzer.hpp"
 #include "..//..//Librarys//Debug.hpp"
@@ -14,7 +16,6 @@ void GetZ (BinaryNode <Token>& current, Stream <Token>& example);
 
 //{
 
-// Z = O | { Z }
 // O = E | E = E
 // E = T | T + T | T - T
 // T = P | P + P | P - P
@@ -101,10 +102,10 @@ void GetT (BinaryNode <Token>& current, Stream <Token>& example)
         example++;
 
         BinaryNode <Token> operation ({ sign, 0 });
-                           operation.insertLeft  (value);
+                           operation.insert (value);
 
                            GetP (value, example);
-                           operation.insertRight (value);
+                           operation.insert (value);
 
         value.move (operation);
     }
@@ -124,10 +125,10 @@ void GetE (BinaryNode <Token>& current, Stream <Token>& example)
         example++;
 
         BinaryNode <Token> operation ({ sign, 0 });
-                           operation.insertLeft  (value);
+                           operation.insert (value);
 
                            GetT (value, example);
-                           operation.insertRight (value);
+                           operation.insert (value);
 
         value.move (operation);
     }
@@ -147,10 +148,10 @@ void GetO (BinaryNode <Token>& current, Stream <Token>& example)
         example++;
 
         BinaryNode <Token> operation ({ sign, 0 });
-                           operation.insertLeft  (value);
+                           operation.insert (value);
 
                            GetE (value, example);
-                           operation.insertRight (value);
+                           operation.insert (value);
 
         value.move (operation);
     }
@@ -158,48 +159,47 @@ void GetO (BinaryNode <Token>& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetZ (BinaryNode <Token>* current, Stream <Token>& example)
+void GetZ (BinaryNode <Token>& current, Stream <Token>& example)
 {
-    while (example.check ())
+    if (example.check ())
     {
         if (example[example.place ()].type_ == Begin)
         {
             while (example.check () && example[example.place ()].type_ == Begin)
             {
-                example++;
+                example++; //{
 
-                GetZ (current, example);
+                BinaryNode <Token> grayNode ({ None, None });
 
-                char end = 0;
-                example >> end;
+                GetZ (grayNode, example);
 
-                if (end != End) THROW ("Expected '}'");
+                current.insert (grayNode);
 
-                GetZ (current, example);
+                example++; //}
             }
         }
 
         else
         {
-            Vector <char> tmp;
-
-            while (example.check () && example[example.place ()].type_ != EndOfToken)
+            while (example.check () && example[example.place ()].type_ != End)
             {
-                tmp.push_back (symbol);
+                Stream <Token> tmp;
 
-                char symbol = 0;
-                example >> symbol;
+                while (example.check () && example[example.place ()].type_ != EndOfToken)
+                {
+                    tmp.push_back (example[example.place ()]);
+
+                    example++;
+                }
+
+                BinaryNode <Token> operation;
+
+                GetO (operation, tmp);
+
+                current.insert (operation);
+
+                example++;
             }
-
-            Stream <char> command (tmp);
-
-            BinaryNode <Token> value;
-            GetO (value, command);
-
-            current -> insertLeft  (value);
-            current -> insertRight ();
-
-            GetZ (current -> right (), example);
         }
     }
 }

@@ -9,7 +9,7 @@
 #include "Librarys//AbstractSyntaxTree.hpp"
 #include "Headers//FrontEnd//LexicialAnalyzer.hpp"
 #include "Headers//FrontEnd//SyntaxAnalyzer.hpp"
-#include "Headers//BackEnd//Compiler.hpp"
+//#include "Headers//BackEnd//Compiler.hpp"
 //#include "Headers//BackEnd//Assembler.hpp"
 
 //}==============================================================================
@@ -42,16 +42,11 @@ int main (int argc, const char* argv[])
         Parser (example, code);
 
         BinaryNode <Token> root;
-        GetO (root, code);
+        GetZ (root, code);
 
         DotDump (root, "EX1.dot");
 
-        FILE* asm_txt = fopen ("Data.txt", "w");
-
-        CreateAsm (root, asm_txt);
-
         fclose (C_File);
-        fclose (asm_txt);
     }
     catch (const char* message)
     {

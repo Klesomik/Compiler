@@ -1,5 +1,4 @@
-#ifndef PARSER_HPP_INCLUDED
-    #define PARSER_HPP_INCLUDED
+#pragma once
 
 #include <iostream>
 #include <cstring>
@@ -26,19 +25,24 @@ enum Operations
     EndOfToken,
     EqualEqual,
     If,
-    Else
+    Else,
+    None
 };
 
-map <flag, int> Table = { { '+',       Add },
-                          { '-',       Sub },
-                          { '*',       Mul },
-                          { '/',       Div },
-                          { '(',     Start },
-                          { ')',    Finish },
-                          { '=',     Equal },
-                          { '{',     Begin },
-                          { '}',       End },
-                          { ';', EndOfToken} };
+map <flag, int> Table   =   { { '+',       Add  },
+                              { '-',       Sub  },
+                              { '*',       Mul  },
+                              { '/',       Div  },
+                              { '(',     Start  },
+                              { ')',    Finish  },
+                              { '=',     Equal  },
+                              { '{',     Begin  },
+                              { '}',       End  },
+                              { ';', EndOfToken } };
+
+map <string, int> KeyWords = { {   "==",  EqualEqual },
+                               {   "if",          If },
+                               { "else",        Else } };
 
 Vector <string> Variables;
 
@@ -116,7 +120,7 @@ void Parser    (Stream <char>& example, Stream <Token>& code);
 
 void SkipSpace (Stream <char>& example)
 {
-    while (example.check () && example[example.place ()] == ' ')
+    while (example.check () && (example[example.place ()] == ' ' || example[example.place ()] == '\n'))
     {
         char digit = 0;
         example >> digit;
@@ -158,16 +162,11 @@ void Parser (Stream <char>& example, Stream <Token>& code)
                 value.push_back (symbol);
             }
 
-            if (value == "if")
-            {
-                Token tmp (If, 0);
+            int number = KeyWords[value];
 
-                code.push_back (tmp);
-            }
-
-            else if (value == "else")
+            if (number)
             {
-                Token tmp (Else, 0);
+                Token tmp (number, 0);
 
                 code.push_back (tmp);
             }
@@ -211,5 +210,3 @@ void Parser (Stream <char>& example, Stream <Token>& code)
         }
     }
 }
-
-#endif /* PARSER_HPP_INCLUDED */

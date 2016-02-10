@@ -1,3 +1,5 @@
+#pragma once
+
 void CreateAsm     (BinaryNode <Token>& current, FILE* write);
 void CreateAsmTree (BinaryNode <Token>* current, FILE* write);
 
