@@ -1,8 +1,5 @@
-
-//TODO: Rewrite Danila's DOTTER!!!
-
-#ifndef BINARYNODE_HPP_INCLUDED
-    #define BINARYNODE_HPP_INCLUDED
+#ifndef ASTNode_INCLUDED
+    #define ASTNode_INCLUDED
 
 //Include
 //{==============================================================================
@@ -10,79 +7,79 @@
 #include <cstdio>
 #include <iostream>
 #include <cassert>
-#include "Dotter.h"
-#include "Debug.hpp"
+#include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
 
 //}==============================================================================
 
 //Define
 //{==============================================================================
 
-#define DEBUG_BINARYNODE
+#define DEBUG_ASTNODE
 
-#if defined (DEBUG_BINARYNODE)
+#if defined (DEBUG_ASTNODE)
 
-    #define DO(codeDebug, codeTest)  codeDebug
-    #define OK_BINARYNODE ok ();
+    #include "Debug.hpp"
+    #define DO_ASTNODE(codeDebug, codeTest)  codeDebug
+    #define OK_ASTNODE ok ();
 
-#elif defined (TEST_BINARYNODE)
+#elif defined (TEST_ASTNODE)
 
-    #define DO(codeDebug, codeTest)  codeTest
-    #define OK_BINARYNODE assert (ok ());
+    #include "Debug.hpp"
+    #define DO_ASTNODE(codeDebug, codeTest)  codeTest
+    #define OK_ASTNODE assert (ok ());
 
-#elif defined (RELEASE_BINARYNODE)
+#elif defined (RELEASE_ASTNODE)
 
-    #define DO(codeDebug, codeTest)
-    #define OK_BINARYNODE
+    #define DO_ASTNODE(codeDebug, codeTest)
+    #define OK_ASTNODE
 
 #else
 
-    #error "Either DEBUG_BINARYNODE or TEST_BINARYNODE or RELEASE_BINARYNODE MUST be defined"
+    #error "Either DEBUG_ASTNODE or TEST_ASTNODE or RELEASE_ASTNODE MUST be defined"
 
 #endif
 
 //}==============================================================================
 
-//Class: BinaryNode
+//Class: AstNode
 //{==============================================================================
 
-template <typename Data_T>
-class BinaryNode
+class AstNode
 {
     private:
-        Data_T key_;
+        Token key_;
 
-        BinaryNode <Data_T>* parent_;
+        AstNode* parent_;
 
-        Vector <BinaryNode <Data_T>*> children_;
+        Vector <AstNode*> children_;
 
-        BinaryNode (BinaryNode <Data_T>& from);
+        AstNode (AstNode& from);
 
-        BinaryNode <Data_T>& operator =  (BinaryNode <Data_T>& from);
+        AstNode& operator =  (AstNode& from);
 
-        int position (BinaryNode <Data_T>* child); //[]
+        int position (AstNode* child); //[]
 
     public:
-        BinaryNode ();
-        BinaryNode (const Data_T& value);
+        AstNode ();
+        AstNode (const Token& value);
 
-        ~BinaryNode ();
+        ~AstNode ();
 
-        /*const*/BinaryNode <Data_T>* operator [] (const size_t child);
+        /*const*/AstNode* operator [] (const size_t child);
 
-        BinaryNode& insert ();
-        BinaryNode& insert (const Data_T& value);
-        BinaryNode& insert (BinaryNode <Data_T>& example);
+        AstNode& insert ();
+        AstNode& insert (const Token& value);
+        AstNode& insert (AstNode& example);
 
         void erase ();
 
-        BinaryNode <Data_T>& copy (const BinaryNode <Data_T>& from); //old
-        BinaryNode <Data_T>& move (BinaryNode <Data_T>& from);
+        AstNode& copy (const AstNode& from); //old
+        AstNode& move (AstNode& from);
 
-        Data_T&                             key ();
-        Vector <BinaryNode <Data_T>*>& children ();
+        Token&                  key ();
+        Vector <AstNode*>& children ();
 
-        #if defined (DEBUG_BINARYNODE)
+        #if defined (DEBUG_ASTNODE)
 
             public:
 
@@ -93,31 +90,28 @@ class BinaryNode
         #endif
 
         bool ok   ();
-        void dump ();
+        void dump (FILE* out = stdout);
 };
 
 //}==============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T> :: BinaryNode ():
+AstNode :: AstNode ():
     key_      (),
     parent_   (nullptr),
     children_ ()
-    { OK_BINARYNODE }
+    { OK_ASTNODE }
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T> :: BinaryNode (const Data_T& value):
+AstNode :: AstNode (const Token& value):
     key_      (value),
     parent_   (nullptr),
     children_ ()
-    { OK_BINARYNODE }
+    { OK_ASTNODE }
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T> :: BinaryNode (BinaryNode <Data_T>& from):
+AstNode :: AstNode (AstNode& from):
     key_      (from.key_),
     parent_   (from.parent_),
     children_ (from.children_)
@@ -128,15 +122,14 @@ BinaryNode <Data_T> :: BinaryNode (BinaryNode <Data_T>& from):
 
         for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
-        OK_BINARYNODE
+        OK_ASTNODE
     }
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T> :: ~BinaryNode ()
+AstNode :: ~AstNode ()
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     if (parent_) parent_ = nullptr;
 
@@ -152,10 +145,9 @@ BinaryNode <Data_T> :: ~BinaryNode ()
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& from)
+AstNode& AstNode :: operator = (AstNode& from)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     key_      = from.key_;
     parent_   = from.parent_;
@@ -166,99 +158,93 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: operator = (BinaryNode <Data_T>& fro
 
     for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return (*this);
 }
 
 //===============================================================================
 
-template <typename Data_T>
-/*const*/BinaryNode <Data_T>* BinaryNode <Data_T> :: operator [] (const size_t child)
+/*const*/AstNode* AstNode :: operator [] (const size_t child)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     if (child >= children_.size ())
     {
-        DO ({ throw "Not found this children"; },
-            { assert (false); })
+        DO_ASTNODE ({ throw "Not found this children"; },
+                    { assert (false); })
     }
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return children_[child];
 }
 
 //===============================================================================
 
-template <typename Data_T>
-int BinaryNode <Data_T> :: position (BinaryNode <Data_T>* child)
+int AstNode :: position (AstNode* child)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     for (size_t i = 0; i < children_.size (); i++)
     {
         if (children_[i] == child) return i;
     }
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return -1;
 }
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insert  ()
+AstNode& AstNode :: insert  ()
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
-    BinaryNode from = BinaryNode ();
+    AstNode from; //AstNode from = AstNode ();
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return insert (from);
 }
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insert (const Data_T& value)
+AstNode& AstNode :: insert (const Token& value)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
-    BinaryNode from (value);
+    AstNode from (value);
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return insert (from);
 }
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: insert (BinaryNode <Data_T>& from)
+AstNode& AstNode :: insert (AstNode& from)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
-    BinaryNode* example = new BinaryNode (from);
+    AstNode* example = new AstNode (from);
 
     children_.push_back (example);
                          example -> parent_ = this;
 
-    from.~BinaryNode ();
+    from.~AstNode ();
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return (*this);
 }
 
 //===============================================================================
 
-/*template <typename Data_T>
-void BinaryNode <Data_T> :: erase ()
+/*void AstNode :: erase ()
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     parent_ = nullptr;
     children_.clear ();
@@ -269,31 +255,29 @@ void BinaryNode <Data_T> :: erase ()
 
     for (size_t i = 0; i < children_.size (); i++) delete children_[i];
 
-    OK_BINARYNODE
+    OK_ASTNODE
 }*/
 
 //===============================================================================
 
-/*template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: copy (const BinaryNode <Data_T>& from)
+/*AstNode& AstNode :: copy (const AstNode& from)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
-    BinaryNode <Data_T> current (from.key_);
+    AstNode current (from.key_);
 
     for (size_t i = 0; i < from.children_.size (); i++) current.insert (copy (children_[i]));
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return current;
 }*/
 
 //===============================================================================
 
-template <typename Data_T>
-BinaryNode <Data_T>& BinaryNode <Data_T> :: move (BinaryNode <Data_T>& from)
+AstNode& AstNode :: move (AstNode& from)
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     for (size_t i = 0; i < children_.size (); i++) delete children_[i];
 
@@ -310,15 +294,14 @@ BinaryNode <Data_T>& BinaryNode <Data_T> :: move (BinaryNode <Data_T>& from)
 
     from.children_.clear ();
 
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return (*this);
 }
 
 //===============================================================================
 
-template <typename Data_T>
-bool BinaryNode <Data_T> :: ok ()
+bool AstNode :: ok ()
 {
     if (parent_)
     {
@@ -326,8 +309,8 @@ bool BinaryNode <Data_T> :: ok ()
 
         if (number == -1)
         {
-            DO ({ throw "parent_ -> left_ != this && parent_ -> right_ != this"; },
-                { return false; })
+            DO_ASTNODE ({ throw "parent_ -> left_ != this && parent_ -> right_ != this"; },
+                        { return false; })
         }
     }
 
@@ -335,8 +318,8 @@ bool BinaryNode <Data_T> :: ok ()
     {
         if (children_[i] && (children_[i] -> parent_ != this))
         {
-            DO ({ throw "left_ -> parent_ != this"; },
-                { return false; })
+            DO_ASTNODE ({ throw "left_ -> parent_ != this"; },
+                        { return false; })
         }
     }
 
@@ -345,80 +328,77 @@ bool BinaryNode <Data_T> :: ok ()
 
 //===============================================================================
 
-template <typename Data_T>
-void BinaryNode <Data_T> :: dump ()
+void AstNode :: dump (FILE* out /* = stdout */)
 {
     int mode = -1;
 
-    #if defined (DEBUG_BINARYNODE)
+    #if defined (DEBUG_ASTNODE)
 
-        #undef DEBUG_BINARYNODE
+        #undef DEBUG_ASTNODE
 
         mode = 0;
 
-    #elif defined (RELEASE_BINARYNODE)
+    #elif defined (RELEASE_ASTNODE)
 
-        #undef RELEASE_BINARYNODE
+        #undef RELEASE_ASTNODE
 
         mode = 1;
 
     #endif
 
-    printf ("\n====================DUMP====================\n");
+    fprintf (out, "\n====================DUMP====================\n");
 
-    printf ("BinaryNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
-    std::cout << "[" << key_ << "];\n";
+    fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
+    //std::cout << "[" << key_ << "];\n";
 
     if (parent_)
     {
-        printf ("   parent = [%p]", parent_);
-        std::cout << "[" << parent_ -> key_ << "];\n";
+        fprintf (out, "   parent = [%p]", parent_);
+        //std::cout << "[" << parent_ -> key_ << "];\n";
     }
 
     else
     {
-        printf ("   parent = [%p];\n", parent_);
+        fprintf (out, "   parent = [%p];\n", parent_);
     }
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        printf ("   child[%d] = [%p]", i, children_[i]);
-        std::cout << "[" << children_[i] -> key_ << "];\n";
+        fprintf (out, "   child[%d] = [%p]", i, children_[i]);
+        //std::cout << "[" << children_[i] -> key_ << "];\n";
     }
 
-    printf ("============================================\n\n");
+    fprintf (out, "============================================\n\n");
 
     if (mode)
     {
-        #define RELEASE_BINARYNODE
+        #define RELEASE_ASTNODE
     }
 
     else
     {
-        #define DEBUG_BINARYNODE
+        #define DEBUG_ASTNODE
     }
 }
 
 //===============================================================================
 
-template <typename Data_T>
-Data_T& BinaryNode <Data_T> :: key ()
+Token& AstNode :: key ()
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return key_;
 }
 
 //===============================================================================
 
-template <typename Data_T>
-Vector <BinaryNode <Data_T>*>& BinaryNode <Data_T> :: children ()
+Vector <AstNode*>& AstNode :: children ()
 {
-    OK_BINARYNODE
+    OK_ASTNODE
 
     return children_;
 }
 
-#include "BinaryNodeLib.hpp"
+#include "AstNodeLib.hpp"
 
-#endif /* BINARYNODE_HPP_INCLUDED */
+#endif

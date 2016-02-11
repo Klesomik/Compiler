@@ -9,7 +9,7 @@ using namespace std;
 
 typedef unsigned char flag;
 
-enum Operations
+enum Lexemes
 {
     Digit = 0,
     Var,
@@ -29,36 +29,36 @@ enum Operations
     None
 };
 
-map <flag, int> Table   =   { { '+',       Add  },
-                              { '-',       Sub  },
-                              { '*',       Mul  },
-                              { '/',       Div  },
-                              { '(',     Start  },
-                              { ')',    Finish  },
-                              { '=',     Equal  },
-                              { '{',     Begin  },
-                              { '}',       End  },
-                              { ';', EndOfToken } };
+map <flag, int> Table   = { { '+',       Add  },
+                            { '-',       Sub  },
+                            { '*',       Mul  },
+                            { '/',       Div  },
+                            { '(',     Start  },
+                            { ')',    Finish  },
+                            { '=',     Equal  },
+                            { '{',     Begin  },
+                            { '}',       End  },
+                            { ';', EndOfToken } }; //Operators
 
 map <string, int> KeyWords = { {   "==",  EqualEqual },
                                {   "if",          If },
                                { "else",        Else } };
 
-Vector <string> Variables;
+Vector <string> Variables; //map <string, int> Names = {};
 
 //{==============================================================================
 
 struct Token
 {
-    int type_;
-
-    int value_;
+    int type_;  //type
+    int value_; //value
+                //polimorfizm
 
     Token ();
     Token (int     token);
     Token (char    token);
     Token (string& token);
-    Token (int typeVal, int valueVal);
+    Token (int setType, int setValue);
 
     std::ostream& operator << (std::ostream& os);
 };
@@ -105,9 +105,9 @@ Token :: Token (string& token):
         }
     }
 
-Token :: Token (int typeVal, int valueVal):
-    type_  (typeVal),
-    value_ (valueVal)
+Token :: Token (int setType, int setValue):
+    type_  (setType),
+    value_ (setValue)
     {}
 
 std::ostream& Token :: operator << (std::ostream& os)

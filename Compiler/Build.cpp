@@ -9,14 +9,12 @@
 #include "Librarys//AbstractSyntaxTree.hpp"
 #include "Headers//FrontEnd//LexicialAnalyzer.hpp"
 #include "Headers//FrontEnd//SyntaxAnalyzer.hpp"
-//#include "Headers//BackEnd//Compiler.hpp"
-//#include "Headers//BackEnd//Assembler.hpp"
 
 //}==============================================================================
 
 using namespace std;
 
-inline void Hello_C (string& example) { printf ("Input name of C file: "); cin >> example; }
+inline void Hello_C (std::string& example) { printf ("Input name of C file: "); std::cin >> example; }
 
 int main (int argc, const char* argv[])
 {
@@ -24,7 +22,7 @@ int main (int argc, const char* argv[])
     {
         //TRY
 
-        string C_name;
+        std::string C_name;
         Hello_C (C_name);
 
         FILE* C_File = fopen (C_name.c_str (), "r");
@@ -41,8 +39,13 @@ int main (int argc, const char* argv[])
 
         Parser (example, code);
 
-        BinaryNode <Token> root;
-        GetZ (root, code);
+        for (size_t i = 0; i < code.size (); i++)
+        {
+            printf ("type = %d value = %d\n", code[i].type_, code[i].value_);
+        }
+
+        AstNode root ({ None, None });
+        GetY (root, code);
 
         DotDump (root, "EX1.dot");
 

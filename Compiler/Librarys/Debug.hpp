@@ -1,5 +1,4 @@
-#ifndef DEBUG_HPP_INCLUDED
-    #define DEBUG_HPP_INCLUDED
+#pragma once
 
 //Include
 //{==============================================================================
@@ -111,5 +110,3 @@ void ErrorDump :: Wrapper (const char* label)
 }
 
 Vector <ErrorDump> TryList;
-
-#endif /* DEBUG_HPP_INCLUDED */
