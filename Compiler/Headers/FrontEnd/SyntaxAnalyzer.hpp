@@ -22,7 +22,8 @@ void GetY (AstNode& current, Stream <Token>& example);
 
 //{
 
-// Z = O | [{ O }, ..]
+// B = { B } | [L]
+// L = O;
 // O = E | E = E
 // E = T | T + T | T - T
 // T = P | P * P | P / P
