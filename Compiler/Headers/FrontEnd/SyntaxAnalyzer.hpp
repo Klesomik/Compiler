@@ -9,31 +9,31 @@
 
 //Change names
 
-void GetN (AstNode& current, Stream <Token>& example);
-void GetW (AstNode& current, Stream <Token>& example);
-void GetP (AstNode& current, Stream <Token>& example);
-void GetT (AstNode& current, Stream <Token>& example);
-void GetE (AstNode& current, Stream <Token>& example);
-void GetO (AstNode& current, Stream <Token>& example);
-
-void GetToken (AstNode& current, Stream <Token>& example, const int delim);
-void GetBlock (AstNode& current, Stream <Token>& example);
-void GetY (AstNode& current, Stream <Token>& example);
+void GetNumber (AstNode& current, Stream <Token>& example);
+void GetW      (AstNode& current, Stream <Token>& example);
+void GetP      (AstNode& current, Stream <Token>& example);
+void GetT      (AstNode& current, Stream <Token>& example);
+void GetE      (AstNode& current, Stream <Token>& example);
+void GetEqual  (AstNode& current, Stream <Token>& example);
+void GetO      (AstNode& current, Stream <Token>& example);
+void GetLexem  (AstNode& current, Stream <Token>& example);
+void GetBlock  (AstNode& current, Stream <Token>& example);
 
 //{
 
-// B = { B } | [L]
-// L = O;
-// O = E | E = E
-// E = T | T + T | T - T
-// T = P | P * P | P / P
-// P = N | W     | (O)   | -P | +P
-// N = ['0'-'9']
-// W = ['a'-'z']
+// Block = { [Lexem] }
+// Lexem = O; | B
+// O     = Equal | W = O
+// Equal = E | E == E
+// E     = T | T + T | T - T
+// T     = P | P * P | P / P
+// P     = N | W     | (O)   | -P | +P
+// N     = ['0'-'9']
+// W     = ['a'-'z']
 
 //}
 
-void GetN (AstNode& current, Stream <Token>& example)
+void GetNumber (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type_ == Digit)
@@ -65,7 +65,7 @@ void GetW (AstNode& current, Stream <Token>& example)
 
 void GetP (AstNode& current, Stream <Token>& example)
 {
-    AstNode value;
+    AstNode value; //else with out; throw
 
     if (example.check () && example[example.place ()].type_ == Sub)
     {
@@ -99,7 +99,7 @@ void GetP (AstNode& current, Stream <Token>& example)
 
     else
     {
-        GetN (value, example);
+        GetNumber (value, example);
     }
 
     current.move (value);
@@ -151,10 +151,33 @@ void GetE (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetO (AstNode& current, Stream <Token>& example)
+void GetEqual (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     GetE (value, example);
+
+    while (example.check () && example[example.place ()].type_ == EqualEqual)
+    {
+        int sign = example[example.place ()].type_;
+
+        example++;
+
+        AstNode operation ({ sign, 0 });
+                operation.insert (value);
+
+                GetE (value, example);
+                operation.insert (value);
+
+        value.move (operation);
+    }
+
+    current.move (value);
+}
+
+void GetO (AstNode& current, Stream <Token>& example)
+{
+    AstNode value;
+    GetEqual (value, example);
 
     while (example.check () && example[example.place ()].type_ == Equal)
     {
@@ -174,77 +197,58 @@ void GetO (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetToken (AstNode& current, Stream <Token>& example, const int delim)
+void GetLexem (AstNode& current, Stream <Token>& example)
 {
     Stream <Token> tmp;
 
-    while (example.check () && example[example.place ()].type_ != delim)
-    {
-        tmp.push_back (example[example.place ()]);
-
-        example++;
-    }
-
-    AstNode operation;
-
-    GetO (operation, tmp);
-
-    current.insert (operation);
-
-    example++;
-}
-
-void GetBlock (AstNode& current, Stream <Token>& example)
-{
     if (example.check ())
     {
         if (example[example.place ()].type_ == Begin)
         {
-            example++; //{
+            AstNode grayNode ({ None, None }); //
 
-            AstNode grayNode ({ None, None });
-
-            GetBlock (grayNode, example); //GetY
+            GetBlock (grayNode, example);
 
             current.insert (grayNode);
-
-            example++; //}
         }
 
         else
         {
-            while (example.check () && example[example.place ()].type_ != End)
-                GetToken (current, example, EndOfToken);
+            AstNode operation;
 
-            //example++;
+            while (example.check () && example[example.place ()].type_ != EndOfToken)
+            {
+                tmp.push_back (example[example.place ()]);
+
+                example++;
+            }
+
+            GetO (operation, tmp);
+
+            current.insert (operation);
+
+            example++;
         }
     }
 }
 
-void GetY (AstNode& current, Stream <Token>& example)
+void GetBlock (AstNode& current, Stream <Token>& example)
 {
-    while (example.check ())
+    if (example.check () && example[example.place ()].type_ == Begin)
     {
-        if (example[example.place ()].type_ == Begin)
-        {
-            while (example.check () && example[example.place ()].type_ == Begin)
-                GetBlock (current, example);
-        }
+        example++;
 
-        else if (example[example.place ()].type_ == If)
-        {
-            example++;
+        //AstNode grayNode ({ None, None });
 
-            AstNode condition ({ If, 0 });
-            GetToken (condition, example, Finish);
+        while (example.check () && example[example.place ()].type_ != End)
+            GetLexem (current, example); //grayNode
 
-            example++;
+        //current.insert (grayNode);
 
-            GetBlock (current, example);
-        }
-
-        else GetToken (current, example, EndOfToken);
+        example++;
     }
+
+    else throw "expected '{'";
 }
 
 #endif

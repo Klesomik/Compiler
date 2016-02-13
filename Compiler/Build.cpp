@@ -39,13 +39,8 @@ int main (int argc, const char* argv[])
 
         Parser (example, code);
 
-        for (size_t i = 0; i < code.size (); i++)
-        {
-            printf ("type = %d value = %d\n", code[i].type_, code[i].value_);
-        }
-
         AstNode root ({ None, None });
-        GetY (root, code);
+        GetBlock (root, code);
 
         DotDump (root, "EX1.dot");
 

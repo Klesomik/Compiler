@@ -120,7 +120,7 @@ void Parser    (Stream <char>& example, Stream <Token>& code);
 
 void SkipSpace (Stream <char>& example)
 {
-    while (example.check () && (example[example.place ()] == ' ' || example[example.place ()] == '\n'))
+    while (example.check () && (example[example.place ()] == ' ' || example[example.place ()] == '\n' || example[example.place ()] == '\t'))
     {
         char digit = 0;
         example >> digit;

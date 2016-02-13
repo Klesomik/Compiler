@@ -1,8 +1,0 @@
-push 2;
-push 2;
-add;
-push 2;
-mul;
-push 5;
-add;
-pop %0;
