@@ -7,31 +7,32 @@
 #include "..//..//Librarys//Stream.hpp"
 #include "..//..//Librarys//AbstractSyntaxTree.hpp"
 
-//Change names
-
-void GetNumber (AstNode& current, Stream <Token>& example);
-void GetW      (AstNode& current, Stream <Token>& example);
-void GetP      (AstNode& current, Stream <Token>& example);
-void GetT      (AstNode& current, Stream <Token>& example);
-void GetE      (AstNode& current, Stream <Token>& example);
-void GetEqual  (AstNode& current, Stream <Token>& example);
-void GetO      (AstNode& current, Stream <Token>& example);
-void GetLexem  (AstNode& current, Stream <Token>& example);
-void GetBlock  (AstNode& current, Stream <Token>& example);
-
 //{
 
 // Block = { [Lexem] }
 // Lexem = O; | B
-// O     = Equal | W = O
-// Equal = E | E == E
-// E     = T | T + T | T - T
-// T     = P | P * P | P / P
-// P     = N | W     | (O)   | -P | +P
+// O     = Or | Or = Or
+// Or    = E  | E == E
+// E     = T  | T + T | T - T
+// T     = P  | P * P | P / P
+// P     = N  | W     | (O)   | -P | +P
 // N     = ['0'-'9']
 // W     = ['a'-'z']
 
 //}
+
+void GetNumber                     (AstNode& current, Stream <Token>& example);
+void GetVariable                   (AstNode& current, Stream <Token>& example);
+void GetP                          (AstNode& current, Stream <Token>& example);
+void GetMulDivMod                  (AstNode& current, Stream <Token>& example);
+void GetAddSub                     (AstNode& current, Stream <Token>& example);
+void GetLessLessEqualMoreMoreEqual (AstNode& current, Stream <Token>& example);
+void GetEqualNotEqual              (AstNode& current, Stream <Token>& example);
+void GetAnd                        (AstNode& current, Stream <Token>& example);
+void GetOr                         (AstNode& current, Stream <Token>& example);
+void GetEqualNotEqual              (AstNode& current, Stream <Token>& example);
+void GetLexem                      (AstNode& current, Stream <Token>& example);
+void GetBlock                      (AstNode& current, Stream <Token>& example);
 
 void GetNumber (AstNode& current, Stream <Token>& example)
 {
@@ -110,7 +111,9 @@ void GetT (AstNode& current, Stream <Token>& example)
     AstNode value;
     GetP (value, example);
 
-    while (example.check () && (example[example.place ()].type_ == Mul || example[example.place ()].type_ == Div))
+    while (example.check () && (example[example.place ()].type_ == Mul ||
+                                example[example.place ()].type_ == Div ||
+                                example[example.place ()].type_ == Mod))
     {
         int sign = example[example.place ()].type_;
 
@@ -133,7 +136,8 @@ void GetE (AstNode& current, Stream <Token>& example)
     AstNode value;
     GetT (value, example);
 
-    while (example.check () && (example[example.place ()].type_ == Add || example[example.place ()].type_ == Sub))
+    while (example.check () && (example[example.place ()].type_ == Add ||
+                                example[example.place ()].type_ == Sub))
     {
         int sign = example[example.place ()].type_;
 
@@ -151,12 +155,15 @@ void GetE (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetEqual (AstNode& current, Stream <Token>& example)
+void GetLess (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     GetE (value, example);
 
-    while (example.check () && example[example.place ()].type_ == EqualEqual)
+    while (example.check () && (example[example.place ()].type_ == Less      ||
+                                example[example.place ()].type_ == LessEqual ||
+                                example[example.place ()].type_ == More      ||
+                                example[example.place ()].type_ == MoreEqual ||))
     {
         int sign = example[example.place ()].type_;
 
@@ -174,12 +181,13 @@ void GetEqual (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetO (AstNode& current, Stream <Token>& example)
+void GetEqual (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetEqual (value, example);
+    GetLess (value, example);
 
-    while (example.check () && example[example.place ()].type_ == Equal)
+    while (example.check () && (example[example.place ()].type_ == Equal ||
+                                example[example.place ()].type_ == NotEqual))
     {
         int sign = example[example.place ()].type_;
 
@@ -188,7 +196,100 @@ void GetO (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetE (value, example);
+                GetLess (value, example);
+                operation.insert (value);
+
+        value.move (operation);
+    }
+
+    current.move (value);
+}
+
+void GetO (AstNode& current, Stream <Token>& example)
+{
+    AstNode value;
+    GetOr (value, example);
+
+    while (example.check () && (example[example.place ()].type_ == Equal ||
+                                example[example.place ()].type_ == NotEqual))
+    {
+        int sign = example[example.place ()].type_;
+
+        example++;
+
+        AstNode operation ({ sign, 0 });
+                operation.insert (value);
+
+                GetOr (value, example);
+                operation.insert (value);
+
+        value.move (operation);
+    }
+
+    current.move (value);
+}
+
+void GetAnd (AstNode& current, Stream <Token>& example)
+{
+    AstNode value;
+    GetEqual (value, example);
+
+    while (example.check () && example[example.place ()].type_ == And)
+    {
+        int sign = example[example.place ()].type_;
+
+        example++;
+
+        AstNode operation ({ sign, 0 });
+                operation.insert (value);
+
+                GetEqual (value, example);
+                operation.insert (value);
+
+        value.move (operation);
+    }
+
+    current.move (value);
+}
+
+void GetOr (AstNode& current, Stream <Token>& example)
+{
+    AstNode value;
+    GetAnd (value, example);
+
+    while (example.check () && example[example.place ()].type_ == Or)
+    {
+        int sign = example[example.place ()].type_;
+
+        example++;
+
+        AstNode operation ({ sign, 0 });
+                operation.insert (value);
+
+                GetAnd (value, example);
+                operation.insert (value);
+
+        value.move (operation);
+    }
+
+    current.move (value);
+}
+
+void GetO (AstNode& current, Stream <Token>& example)
+{
+    AstNode value;
+    GetOr (value, example);
+
+    while (example.check () && (example[example.place ()].type_ == Assignment)
+    {
+        int sign = example[example.place ()].type_;
+
+        example++;
+
+        AstNode operation ({ sign, 0 });
+                operation.insert (value);
+
+                GetOr (value, example);
                 operation.insert (value);
 
         value.move (operation);

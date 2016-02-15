@@ -1,50 +1,77 @@
 #pragma once
 
+//{==============================================================================
+
 #include <iostream>
 #include <cstring>
 #include <map>
 #include "..//..//Librarys//Stream.hpp"
 
+//}==============================================================================
+
 using namespace std;
 
-typedef unsigned char flag;
+//{==============================================================================
 
 enum Lexemes
 {
     Digit = 0,
     Var,
-    Add,
-    Sub,
+
+    //Operators:
+    OpenBracket,
+    CloseBracket,
     Mul,
     Div,
-    Start,
-    Finish,
+    Mod,
+    Add,
+    Sub,
     Equal,
+    NotEqual,
+    And,
+    Or,
+    Assignment,
+
+    //SpecialSymbols:
     Begin,
     End,
     EndOfToken,
-    EqualEqual,
+
+    //KeyWords:
     If,
     Else,
+
+    //None:
     None
 };
 
-map <flag, int> Table   = { { '+',       Add  },
-                            { '-',       Sub  },
-                            { '*',       Mul  },
-                            { '/',       Div  },
-                            { '(',     Start  },
-                            { ')',    Finish  },
-                            { '=',     Equal  },
-                            { '{',     Begin  },
-                            { '}',       End  },
-                            { ';', EndOfToken } }; //Operators
+//}==============================================================================
 
-map <string, int> KeyWords = { {   "==",  EqualEqual },
-                               {   "if",          If },
-                               { "else",        Else } };
+//{==============================================================================
 
-Vector <string> Variables; //map <string, int> Names = {};
+map <string, int> SpecialSymbols = { { "{",      Begin },
+                                     { "}",        End },
+                                     { ";", EndOfToken }, };
+
+map <string, int> Operators = { {  "(",  OpenBracket },
+                                {  ")", CloseBracket },
+                                {  "*",          Mul },
+                                {  "/",          Div },
+                                {  "%",          Mod },
+                                {  "+",          Add },
+                                {  "-",          Sub },
+                                { "==",        Equal },
+                                { "!=",     NotEqual },
+                                { "&&",          And },
+                                { "||",           Or },
+                                {  "=",   Assignment } };
+
+map <string, int> KeyWords = { {   "if",   If },
+                               { "else", Else } };
+
+map <string, int> Names = {};
+
+//}==============================================================================
 
 //{==============================================================================
 
@@ -120,7 +147,9 @@ void Parser    (Stream <char>& example, Stream <Token>& code);
 
 void SkipSpace (Stream <char>& example)
 {
-    while (example.check () && (example[example.place ()] == ' ' || example[example.place ()] == '\n' || example[example.place ()] == '\t'))
+    while (example.check () && (example[example.place ()] == ' '  ||
+                                example[example.place ()] == '\n' ||
+                                example[example.place ()] == '\t'))
     {
         char digit = 0;
         example >> digit;
