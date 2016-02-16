@@ -79,16 +79,6 @@ class AstNode
         Token&                  key ();
         Vector <AstNode*>& children ();
 
-        #if defined (DEBUG_ASTNODE)
-
-            public:
-
-        #else
-
-            private:
-
-        #endif
-
         bool ok   ();
         void dump (FILE* out = stdout);
 };

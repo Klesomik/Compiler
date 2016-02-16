@@ -74,25 +74,25 @@ string BtInf (const Token value)
 {
     char tmp[5] = "";
 
-    if (value.type_ == 0)
+    if (value.type == Digit)
     {
         dtNodeStyle ().fontcolor ("darkgreen")
                       .color     ("darkgreen")
                       .fillcolor ("#98FF66");
 
-        sprintf (tmp, "%d\n", value.value_);
+        sprintf (tmp, "%d\n", value.value);
     }
 
-    else if (value.type_ == 1)
+    else if (value.type == Var)
     {
         dtNodeStyle ().fontcolor ("darkgreen")
                       .color     ("darkgreen")
                       .fillcolor ("#98FF66");
 
-        sprintf (tmp, "var_%d\n", value.value_);
+        sprintf (tmp, "var_%d\n", value.value);
     }
 
-    else if (value.type_ == None)
+    else if (value.type == None)
     {
         dtNodeStyle ().fontcolor ("grey")
                       .color     ("grey")
@@ -105,13 +105,14 @@ string BtInf (const Token value)
                       .color     ("red")
                       .fillcolor ("#FFCCC9");
 
-        switch (value.type_)
+        switch (value.type)
         {
-            case Add:   { sprintf (tmp, "+\n"); break; }
-            case Sub:   { sprintf (tmp, "-\n"); break; }
-            case Mul:   { sprintf (tmp, "*\n"); break; }
-            case Div:   { sprintf (tmp, "/\n"); break; }
-            case Equal: { sprintf (tmp, "=\n"); break; }
+            case Add:        { sprintf (tmp, "+\n"); break; }
+            case Sub:        { sprintf (tmp, "-\n"); break; }
+            case Mul:        { sprintf (tmp, "*\n"); break; }
+            case Div:        { sprintf (tmp, "/\n"); break; }
+            case Assignment: { sprintf (tmp, "=\n"); break; }
+            case Equal:      { sprintf (tmp, "==\n"); break; }
 
             default: break;
         }
