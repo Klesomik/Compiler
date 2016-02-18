@@ -84,7 +84,11 @@ Vector <string> Names;
 
 //{==============================================================================
 
-struct Token //polimorfizm
+//union
+//{
+//};
+
+struct Token
 {
     int  type;
     int value;
@@ -177,7 +181,7 @@ void Parser (Stream <char>& example, Stream <Token>& code)
             }
         }
 
-        if (IsDigit (example[example.place ()]))
+        else if (IsDigit (example[example.place ()]))
         {
             int value = 0;
             while (example.check () && IsDigit (example[example.place ()]))

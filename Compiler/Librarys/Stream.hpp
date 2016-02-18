@@ -18,11 +18,11 @@
 
 #ifdef DEBUG_STREAM
 
-    #define OK_STREAM assert (ok ());
+    #define OK_STREAM ok ();
 
 #else
 
-    #define OK_STREAM
+    #define OK_STREAM assert (ok ());
 
 #endif /* DEBUG_STREAM */
 
@@ -315,7 +315,7 @@ void Stream <Data_T> :: dump ()
 {
     printf ("\n=============DUMP=============\n");
 
-    printf ("Stream (%s) [%p]\n", ok ()? "ok" : "ERROR", (*this));
+    printf ("Stream (%s) [%p]\n", ok ()? "ok" : "ERROR", this);
 
     printf ("size  = %d;\n", data_.size ());
     printf ("place = %d;\n", place_);

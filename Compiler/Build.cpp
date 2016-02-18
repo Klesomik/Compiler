@@ -1,6 +1,7 @@
 //Include
 //{==============================================================================
 
+//#include <ctype.h>
 #include <cstdio>
 #include <cstring>
 #include <iostream>

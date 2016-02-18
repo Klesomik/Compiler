@@ -277,14 +277,26 @@ void GetAssignment (AstNode& current, Stream <Token>& example)
 
 void GetIfElse (AstNode& current, Stream <Token>& example)
 {
-    cout << example[example.place ()].type << "\n";
-
     example++;
 
     current.key () = { If, 0 };
 
     AstNode condition;
-    GetLexem (condition, example);
+
+    example++;
+
+    Stream <Token> tmp;
+    while (example.check () && example[example.place ()].type != CloseBracket)
+    {
+        tmp.push_back (example[example.place ()]);
+
+        example++;
+    }
+    tmp.push_back ({ End, 0 });
+
+    example++;
+
+    GetLexem (condition, tmp);
     current.insert (condition);
 
     AstNode true_action;
