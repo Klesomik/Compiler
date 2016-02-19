@@ -301,10 +301,13 @@ void GetIfElse (AstNode& current, Stream <Token>& example)
 
     AstNode true_action;
     GetLexem (true_action, example);
+
     current.insert (true_action);
 
     if (example.check () && example[example.place ()].type == Else)
     {
+        example++;
+
         AstNode false_action;
         GetLexem (false_action, example);
         current.insert (false_action);

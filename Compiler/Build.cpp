@@ -19,10 +19,8 @@ inline void Hello_C (std::string& example) { printf ("Input name of C file: "); 
 
 int main (int argc, const char* argv[])
 {
-    try
+    TRY
     {
-        //TRY
-
         std::string C_name;
         Hello_C (C_name);
 
@@ -47,17 +45,12 @@ int main (int argc, const char* argv[])
 
         fclose (C_File);
     }
-    catch (const char* message)
+    CATCH
     {
-        CATCH (message)
     }
     catch (...)
     {
-        char message[1000];
-
-        sprintf (message, "Unknown error was in %s\n", __PRETTY_FUNCTION__);
-
-        CATCH (message)
+        printf ("Unknown error\n");
     }
 
     return 0;
