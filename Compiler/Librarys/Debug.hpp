@@ -14,26 +14,26 @@
 //Define
 //{==============================================================================
 
-#define TRY\
-range.Try (__FILE__, __PRETTY_FUNCTION__, __LINE__);\
-try
+#define TRY \
+{ range.Try (__FILE__, __PRETTY_FUNCTION__, __LINE__); }
 
-#define THROW(message)\
+#define CATCH \
+{\
+\
+    printf ("Message was caught at\n");\
+\
+    printf ("  FILE: %s\n", __FILE__);\
+    printf ("  FUNC: %s\n", __PRETTY_FUNCTION__);\
+    printf ("  LINE: %d\n", __LINE__);\
+\
+    printf ("%s\n", message);\
+}
+
+#define THROW(message) \
 {\
     range.Throw (__FILE__, __PRETTY_FUNCTION__, __LINE__);\
     range.Wrapper (message);\
 }
-
-#define CATCH{\
-catch (const char* message)\
-{\
-    std::cout << message << "\n";\
-\
-    printf (indent, "Message was caught at\n");\
-\
-    printf (indent, "  FILE: %s\n", __FILE__);\
-    printf (indent, "  FUNC: %s\n", __PRETTY_FUNCTION__);\
-    printf (indent, "  LINE: %d\n", __LINE__);
 
 //__VA_ARGS__
 //__DATE__

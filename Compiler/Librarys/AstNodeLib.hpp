@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "Dotter.h"
+#include "Dotter//Dotter.h"
 #include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
 
 using namespace std;

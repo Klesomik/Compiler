@@ -19,8 +19,10 @@ inline void Hello_C (std::string& example) { printf ("Input name of C file: "); 
 
 int main (int argc, const char* argv[])
 {
-    TRY
+    try
     {
+        TRY
+
         std::string C_name;
         Hello_C (C_name);
 
@@ -45,8 +47,9 @@ int main (int argc, const char* argv[])
 
         fclose (C_File);
     }
-    CATCH
+    catch (const char* message)
     {
+        CATCH
     }
     catch (...)
     {
