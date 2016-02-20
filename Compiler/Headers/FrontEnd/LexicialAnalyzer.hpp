@@ -108,17 +108,19 @@ std::ostream& Token :: operator << (std::ostream& os)
 
     switch (type)
     {
-        case     Digit: { sprintf (tmp, "%d",     type); break; }
-        case       Var: { sprintf (tmp, "var_%d", type); break; }
-        case     Equal: { sprintf (tmp, "==");           break; }
-        case  NotEqual: { sprintf (tmp, "!=");           break; }
-        case       And: { sprintf (tmp, "&&");           break; }
-        case        Or: { sprintf (tmp, "||");           break; }
-        case LessEqual: { sprintf (tmp, "<=");           break; }
-        case MoreEqual: { sprintf (tmp, ">=");           break; }
-        case        If: { sprintf (tmp, "if");           break; }
-        case      Else: { sprintf (tmp, "else");         break; }
-        case      None: { sprintf (tmp, "none");         break; }
+        case     Digit: { sprintf (tmp, "%d",     value); break; }
+        case       Var: { sprintf (tmp, "var_%d", value); break; }
+        case     Equal: { sprintf (tmp, "==");            break; }
+        case  NotEqual: { sprintf (tmp, "!=");            break; }
+        case       And: { sprintf (tmp, "&&");            break; }
+        case        Or: { sprintf (tmp, "||");            break; }
+        case LessEqual: { sprintf (tmp, "<=");            break; }
+        case MoreEqual: { sprintf (tmp, ">=");            break; }
+        case        If: { sprintf (tmp, "if");            break; }
+        case      Else: { sprintf (tmp, "else");          break; }
+        case      None: { sprintf (tmp, "none");          break; }
+
+        default:        { sprintf (tmp, "%d", type);      break; }
     }
 
     return os << tmp;
@@ -170,7 +172,7 @@ void Parser (Stream <char>& example, Stream <Token>& code)
 
             else
             {
-                int hash_value = Variables[value];
+                hash_value = Variables[value];
 
                 if (hash_value) code.push_back ({ Var, hash_value });
 

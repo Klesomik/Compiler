@@ -281,8 +281,6 @@ void GetIfElse (AstNode& current, Stream <Token>& example)
 
     current.key () = { If, 0 };
 
-    AstNode condition;
-
     example++;
 
     Stream <Token> tmp;
@@ -296,21 +294,15 @@ void GetIfElse (AstNode& current, Stream <Token>& example)
 
     example++;
 
-    GetLexem (condition, tmp);
-    current.insert (condition);
+    GetLexem (current, tmp);
 
-    AstNode true_action;
-    GetLexem (true_action, example);
-
-    current.insert (true_action);
+    GetLexem (current, example);
 
     if (example.check () && example[example.place ()].type == Else)
     {
         example++;
 
-        AstNode false_action;
-        GetLexem (false_action, example);
-        current.insert (false_action);
+        GetLexem (current, example);
     }
 }
 

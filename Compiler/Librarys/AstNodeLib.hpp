@@ -92,11 +92,22 @@ string BtInf (const Token value)
         sprintf (tmp, "var_%d\n", value.value);
     }
 
+    else if (value.type == If)
+    {
+        dtNodeStyle ().fontcolor ("blue")
+                      .color     ("blue")
+                      .fillcolor ("lightblue");
+
+        sprintf (tmp, "if\n");
+    }
+
     else if (value.type == None)
     {
         dtNodeStyle ().fontcolor ("grey")
                       .color     ("grey")
                       .fillcolor ("grey");
+
+        sprintf (tmp, "If\n");
     }
 
     else
@@ -107,11 +118,11 @@ string BtInf (const Token value)
 
         switch (value.type)
         {
-            case Add:        { sprintf (tmp, "+\n"); break; }
-            case Sub:        { sprintf (tmp, "-\n"); break; }
-            case Mul:        { sprintf (tmp, "*\n"); break; }
-            case Div:        { sprintf (tmp, "/\n"); break; }
-            case Assignment: { sprintf (tmp, "=\n"); break; }
+            case Add:        { sprintf (tmp, "+\n");  break; }
+            case Sub:        { sprintf (tmp, "-\n");  break; }
+            case Mul:        { sprintf (tmp, "*\n");  break; }
+            case Div:        { sprintf (tmp, "/\n");  break; }
+            case Assignment: { sprintf (tmp, "=\n");  break; }
             case Equal:      { sprintf (tmp, "==\n"); break; }
 
             default: break;
