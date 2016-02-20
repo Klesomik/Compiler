@@ -17,47 +17,39 @@ enum Lexemes
 {
     Digit = 0,
     Var,
-
-    //Operators:
-    OpenBracket,
-    CloseBracket,
-    Mul,
-    Div,
-    Mod,
-    Add,
-    Sub,
     Equal,
     NotEqual,
     And,
     Or,
-    Assignment,
-    Less,
     LessEqual,
-    More,
     MoreEqual,
-
-    //SpecialSymbols:
-    Begin,
-    End,
-    EndOfToken,
-
-    //KeyWords:
     If,
     Else,
+    None,
 
-    //None:
-    None
+    OpenBracket  = '(',
+    CloseBracket = ')',
+    Mul          = '*',
+    Div          = '/',
+    Mod          = '%',
+    Add          = '+',
+    Sub          = '-',
+    Assignment   = '=',
+    Less         = '<',
+    More         = '>',
+    Begin        = '{',
+    End          = '}',
+    EndOfToken   = ';'
 };
 
 //}==============================================================================
 
 //{==============================================================================
 
-map <char, int> SpecialSymbols = { { '{',      Begin },
-                                   { '}',        End },
-                                   { ';', EndOfToken }, };
-
-map <string, int> Operators = { {  "(",  OpenBracket },
+map <string, int> Operators = { {  "{",        Begin },
+                                {  "}",          End },
+                                {  ";",   EndOfToken },
+                                {  "(",  OpenBracket },
                                 {  ")", CloseBracket },
                                 {  "*",          Mul },
                                 {  "/",          Div },
@@ -77,8 +69,7 @@ map <string, int> Operators = { {  "(",  OpenBracket },
 map <string, int> KeyWords = { {   "if",   If },
                                { "else", Else } };
 
-Vector <string> Names;
-//map <string, int> Names = {};
+map <string, int> Variables;
 
 //}==============================================================================
 
@@ -113,78 +104,45 @@ Token :: Token (int setType, int setValue):
 
 std::ostream& Token :: operator << (std::ostream& os)
 {
-    return os << type << " " << value;
+    char tmp[9] = "";
+
+    switch (type)
+    {
+        case     Digit: { sprintf (tmp, "%d",     type); break; }
+        case       Var: { sprintf (tmp, "var_%d", type); break; }
+        case     Equal: { sprintf (tmp, "==");           break; }
+        case  NotEqual: { sprintf (tmp, "!=");           break; }
+        case       And: { sprintf (tmp, "&&");           break; }
+        case        Or: { sprintf (tmp, "||");           break; }
+        case LessEqual: { sprintf (tmp, "<=");           break; }
+        case MoreEqual: { sprintf (tmp, ">=");           break; }
+        case        If: { sprintf (tmp, "if");           break; }
+        case      Else: { sprintf (tmp, "else");         break; }
+        case      None: { sprintf (tmp, "none");         break; }
+    }
+
+    return os << tmp;
 }
 
-bool IsOther         (char c);
-bool IsDigit         (char c);
-bool IsLetter        (char c);
-bool IsOperator      (char c);
-bool IsSpecialSymbol (char c);
-void Parser    (Stream <char>& example, Stream <Token>& code);
-
-bool IsOther (char c)
-{
-    return c == ' '  ||
-           c == '\n' ||
-           c == '\t' ||
-           c == '\b';
-}
-
-bool IsDigit (char c)
-{
-	return c >= '0' && c <= '9';
-}
-
-bool IsLetter (char c)
-{
-	return (c >= 'a' && c <= 'z') ||
-           (c >= 'A' && c <= 'Z') ||
-           (c == '_')             ||
-           (c == '$');
-}
-
-bool IsOperator (char c)
-{
-    return c == '(' ||
-           c == ')' ||
-           c == '*' ||
-           c == '/' ||
-           c == '%' ||
-           c == '+' ||
-           c == '-' ||
-           c == '=' ||
-           c == '!' ||
-           c == '&' ||
-           c == '|' ||
-           c == '<' ||
-           c == '>';
-}
-
-bool IsSpecialSymbol (char c)
-{
-    return c == '{' ||
-           c == '}' ||
-           c == ';';
-}
+void Parser (Stream <char>& example, Stream <Token>& code);
 
 void Parser (Stream <char>& example, Stream <Token>& code)
 {
     while (example.check ())
     {
-        if (IsOther (example[example.place ()]))
+        if (isspace (example[example.place ()])) //iscntrl
         {
-            while (example.check () && IsOther (example[example.place ()]))
+            while (example.check () && isspace (example[example.place ()]))
             {
                 char digit = 0;
                 example >> digit;
             }
         }
 
-        else if (IsDigit (example[example.place ()]))
+        else if (isdigit (example[example.place ()]))
         {
             int value = 0;
-            while (example.check () && IsDigit (example[example.place ()]))
+            while (example.check () && isdigit (example[example.place ()]))
             {
                 char digit = 0;
                 example >> digit;
@@ -195,10 +153,10 @@ void Parser (Stream <char>& example, Stream <Token>& code)
             code.push_back ({ Digit, value });
         }
 
-        else if (IsLetter (example[example.place ()]))
+        else if (isalpha (example[example.place ()]))
         {
             string value;
-            while (example.check () && IsLetter (example[example.place ()]))
+            while (example.check () && isalpha (example[example.place ()]))
             {
                 char symbol = 0;
                 example >> symbol;
@@ -212,30 +170,23 @@ void Parser (Stream <char>& example, Stream <Token>& code)
 
             else
             {
-                bool first = false;
-                for (size_t i = 0; i < Names.size (); i++)
+                int hash_value = Variables[value];
+
+                if (hash_value) code.push_back ({ Var, hash_value });
+
+                else
                 {
-                    if (Names[i] == value)
-                    {
-                        code.push_back ({ Var, i });
+                    Variables.insert (pair <string, int> (value, Variables.size ()));
 
-                        first = true;
-                    }
-                }
-
-                if (!first)
-                {
-                    Names.push_back (value);
-
-                    code.push_back ({ Var, Names.size () - 1 });
+                    code.push_back ({ Var, Variables.size () });
                 }
             }
         }
 
-        else if (IsOperator (example[example.place ()]))
+        else if (ispunct (example[example.place ()]))
         {
             string value;
-            while (example.check () && IsOperator (example[example.place ()]))
+            while (example.check () && ispunct (example[example.place ()]))
             {
                 char digit = 0;
                 example >> digit;
@@ -248,14 +199,11 @@ void Parser (Stream <char>& example, Stream <Token>& code)
             if (hash_value) code.push_back ({ hash_value, 0 });
         }
 
-        else if (IsSpecialSymbol (example[example.place ()]))
+        else
         {
-            char symbol = 0;
-            example >> symbol;
+            cout << example[example.place ()] << "\n\n";
 
-            code.push_back ({ SpecialSymbols[symbol], 0 });
+            THROW ("Unknown symbol");
         }
-
-        else throw "Unknown symbol";
     }
 }
