@@ -71,18 +71,20 @@ map <string, int> KeyWords = { {   "if",   If },
 
 map <string, int> Variables;
 
+map <string, int> Functions;
+
 //}==============================================================================
 
 //{==============================================================================
 
-//union
-//{
-//};
-
 struct Token
 {
     int  type;
-    int value;
+
+    union
+    {
+        int value;
+    };
 
     Token ();
     Token (int setType, int setValue);
@@ -109,6 +111,7 @@ std::ostream& Token :: operator << (std::ostream& os)
     switch (type)
     {
         case     Digit: { sprintf (tmp, "%d",     value); break; }
+
         case       Var: { sprintf (tmp, "var_%d", value); break; }
         case     Equal: { sprintf (tmp, "==");            break; }
         case  NotEqual: { sprintf (tmp, "!=");            break; }

@@ -9,33 +9,37 @@
 
 //{
 
-// Block = { [Lexem] }
-// Lexem = O; | B
-// O     = Or | Or = Or
-// Or    = E  | E == E
-// E     = T  | T + T | T - T
-// T     = P  | P * P | P / P
-// P     = N  | W     | (O)   | -P | +P
-// N     = ['0'-'9']
-// W     = ['a'-'z']
+// Get_Block                         ::= { [Get_Lexem] }
+// Get_Lexem                         ::= Get_Block | Get_If_Else | Get_Assignment
+// Get_If_Else                       ::= if (Get_Lexem) Get_Lexem else Get_Lexem
+// Get_Assignment                    ::= Get_Equal_NotEqual | Get_Equal_NotEqual = Get_Equal_NotEqual
+// Get_Equal_NotEqual                ::= Get_Or | Get_Or == Get_Or | Get_Or != Get_Or
+// Get_Or                            ::= Get_And | Get_And || Get_And
+// Get_And                           ::= Get_Less_LessEqual_More_MoreEqual  | Get_Less_LessEqual_More_MoreEqual && Get_Less_LessEqual_More_MoreEqual
+// Get_Less_LessEqual_More_MoreEqual ::= Get_Add_Sub | Get_Add_Sub < Get_Add_Sub | Get_Add_Sub <= Get_Add_Sub| Get_Add_Sub > Get_Add_Sub | Get_Add_Sub >= Get_Add_Sub
+// Get_Add_Sub                       ::= Get_Mul_Div_Mod | Get_Mul_Div_Mod + Get_Mul_Div_Mod | Get_Mul_Div_Mod - Get_Mul_Div_Mod
+// Get_Mul_Div_Mod                   ::= Get_Value | Get_Value * Get_Value | Get_Value / Get_Value | Get_Value % Get_Value
+// Get_Value                         ::= +Get_Value | -Get_Value | (Get_Assignment) | Get_Variable | Get_Number
+// Get_Number                        ::= ['0'-'9']
+// Get_Variable                      ::= ['a'-'z']
 
 //}
 
-void GetNumber                     (AstNode& current, Stream <Token>& example);
-void GetVariable                   (AstNode& current, Stream <Token>& example);
-void GetP                          (AstNode& current, Stream <Token>& example);
-void GetMulDivMod                  (AstNode& current, Stream <Token>& example);
-void GetAddSub                     (AstNode& current, Stream <Token>& example);
-void GetLessLessEqualMoreMoreEqual (AstNode& current, Stream <Token>& example);
-void GetAnd                        (AstNode& current, Stream <Token>& example);
-void GetOr                         (AstNode& current, Stream <Token>& example);
-void GetEqualNotEqual              (AstNode& current, Stream <Token>& example);
-void GetAssignment                 (AstNode& current, Stream <Token>& example);
-void GetIfElse                     (AstNode& current, Stream <Token>& example);
-void GetLexem                      (AstNode& current, Stream <Token>& example);
-void GetBlock                      (AstNode& current, Stream <Token>& example);
+void Get_Number                        (AstNode& current, Stream <Token>& example);
+void Get_Variable                      (AstNode& current, Stream <Token>& example);
+void Get_Value                         (AstNode& current, Stream <Token>& example);
+void Get_Mul_Div_Mod                   (AstNode& current, Stream <Token>& example);
+void Get_Add_Sub                       (AstNode& current, Stream <Token>& example);
+void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example);
+void Get_And                           (AstNode& current, Stream <Token>& example);
+void Get_Or                            (AstNode& current, Stream <Token>& example);
+void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example);
+void Get_Assignment                    (AstNode& current, Stream <Token>& example);
+void Get_If_Else                       (AstNode& current, Stream <Token>& example);
+void Get_Lexem                         (AstNode& current, Stream <Token>& example);
+void Get_Block                         (AstNode& current, Stream <Token>& example);
 
-void GetNumber (AstNode& current, Stream <Token>& example)
+void Get_Number (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type == Digit)
@@ -50,7 +54,7 @@ void GetNumber (AstNode& current, Stream <Token>& example)
     if (!first) THROW ("expected integer");
 }
 
-void GetVariable (AstNode& current, Stream <Token>& example)
+void Get_Variable (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type == Var)
@@ -65,7 +69,7 @@ void GetVariable (AstNode& current, Stream <Token>& example)
     if (!first) THROW ("expected name of variable");
 }
 
-void GetP (AstNode& current, Stream <Token>& example)
+void Get_Value (AstNode& current, Stream <Token>& example)
 {
     AstNode value; //else with out; throw
 
@@ -73,21 +77,21 @@ void GetP (AstNode& current, Stream <Token>& example)
     {
         example++;
 
-        //value = -GetP (example); *-1
+        //value = -Get_Value (example); *-1
     }
 
     else if (example.check () && example[example.place ()].type == Add)
     {
         example++;
 
-        //value = +GetP (example); *+1
+        //value = +Get_Value (example); *+1
     }
 
     else if (example.check () && example[example.place ()].type == OpenBracket)
     {
         example++;
 
-        GetAssignment (value, example);
+        Get_Assignment (value, example);
 
         if (example.check () && example[example.place ()].type != CloseBracket) THROW ("forgot ')'");
 
@@ -96,21 +100,21 @@ void GetP (AstNode& current, Stream <Token>& example)
 
     else if (example.check () && example[example.place ()].type == Var)
     {
-        GetVariable (value, example);
+        Get_Variable (value, example);
     }
 
     else
     {
-        GetNumber (value, example);
+        Get_Number (value, example);
     }
 
     current.move (value);
 }
 
-void GetMulDivMod (AstNode& current, Stream <Token>& example)
+void Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetP (value, example);
+    Get_Value (value, example);
 
     while (example.check () && (example[example.place ()].type == Mul ||
                                 example[example.place ()].type == Div ||
@@ -123,7 +127,7 @@ void GetMulDivMod (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetP (value, example);
+                Get_Value (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -132,10 +136,10 @@ void GetMulDivMod (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetAddSub (AstNode& current, Stream <Token>& example)
+void Get_Add_Sub (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetMulDivMod (value, example);
+    Get_Mul_Div_Mod (value, example);
 
     while (example.check () && (example[example.place ()].type == Add ||
                                 example[example.place ()].type == Sub))
@@ -147,7 +151,7 @@ void GetAddSub (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetMulDivMod (value, example);
+                Get_Mul_Div_Mod (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -156,10 +160,10 @@ void GetAddSub (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetLessLessEqualMoreMoreEqual (AstNode& current, Stream <Token>& example)
+void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetAddSub (value, example);
+    Get_Add_Sub (value, example);
 
     while (example.check () && (example[example.place ()].type == Less      ||
                                 example[example.place ()].type == LessEqual ||
@@ -173,7 +177,7 @@ void GetLessLessEqualMoreMoreEqual (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetAddSub (value, example);
+                Get_Add_Sub (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -182,10 +186,10 @@ void GetLessLessEqualMoreMoreEqual (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetEqualNotEqual (AstNode& current, Stream <Token>& example)
+void Get_Equal_NotEqual (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetLessLessEqualMoreMoreEqual (value, example);
+    Get_Less_LessEqual_More_MoreEqual (value, example);
 
     while (example.check () && (example[example.place ()].type == Equal ||
                                 example[example.place ()].type == NotEqual))
@@ -197,7 +201,7 @@ void GetEqualNotEqual (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetLessLessEqualMoreMoreEqual (value, example);
+                Get_Less_LessEqual_More_MoreEqual (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -206,10 +210,10 @@ void GetEqualNotEqual (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetAnd (AstNode& current, Stream <Token>& example)
+void Get_And (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetEqualNotEqual (value, example);
+    Get_Equal_NotEqual (value, example);
 
     while (example.check () && example[example.place ()].type == And)
     {
@@ -220,7 +224,7 @@ void GetAnd (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetEqualNotEqual (value, example);
+                Get_Equal_NotEqual (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -229,10 +233,10 @@ void GetAnd (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetOr (AstNode& current, Stream <Token>& example)
+void Get_Or (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetAnd (value, example);
+    Get_And (value, example);
 
     while (example.check () && example[example.place ()].type == Or)
     {
@@ -243,7 +247,7 @@ void GetOr (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetAnd (value, example);
+                Get_And (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -252,10 +256,10 @@ void GetOr (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetAssignment (AstNode& current, Stream <Token>& example)
+void Get_Assignment (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
-    GetOr (value, example);
+    Get_Or (value, example);
 
     while (example.check () && (example[example.place ()].type == Assignment))
     {
@@ -266,7 +270,7 @@ void GetAssignment (AstNode& current, Stream <Token>& example)
         AstNode operation ({ sign, 0 });
                 operation.insert (value);
 
-                GetOr (value, example);
+                Get_Or (value, example);
                 operation.insert (value);
 
         value.move (operation);
@@ -275,7 +279,7 @@ void GetAssignment (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void GetIfElse (AstNode& current, Stream <Token>& example)
+void Get_If_Else (AstNode& current, Stream <Token>& example)
 {
     example++;
 
@@ -294,19 +298,19 @@ void GetIfElse (AstNode& current, Stream <Token>& example)
 
     example++;
 
-    GetLexem (current, tmp);
+    Get_Lexem (current, tmp);
 
-    GetLexem (current, example);
+    Get_Lexem (current, example);
 
     if (example.check () && example[example.place ()].type == Else)
     {
         example++;
 
-        GetLexem (current, example);
+        Get_Lexem (current, example);
     }
 }
 
-void GetLexem (AstNode& current, Stream <Token>& example)
+void Get_Lexem (AstNode& current, Stream <Token>& example)
 {
     Stream <Token> tmp;
 
@@ -314,9 +318,9 @@ void GetLexem (AstNode& current, Stream <Token>& example)
     {
         if (example[example.place ()].type == Begin)
         {
-            AstNode grayNode ({ None, None }); //
+            AstNode grayNode ({ None, None });
 
-            GetBlock (grayNode, example);
+            Get_Block (grayNode, example);
 
             current.insert (grayNode);
         }
@@ -325,7 +329,7 @@ void GetLexem (AstNode& current, Stream <Token>& example)
         {
             AstNode operation;
 
-            GetIfElse (operation, example);
+            Get_If_Else (operation, example);
 
             current.insert (operation);
         }
@@ -341,7 +345,7 @@ void GetLexem (AstNode& current, Stream <Token>& example)
                 example++;
             }
 
-            GetAssignment (operation, tmp);
+            Get_Assignment (operation, tmp);
 
             current.insert (operation);
 
@@ -350,18 +354,14 @@ void GetLexem (AstNode& current, Stream <Token>& example)
     }
 }
 
-void GetBlock (AstNode& current, Stream <Token>& example)
+void Get_Block (AstNode& current, Stream <Token>& example)
 {
     if (example.check () && example[example.place ()].type == Begin)
     {
         example++;
 
-        //AstNode grayNode ({ None, None });
-
         while (example.check () && example[example.place ()].type != End)
-            GetLexem (current, example); //grayNode
-
-        //current.insert (grayNode);
+            Get_Lexem (current, example);
 
         example++;
     }

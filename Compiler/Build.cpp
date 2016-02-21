@@ -40,7 +40,15 @@ int main (int argc, const char* argv[])
         Parser (example, code);
 
         AstNode root ({ None, None });
-        GetBlock (root, code);
+
+        while (code.check ())
+        {
+            AstNode current ({ None, None });
+
+            Get_Block (current, code);
+
+            root.insert (current);
+        }
 
         DotDump (root, "EX1.dot");
 
