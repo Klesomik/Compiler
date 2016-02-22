@@ -178,7 +178,13 @@ void Compiler :: write ()
     {
         fprintf (asmCode_, "%d ", code_[i]);
 
-        if (code_[i] == CMD_jmp ||
+        if (code_[i] == CMD_jmp  ||
+            code_[i] == CMD_je   ||
+            code_[i] == CMD_jne  ||
+            code_[i] == CMD_jl   ||
+            code_[i] == CMD_jle  ||
+            code_[i] == CMD_jm   ||
+            code_[i] == CMD_jme  ||
             code_[i] == CMD_call)
         {
             i++;
@@ -267,7 +273,17 @@ void Cmd_In (string& cmd, StrStream& command, Vector <int>& code_)
 {
     cmd = StrTok (command, " ;\n");
 
-    code_.push_back (Regists[cmd]);
+    if (cmd[0] == '%')
+    {
+        code_.push_back (0);
+        code_.push_back (atoi (cmd.c_str () + 1));
+    }
+
+    else
+    {
+        code_.push_back (1);
+        code_.push_back (Regists[cmd]);
+    }
 }
 
 //===============================================================================
@@ -276,14 +292,24 @@ void Cmd_Out (string& cmd, StrStream& command, Vector <int>& code_)
 {
     cmd = StrTok (command, " ;\n");
 
-    code_.push_back (Regists[cmd]);
+    if (cmd[0] == '%')
+    {
+        code_.push_back (0);
+        code_.push_back (atoi (cmd.c_str () + 1));
+    }
+
+    else
+    {
+        code_.push_back (1);
+        code_.push_back (Regists[cmd]);
+    }
 }
 
 //===============================================================================
 
 int Cmd_Jmp (Vector <Label>& label_, const string lb_name)
 {
-    for (size_t i = 0; i < label_.size(); i++)
+    for (size_t i = 0; i < label_.size (); i++)
     {
         if (lb_name == label_[i].name_) return i;
     }
@@ -297,7 +323,7 @@ int Cmd_Jmp (Vector <Label>& label_, const string lb_name)
 
 void Cmd_Label (Vector <int>& code_, Vector <Label>& label_, const string lb_name)
 {
-    for (size_t i = 0; i < label_.size(); i++)
+    for (size_t i = 0; i < label_.size (); i++)
     {
         if (lb_name == label_[i].name_)
         {

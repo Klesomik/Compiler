@@ -23,9 +23,11 @@ class Stack
         Data_T pop ();
 
         Data_T& top ();
-        int size    ();
+        size_t size ();
         void clear  ();
         bool empty  ();
+
+        void dump ();
 };
 
 //}==============================================================================
@@ -54,7 +56,7 @@ Data_T Stack <Data_T> :: pop ()
 {
     Data_T answer = data_.back ();
 
-    data_.resize (size() - 1);
+    data_.resize (size () - 1);
 
     return answer;
 }
@@ -62,7 +64,7 @@ Data_T Stack <Data_T> :: pop ()
 //===============================================================================
 
 template <typename Data_T>
-int Stack <Data_T> :: size ()
+size_t Stack <Data_T> :: size ()
 { return data_.size (); }
 
 //===============================================================================
@@ -82,5 +84,10 @@ void Stack <Data_T> :: clear ()
 template <typename Data_T>
 bool Stack <Data_T> :: empty ()
 { return data_.empty (); }
+
+template <typename Data_T>
+void Stack <Data_T> :: dump ()
+{
+}
 
 #endif /* STACK_H_INCLUDED */
