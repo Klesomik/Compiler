@@ -1,11 +1,15 @@
 #ifndef SYNTAX_INCLUDED
     #define SYNTAX_INCLUDED
 
+//{==============================================================================
+
 #include <cstdio>
 #include "LexicialAnalyzer.hpp"
 #include "..//..//Librarys//Debug.hpp"
 #include "..//..//Librarys//Stream.hpp"
 #include "..//..//Librarys//AbstractSyntaxTree.hpp"
+
+//}==============================================================================
 
 //{
 
@@ -25,6 +29,8 @@
 
 //}
 
+//{==============================================================================
+
 void Get_Number                        (AstNode& current, Stream <Token>& example);
 void Get_Variable                      (AstNode& current, Stream <Token>& example);
 void Get_Value                         (AstNode& current, Stream <Token>& example);
@@ -38,6 +44,8 @@ void Get_Assignment                    (AstNode& current, Stream <Token>& exampl
 void Get_If_Else                       (AstNode& current, Stream <Token>& example);
 void Get_Lexem                         (AstNode& current, Stream <Token>& example);
 void Get_Block                         (AstNode& current, Stream <Token>& example);
+
+//}==============================================================================
 
 void Get_Number (AstNode& current, Stream <Token>& example)
 {

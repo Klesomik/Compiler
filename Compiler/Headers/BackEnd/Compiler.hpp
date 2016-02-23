@@ -1,136 +1,56 @@
 #pragma once
 
-void CreateAsm     (BinaryNode <Token>& current, FILE* write);
-void CreateAsmTree (BinaryNode <Token>* current, FILE* write);
+//{==============================================================================
 
-void CreateAsm     (BinaryNode <Token>& current, FILE* write)
+#define DETOUR \
+for (size_t i = 0; i < current -> children ().size (); i++)\
+    CreateAsm (current -> children ()[i], write);
+
+//}==============================================================================
+
+//{==============================================================================
+
+void CreateAsm (AstNode* current, FILE* write);
+
+//}==============================================================================
+
+void CreateAsm (AstNode* current, FILE* write)
 {
-    if (current.key ().type_ == Add)
+    static int jmp = 0;
+
+    switch (current -> key ().type)
     {
-        CreateAsmTree (current.left  (), write);
-        CreateAsmTree (current.right (), write);
+        case Add:        { DETOUR fprintf (write, "add;\n"); break; }
+        case Sub:        { DETOUR fprintf (write, "sub;\n"); break; }
+        case Mul:        { DETOUR fprintf (write, "mul;\n"); break; }
+        case Div:        { DETOUR fprintf (write, "div;\n"); break; }
+        case Mod:        { DETOUR fprintf (write, "mod;\n"); break; }
 
-        fprintf (write, "add;\n");
+        case Assignment: { DETOUR fprintf (write, "pop %c%d;\n", '%', current -> key ().value); break; }
+        case Digit:      { fprintf (write, "push %d;\n", current -> key ().value); break; }
+        case Var:        { return; }
+        case None:       { DETOUR break; }
 
-        return;
-    }
+        case Equal:      { DETOUR fprintf (write, "push %c%d;\n", '%', current -> key ().value); fprintf (write, "sub;\n"); break; }
+        case    If:
+        {
+            CreateAsm (current -> children ()[0], write);
 
-    else if (current.key ().type_ == Sub)
-    {
-        CreateAsmTree (current.left  (), write);
-        CreateAsmTree (current.right (), write);
+            int copy = jmp++;
+            fprintf (write, "jne %d;\n", copy);
 
-        fprintf (write, "sub;\n");
+            CreateAsm (current -> children ()[1], write);
 
-        return;
-    }
+            int tmp = jmp++;
+            fprintf (write, "jmp %d;\n", tmp);
+            fprintf (write, "label %d;\n", copy);
 
-    else if (current.key ().type_ == Mul)
-    {
-        CreateAsmTree (current.left  (), write);
-        CreateAsmTree (current.right (), write);
+            if (current -> children ().size () > 2) CreateAsm (current -> children ()[2], write);
+            fprintf (write, "label %d;\n", tmp);
 
-        fprintf (write, "mul;\n");
+            break;
+        }
 
-        return;
-    }
-
-    else if (current.key ().type_ == Div)
-    {
-        CreateAsmTree (current.left  (), write);
-        CreateAsmTree (current.right (), write);
-
-        fprintf (write, "div;\n");
-
-        return;
-    }
-
-    else if (current.key ().type_ == Equal)
-    {
-        CreateAsmTree (current.left  (), write);
-        CreateAsmTree (current.right (), write);
-
-        char del = '%';
-        fprintf (write, "pop %c%d;\n", del, current.key ().value_);
-
-        return;
-    }
-
-    else if (current.key ().type_ == Digit)
-    {
-        fprintf (write, "push %d;\n", current.key ().value_);
-
-        return;
-    }
-
-    else if (current.key ().type_ == Var)
-    {
-        return;
-    }
-}
-
-void CreateAsmTree (BinaryNode <Token>* current, FILE* write)
-{
-    if (current -> key ().type_ == Add)
-    {
-        CreateAsmTree (current -> left  (), write);
-        CreateAsmTree (current -> right (), write);
-
-        fprintf (write, "add;\n");
-
-        return;
-    }
-
-    else if (current -> key ().type_ == Sub)
-    {
-        CreateAsmTree (current -> left  (), write);
-        CreateAsmTree (current -> right (), write);
-
-        fprintf (write, "sub;\n");
-
-        return;
-    }
-
-    else if (current -> key ().type_ == Mul)
-    {
-        CreateAsmTree (current -> left  (), write);
-        CreateAsmTree (current -> right (), write);
-
-        fprintf (write, "mul;\n");
-
-        return;
-    }
-
-    else if (current -> key ().type_ == Div)
-    {
-        CreateAsmTree (current -> left  (), write);
-        CreateAsmTree (current -> right (), write);
-
-        fprintf (write, "div;\n");
-
-        return;
-    }
-
-    else if (current -> key ().type_ == Equal)
-    {
-        CreateAsmTree (current -> left  (), write);
-        CreateAsmTree (current -> right (), write);
-
-        char del = '%';
-        fprintf (write, "pop %c%d;\n", del, current -> key ().value_);
-
-        return;
-    }
-
-    else if (current -> key ().type_ == Digit)
-    {
-        fprintf (write, "push %d;\n", current -> key ().value_);
-
-        return;
-    }
-
-    else if (current -> key ().type_ == Var)
-    {
-        return;
+        default:         { cout << current -> key ().type << "\n"; throw "default: error"; }
     }
 }

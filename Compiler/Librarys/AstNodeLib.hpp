@@ -1,17 +1,25 @@
 #ifndef ASTNodeLIB_INCLUDED
     #define ASTNodeLIB_INCLUDED
 
+//{==============================================================================
+
 #include <cstdio>
 #include <cstring>
 #include <iostream>
 #include "Dotter//Dotter.h"
 #include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
 
+//}==============================================================================
+
 using namespace std;
+
+//{==============================================================================
 
 void DotDump  (AstNode& root, const string& file_name);
 void GrowTree (AstNode* current, const size_t number);
 string BtInf (const Token value);
+
+//}==============================================================================
 
 void DotDump (AstNode& root, const string& file_name)
 {

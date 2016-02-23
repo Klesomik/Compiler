@@ -69,7 +69,7 @@ map <string, int> Operators = { {  "{",        Begin },
 map <string, int> KeyWords = { {   "if",   If },
                                { "else", Else } };
 
-map <string, int> Variables;
+map <string, int> Variables = {};
 
 map <string, int> Functions;
 
@@ -89,7 +89,7 @@ struct Token
     Token ();
     Token (int setType, int setValue);
 
-    std::ostream& operator << (std::ostream& os);
+    //std::ostream& operator << (std::ostream& os);
 };
 
 //}==============================================================================
@@ -104,105 +104,125 @@ Token :: Token (int setType, int setValue):
     value (setValue)
     {}
 
-std::ostream& Token :: operator << (std::ostream& os)
+std::ostream& operator << (std::ostream& os, Token const &m)
 {
     char tmp[9] = "";
 
-    switch (type)
+    switch (m.type)
     {
-        case     Digit: { sprintf (tmp, "%d",     value); break; }
+        case     Digit: { sprintf (tmp, "%d",     m.value); break; }
 
-        case       Var: { sprintf (tmp, "var_%d", value); break; }
-        case     Equal: { sprintf (tmp, "==");            break; }
-        case  NotEqual: { sprintf (tmp, "!=");            break; }
-        case       And: { sprintf (tmp, "&&");            break; }
-        case        Or: { sprintf (tmp, "||");            break; }
-        case LessEqual: { sprintf (tmp, "<=");            break; }
-        case MoreEqual: { sprintf (tmp, ">=");            break; }
-        case        If: { sprintf (tmp, "if");            break; }
-        case      Else: { sprintf (tmp, "else");          break; }
-        case      None: { sprintf (tmp, "none");          break; }
+        case       Var: { sprintf (tmp, "var_%d", m.value); break; }
+        case     Equal: { sprintf (tmp, "==");              break; }
+        case  NotEqual: { sprintf (tmp, "!=");              break; }
+        case       And: { sprintf (tmp, "&&");              break; }
+        case        Or: { sprintf (tmp, "||");              break; }
+        case LessEqual: { sprintf (tmp, "<=");              break; }
+        case MoreEqual: { sprintf (tmp, ">=");              break; }
+        case        If: { sprintf (tmp, "if");              break; }
+        case      Else: { sprintf (tmp, "else");            break; }
+        case      None: { sprintf (tmp, "none");            break; }
 
-        default:        { sprintf (tmp, "%d", type);      break; }
+        default:        { sprintf (tmp, "%c", m.type);      break; }
     }
 
     return os << tmp;
 }
 
-void Parser (Stream <char>& example, Stream <Token>& code);
+//{==============================================================================
+
+void Skip     (Stream <char>& example);
+void Number   (Stream <char>& example, Stream <Token>& code);
+void Word     (Stream <char>& example, Stream <Token>& code);
+void Operator (Stream <char>& example, Stream <Token>& code);
+void Parser   (Stream <char>& example, Stream <Token>& code);
+
+//}==============================================================================
+
+void Skip (Stream <char>& example)
+{
+    while (example.check () && isspace (example[example.place ()]))
+    {
+        char digit = 0;
+        example >> digit;
+    }
+}
+
+void Number (Stream <char>& example, Stream <Token>& code)
+{
+    int value = 0;
+    while (example.check () && isdigit (example[example.place ()]))
+    {
+        char digit = 0;
+        example >> digit;
+
+        value = value * 10 + digit - '0';
+    }
+
+    code.push_back ({ Digit, value });
+}
+
+void Word (Stream <char>& example, Stream <Token>& code)
+{
+    string value;
+    while (example.check () && isalpha (example[example.place ()]))
+    {
+        char symbol = 0;
+        example >> symbol;
+
+        value.push_back (symbol);
+    }
+
+    int hash_value = KeyWords[value];
+
+    if (hash_value) code.push_back ({ hash_value, 0 });
+
+    else
+    {
+        hash_value = Variables[value];
+
+        if (hash_value) code.push_back ({ Var, hash_value });
+
+        else
+        {
+            code.push_back ({ Var, Variables.size () + 1 });
+
+            Variables[value] = Variables.size () + 1;
+        }
+    }
+}
+
+void Operator (Stream <char>& example, Stream <Token>& code)
+{
+    string value;
+    while (example.check () && ispunct (example[example.place ()]))
+    {
+        char digit = 0;
+        example >> digit;
+
+        value.push_back (digit);
+    }
+
+    int hash_value = Operators[value];
+
+    if (hash_value) code.push_back ({ hash_value, 0 });
+}
 
 void Parser (Stream <char>& example, Stream <Token>& code)
 {
     while (example.check ())
     {
         if (isspace (example[example.place ()])) //iscntrl
-        {
-            while (example.check () && isspace (example[example.place ()]))
-            {
-                char digit = 0;
-                example >> digit;
-            }
-        }
+            Skip (example);
 
         else if (isdigit (example[example.place ()]))
-        {
-            int value = 0;
-            while (example.check () && isdigit (example[example.place ()]))
-            {
-                char digit = 0;
-                example >> digit;
-
-                value = value * 10 + digit - '0';
-            }
-
-            code.push_back ({ Digit, value });
-        }
+            Number (example, code);
 
         else if (isalpha (example[example.place ()]))
-        {
-            string value;
-            while (example.check () && isalpha (example[example.place ()]))
-            {
-                char symbol = 0;
-                example >> symbol;
-
-                value.push_back (symbol);
-            }
-
-            int hash_value = KeyWords[value];
-
-            if (hash_value) code.push_back ({ hash_value, 0 });
-
-            else
-            {
-                hash_value = Variables[value];
-
-                if (hash_value) code.push_back ({ Var, hash_value });
-
-                else
-                {
-                    Variables.insert (pair <string, int> (value, Variables.size ()));
-
-                    code.push_back ({ Var, Variables.size () });
-                }
-            }
-        }
+            Word (example, code);
 
         else if (ispunct (example[example.place ()]))
-        {
-            string value;
-            while (example.check () && ispunct (example[example.place ()]))
-            {
-                char digit = 0;
-                example >> digit;
-
-                value.push_back (digit);
-            }
-
-            int hash_value = Operators[value];
-
-            if (hash_value) code.push_back ({ hash_value, 0 });
-        }
+            Operator (example, code);
 
         else
         {

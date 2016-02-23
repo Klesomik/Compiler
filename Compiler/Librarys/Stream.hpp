@@ -39,9 +39,6 @@ class Stream
 
         Vector <Data_T> data_;
 
-        bool ok   ();
-        void dump ();
-
     public:
         Stream ();
         Stream (const Vector <Data_T> name);
@@ -66,6 +63,9 @@ class Stream
         size_t          place () /*const*/;
         size_t          size  () /*const*/;
         Vector <Data_T> data  () /*const*/;
+
+        bool ok   ();
+        void dump ();
 };
 
 //}==============================================================================
@@ -315,10 +315,15 @@ void Stream <Data_T> :: dump ()
 {
     printf ("\n=============DUMP=============\n");
 
-    printf ("Stream (%s) [%p]\n", ok ()? "ok" : "ERROR", this);
+    printf ("Stream (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
 
-    printf ("size  = %d;\n", data_.size ());
-    printf ("place = %d;\n", place_);
+    printf ("   size  = %d;\n", data_.size ());
+    printf ("   place = %d;\n\n", place_);
+
+    for (size_t i = 0; i < data_.size (); i++)
+    {
+        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << data_[i] << "|\n";
+    }
 
     printf ("==============================\n\n");
 }
