@@ -8,6 +8,19 @@ for (size_t i = 0; i < current -> children ().size (); i++)\
 
 //}==============================================================================
 
+/*
+int var_value = 0;
+if (current -> children ()[0] -> key ().type == Var)
+    var_value = current -> children ()[0] -> key ().value;
+
+for (size_t i = 1; i < current -> children ().size (); i++)
+    CreateAsm (current -> children ()[i], write);
+
+fprintf (write, "pop %c%d;\n", '%', var_value);
+
+    break;
+*/
+
 //{==============================================================================
 
 void CreateAsm (AstNode* current, FILE* write);
@@ -28,7 +41,7 @@ void CreateAsm (AstNode* current, FILE* write)
 
         case Assignment: { DETOUR fprintf (write, "pop %c%d;\n", '%', current -> key ().value); break; }
         case Digit:      { fprintf (write, "push %d;\n", current -> key ().value); break; }
-        case Var:        { return; }
+        case Var:        { fprintf (write, "push %c%d;\n", '%', current -> key ().value); break; }
         case None:       { DETOUR break; }
 
         case Equal:      { DETOUR fprintf (write, "push %c%d;\n", '%', current -> key ().value); fprintf (write, "sub;\n"); break; }
