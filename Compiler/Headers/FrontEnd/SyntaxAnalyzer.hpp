@@ -318,6 +318,30 @@ void Get_If_Else (AstNode& current, Stream <Token>& example)
     }
 }
 
+void Get_While (AstNode& current, Stream <Token>& example)
+{
+    example++;
+
+    current.key () = { While, 0 };
+
+    example++;
+
+    Stream <Token> tmp;
+    while (example.check () && example[example.place ()].type != CloseBracket)
+    {
+        tmp.push_back (example[example.place ()]);
+
+        example++;
+    }
+    tmp.push_back ({ End, 0 });
+
+    example++;
+
+    Get_Lexem (current, tmp);
+
+    Get_Lexem (current, example);
+}
+
 void Get_Lexem (AstNode& current, Stream <Token>& example)
 {
     Stream <Token> tmp;
@@ -338,6 +362,15 @@ void Get_Lexem (AstNode& current, Stream <Token>& example)
             AstNode operation;
 
             Get_If_Else (operation, example);
+
+            current.insert (operation);
+        }
+
+        else if (example[example.place ()].type == While)
+        {
+            AstNode operation;
+
+            Get_While (operation, example);
 
             current.insert (operation);
         }

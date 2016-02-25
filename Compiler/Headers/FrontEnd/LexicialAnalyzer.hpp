@@ -25,6 +25,7 @@ enum Lexemes
     MoreEqual,
     If,
     Else,
+    While,
     None,
 
     OpenBracket  = '(',
@@ -66,8 +67,9 @@ map <string, int> Operators = { {  "{",        Begin },
                                 {  ">",         More },
                                 { ">=",    MoreEqual } };
 
-map <string, int> KeyWords = { {   "if",   If },
-                               { "else", Else } };
+map <string, int> KeyWords = { {   "if",     If },
+                               {  "else",  Else },
+                               { "while", While } };
 
 map <string, int> Variables = {};
 
@@ -104,6 +106,8 @@ Token :: Token (int setType, int setValue):
     value (setValue)
     {}
 
+std::ostream& operator << (std::ostream& os, Token const &m);
+
 std::ostream& operator << (std::ostream& os, Token const &m)
 {
     char tmp[9] = "";
@@ -121,6 +125,7 @@ std::ostream& operator << (std::ostream& os, Token const &m)
         case MoreEqual: { sprintf (tmp, ">=");              break; }
         case        If: { sprintf (tmp, "if");              break; }
         case      Else: { sprintf (tmp, "else");            break; }
+        case     While: { sprintf (tmp, "while");           break; }
         case      None: { sprintf (tmp, "none");            break; }
 
         default:        { sprintf (tmp, "%c", m.type);      break; }

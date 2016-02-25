@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "Dotter//Dotter.h"
+#include "Dotter.h"
 #include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
 
 //}==============================================================================
@@ -15,11 +15,19 @@ using namespace std;
 
 //{==============================================================================
 
+void SetColor (const char* first, const char* second, const char* third);
 void DotDump  (AstNode& root, const string& file_name);
 void GrowTree (AstNode* current, const size_t number);
 string BtInf (const Token value);
 
 //}==============================================================================
+
+void SetColor (const char* first, const char* second, const char* third)
+{
+    dtNodeStyle ().fontcolor (first)
+                  .color     (second)
+                  .fillcolor (third);
+}
 
 void DotDump (AstNode& root, const string& file_name)
 {
@@ -82,58 +90,68 @@ string BtInf (const Token value)
 {
     char tmp[5] = "";
 
-    if (value.type == Digit)
+    switch (value.type)
     {
-        dtNodeStyle ().fontcolor ("darkgreen")
-                      .color     ("darkgreen")
-                      .fillcolor ("#98FF66");
-
-        sprintf (tmp, "%d\n", value.value);
-    }
-
-    else if (value.type == Var)
-    {
-        dtNodeStyle ().fontcolor ("darkgreen")
-                      .color     ("darkgreen")
-                      .fillcolor ("#98FF66");
-
-        sprintf (tmp, "var_%d\n", value.value);
-    }
-
-    else if (value.type == If)
-    {
-        dtNodeStyle ().fontcolor ("blue")
-                      .color     ("blue")
-                      .fillcolor ("lightblue");
-
-        sprintf (tmp, "if\n");
-    }
-
-    else if (value.type == None)
-    {
-        dtNodeStyle ().fontcolor ("grey")
-                      .color     ("grey")
-                      .fillcolor ("grey");
-
-        sprintf (tmp, "If\n");
-    }
-
-    else
-    {
-        dtNodeStyle ().fontcolor ("red")
-                      .color     ("red")
-                      .fillcolor ("#FFCCC9");
-
-        switch (value.type)
+        case Digit:
         {
-            case Add:        { sprintf (tmp, "+\n");  break; }
-            case Sub:        { sprintf (tmp, "-\n");  break; }
-            case Mul:        { sprintf (tmp, "*\n");  break; }
-            case Div:        { sprintf (tmp, "/\n");  break; }
-            case Assignment: { sprintf (tmp, "=\n");  break; }
-            case Equal:      { sprintf (tmp, "==\n"); break; }
+            SetColor ("darkgreen", "darkgreen", "#98FF66");
 
-            default: break;
+            sprintf (tmp, "%d\n", value.value);
+
+            break;
+        }
+
+        case   Var:
+        {
+            SetColor ("darkgreen", "darkgreen", "#98FF66");
+
+            sprintf (tmp, "var_%d\n", value.value);
+
+            break;
+        }
+
+        case    If:
+        {
+            SetColor ("blue", "blue", "lightblue");
+
+            sprintf (tmp, "if\n");
+
+            break;
+        }
+
+        case While:
+        {
+            SetColor ("blue", "blue", "lightblue");
+
+            sprintf (tmp, "while\n");
+
+            break;
+        }
+
+        case  None:
+        {
+            SetColor ("grey", "grey", "grey");
+
+            break;
+        }
+
+        default:
+        {
+            SetColor ("red", "red", "#FFCCC9");
+
+            switch (value.type)
+            {
+                case Add:        { sprintf (tmp, "+\n");  break; }
+                case Sub:        { sprintf (tmp, "-\n");  break; }
+                case Mul:        { sprintf (tmp, "*\n");  break; }
+                case Div:        { sprintf (tmp, "/\n");  break; }
+                case Assignment: { sprintf (tmp, "=\n");  break; }
+                case Equal:      { sprintf (tmp, "==\n"); break; }
+
+                default: break;
+            }
+
+            break;
         }
     }
 
