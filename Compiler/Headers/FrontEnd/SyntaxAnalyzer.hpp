@@ -15,6 +15,7 @@
 
 // Get_Block                         ::= { [Get_Lexem] }
 // Get_Lexem                         ::= Get_Block | Get_If_Else | Get_Assignment
+// Get_While                         ::= while (Get_Lexem) Get_Lexem
 // Get_If_Else                       ::= if (Get_Lexem) Get_Lexem else Get_Lexem
 // Get_Assignment                    ::= Get_Equal_NotEqual | Get_Equal_NotEqual = Get_Equal_NotEqual
 // Get_Equal_NotEqual                ::= Get_Or | Get_Or == Get_Or | Get_Or != Get_Or
