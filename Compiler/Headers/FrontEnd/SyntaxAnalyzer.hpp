@@ -42,6 +42,7 @@ void Get_Or                            (AstNode& current, Stream <Token>& exampl
 void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example);
 void Get_Assignment                    (AstNode& current, Stream <Token>& example);
 void Get_If_Else                       (AstNode& current, Stream <Token>& example);
+void Get_While                         (AstNode& current, Stream <Token>& example)æ
 void Get_Lexem                         (AstNode& current, Stream <Token>& example);
 void Get_Block                         (AstNode& current, Stream <Token>& example);
 
