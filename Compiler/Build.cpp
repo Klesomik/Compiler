@@ -40,11 +40,13 @@ int main (int argc, const char* argv[])
 
         ParserGenerate (code);
 
+        code.dump ();
+
         AstNode root ({ None, None });
 
         TreeGenerate (root, code);
 
-        AsmGenerate (root);
+        //AsmGenerate (root);
 
         DotDump (root, "EX1.dot");
     }

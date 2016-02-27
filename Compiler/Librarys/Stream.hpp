@@ -60,6 +60,12 @@ class Stream
         void seek  (const size_t value);
         bool check ();
 
+        size_t avaliable ();
+
+        bool check_next (const std::initializer_list <Data_T>& next);
+
+        bool check_next (const Data_T next[], const size_t len);
+
         size_t          place () /*const*/;
         size_t          size  () /*const*/;
         Vector <Data_T> data  () /*const*/;
@@ -266,6 +272,37 @@ bool Stream <Data_T> :: check ()
     OK_STREAM
 
     return (place_ < data_.size ());
+}
+
+//===============================================================================
+
+template <typename Data_T>
+size_t Stream <Data_T> :: avaliable ()
+{
+    return (data_.size () - place_);
+}
+
+//===============================================================================
+
+template <typename Data_T>
+bool Stream <Data_T> :: check_next (const std::initializer_list <Data_T>& next)
+{
+    return check_next (next.begin (), next.size ());
+}
+
+//===============================================================================
+
+template <typename Data_T>
+bool Stream <Data_T> :: check_next (const Data_T next[], const size_t len)
+{
+    if (avaliable () < len) return false;
+
+    for (size_t i = 0; i < len; i++)
+    {
+        if (data_[place_ + i] != next[i]) return false;
+    }
+
+    return true;
 }
 
 //===============================================================================

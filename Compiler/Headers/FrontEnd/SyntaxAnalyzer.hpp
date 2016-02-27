@@ -15,12 +15,13 @@
 
 // Get_Block                         ::= { [Get_Lexem] }
 // Get_Lexem                         ::= Get_Block | Get_If_Else | Get_Assignment
+// Get_NewVar                        ::= int GetVariable = Get_Assigment
 // Get_While                         ::= while (Get_Lexem) Get_Lexem
 // Get_If_Else                       ::= if (Get_Lexem) Get_Lexem else Get_Lexem
-// Get_Assignment                    ::= Get_Equal_NotEqual | Get_Equal_NotEqual = Get_Equal_NotEqual
-// Get_Equal_NotEqual                ::= Get_Or | Get_Or == Get_Or | Get_Or != Get_Or
+// Get_Assignment                    ::= Get_Or | GetVariable = Get_Assignment
 // Get_Or                            ::= Get_And | Get_And || Get_And
-// Get_And                           ::= Get_Less_LessEqual_More_MoreEqual  | Get_Less_LessEqual_More_MoreEqual && Get_Less_LessEqual_More_MoreEqual
+// Get_And                           ::= Get_Equal_NotEqual | Get_Equal_NotEqual && Get_Equal_NotEqual
+// Get_Equal_NotEqual                ::= Get_Less_LessEqual_More_MoreEqual | Get_Less_LessEqual_More_MoreEqual == Get_Less_LessEqual_More_MoreEqual | Get_Less_LessEqual_More_MoreEqual != Get_Less_LessEqual_More_MoreEqual
 // Get_Less_LessEqual_More_MoreEqual ::= Get_Add_Sub | Get_Add_Sub < Get_Add_Sub | Get_Add_Sub <= Get_Add_Sub| Get_Add_Sub > Get_Add_Sub | Get_Add_Sub >= Get_Add_Sub
 // Get_Add_Sub                       ::= Get_Mul_Div_Mod | Get_Mul_Div_Mod + Get_Mul_Div_Mod | Get_Mul_Div_Mod - Get_Mul_Div_Mod
 // Get_Mul_Div_Mod                   ::= Get_Value | Get_Value * Get_Value | Get_Value / Get_Value | Get_Value % Get_Value
@@ -43,7 +44,8 @@ void Get_Or                            (AstNode& current, Stream <Token>& exampl
 void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example);
 void Get_Assignment                    (AstNode& current, Stream <Token>& example);
 void Get_If_Else                       (AstNode& current, Stream <Token>& example);
-void Get_While                         (AstNode& current, Stream <Token>& example)æ
+void Get_While                         (AstNode& current, Stream <Token>& example);
+void Get_NewVar                        (AstNode& current, Stream <Token>& example);
 void Get_Lexem                         (AstNode& current, Stream <Token>& example);
 void Get_Block                         (AstNode& current, Stream <Token>& example);
 
@@ -268,25 +270,32 @@ void Get_Or (AstNode& current, Stream <Token>& example)
 
 void Get_Assignment (AstNode& current, Stream <Token>& example)
 {
-    AstNode value;
-    Get_Or (value, example);
+    AstNode operation;
 
-    while (example.check () && (example[example.place ()].type == Assignment))
+    if (example.check_next ({ Token (Var), Token (Assignment) }))
     {
-        int sign = example[example.place ()].type;
+        cout << "Yes\n";
 
-        example++;
+        operation.key () = { Assignment, 0 };
 
-        AstNode operation ({ sign, 0 });
-                operation.insert (value);
+        while (example.check_next ({ Token (Var), Token (Assignment) }))
+        {
+            AstNode value;
+            Get_Variable (value, example);
 
-                Get_Or (value, example);
-                operation.insert (value);
+            example++;
 
-        value.move (operation);
+            operation.insert (value);
+        }
+
+        AstNode value;
+        Get_Or (value, example);
+        operation.insert (value);
     }
 
-    current.move (value);
+    else Get_Or (operation, example);
+
+    current.move (operation);
 }
 
 void Get_If_Else (AstNode& current, Stream <Token>& example)
@@ -344,6 +353,29 @@ void Get_While (AstNode& current, Stream <Token>& example)
     Get_Lexem (current, example);
 }
 
+void Get_NewVar (AstNode& current, Stream <Token>& example)
+{
+    current.insert (example[example.place ()]);
+
+    example++;
+
+    AstNode operation;
+
+    Get_Variable (operation, example);
+
+    current.insert (operation);
+
+    if (!example.check () || example[example.place ()].type != Assignment) return;
+
+    example++;
+
+    AstNode value;
+
+    Get_Number (value, example);
+
+    current.insert (value);
+}
+
 void Get_Lexem (AstNode& current, Stream <Token>& example)
 {
     Stream <Token> tmp;
@@ -377,6 +409,15 @@ void Get_Lexem (AstNode& current, Stream <Token>& example)
             current.insert (operation);
         }
 
+        else if (example[example.place ()].type == Int)
+        {
+            AstNode operation ({ Declaration, 0 });
+
+            Get_NewVar (operation, example);
+
+            current.insert (operation);
+        }
+
         else
         {
             AstNode operation;
@@ -387,6 +428,8 @@ void Get_Lexem (AstNode& current, Stream <Token>& example)
 
                 example++;
             }
+
+            tmp.dump ();
 
             Get_Assignment (operation, tmp);
 

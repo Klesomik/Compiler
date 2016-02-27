@@ -26,6 +26,8 @@ enum Lexemes
     If,
     Else,
     While,
+    Int,
+    Declaration,
     None,
 
     OpenBracket  = '(',
@@ -69,11 +71,10 @@ map <string, int> Operators = { {  "{",        Begin },
 
 map <string, int> KeyWords = { {   "if",     If },
                                {  "else",  Else },
-                               { "while", While } };
+                               { "while", While },
+                               {   "int",   Int } };
 
 map <string, int> Variables = {};
-
-map <string, int> Functions;
 
 //}==============================================================================
 
@@ -89,6 +90,7 @@ struct Token
     };
 
     Token ();
+    Token (int setType);
     Token (int setType, int setValue);
 
     //std::ostream& operator << (std::ostream& os);
@@ -101,12 +103,29 @@ Token :: Token ():
     value ()
     {}
 
+Token :: Token (int setType):
+    type  (setType),
+    value (0)
+    {}
+
 Token :: Token (int setType, int setValue):
     type  (setType),
     value (setValue)
     {}
 
+bool operator == (const Token& a, const Token& b);
+bool operator != (const Token& a, const Token& b);
 std::ostream& operator << (std::ostream& os, Token const &m);
+
+bool operator == (const Token& a, const Token& b)
+{
+    return a.type == b.type && a.value == b.value;
+}
+
+bool operator != (const Token& a, const Token& b)
+{
+    return !(a == b);
+}
 
 std::ostream& operator << (std::ostream& os, Token const &m)
 {
@@ -126,6 +145,7 @@ std::ostream& operator << (std::ostream& os, Token const &m)
         case        If: { sprintf (tmp, "if");              break; }
         case      Else: { sprintf (tmp, "else");            break; }
         case     While: { sprintf (tmp, "while");           break; }
+        case       Int: { sprintf (tmp, "int");             break; }
         case      None: { sprintf (tmp, "none");            break; }
 
         default:        { sprintf (tmp, "%c", m.type);      break; }
