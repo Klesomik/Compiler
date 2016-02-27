@@ -147,6 +147,7 @@ string BtInf (const Token value)
                 case Div:        { sprintf (tmp, "/\n");  break; }
                 case Assignment: { sprintf (tmp, "=\n");  break; }
                 case Equal:      { sprintf (tmp, "==\n"); break; }
+                case    Or:      { sprintf (tmp, "||\n"); break; }
 
                 default: break;
             }

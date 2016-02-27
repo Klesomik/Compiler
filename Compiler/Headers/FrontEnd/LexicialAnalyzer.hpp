@@ -119,7 +119,7 @@ std::ostream& operator << (std::ostream& os, Token const &m);
 
 bool operator == (const Token& a, const Token& b)
 {
-    return a.type == b.type && a.value == b.value;
+    return a.type == b.type; // && a.value == b.value
 }
 
 bool operator != (const Token& a, const Token& b)

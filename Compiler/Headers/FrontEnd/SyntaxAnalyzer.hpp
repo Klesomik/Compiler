@@ -85,7 +85,7 @@ void Get_Value (AstNode& current, Stream <Token>& example)
 {
     AstNode value; //else with out; throw
 
-    if (example.check () && example[example.place ()].type == Sub)
+    /*if (example.check () && example[example.place ()].type == Sub)
     {
         example++;
 
@@ -97,9 +97,9 @@ void Get_Value (AstNode& current, Stream <Token>& example)
         example++;
 
         //value = +Get_Value (example); *+1
-    }
+    }*/
 
-    else if (example.check () && example[example.place ()].type == OpenBracket)
+    /*else*/ if (example.check () && example[example.place ()].type == OpenBracket)
     {
         example++;
 
@@ -153,20 +153,37 @@ void Get_Add_Sub (AstNode& current, Stream <Token>& example)
     AstNode value;
     Get_Mul_Div_Mod (value, example);
 
-    while (example.check () && (example[example.place ()].type == Add ||
-                                example[example.place ()].type == Sub))
+    AstNode operation;
+
+    if (example.check () && (example[example.place ()].type == Add ||
+                             example[example.place ()].type == Sub))
     {
-        int sign = example[example.place ()].type;
+        operation.insert (value);
 
-        example++;
+        if (example.check () && (example[example.place ()].type == Add))
+            operation.key () = { Add, 0 };
 
-        AstNode operation ({ sign, 0 });
-                operation.insert (value);
+        if (example.check () && (example[example.place ()].type == Sub))
+            operation.key () = { Sub, 0 };
 
-                Get_Mul_Div_Mod (value, example);
-                operation.insert (value);
+        while (example.check () && (example[example.place ()].type == Add ||
+                                    example[example.place ()].type == Sub))
+        {
+            int sign = example[example.place ()].type;
 
-        value.move (operation);
+            example++;
+
+            if (sign != operation.key ().type)
+            {
+                value.move (operation);
+                            operation.key () = sign;
+
+                value.insert (operation);
+            }
+
+            Get_Mul_Div_Mod (value, example);
+            operation.insert (value);
+        }
     }
 
     current.move (value);
@@ -274,8 +291,6 @@ void Get_Assignment (AstNode& current, Stream <Token>& example)
 
     if (example.check_next ({ Token (Var), Token (Assignment) }))
     {
-        cout << "Yes\n";
-
         operation.key () = { Assignment, 0 };
 
         while (example.check_next ({ Token (Var), Token (Assignment) }))
@@ -428,8 +443,6 @@ void Get_Lexem (AstNode& current, Stream <Token>& example)
 
                 example++;
             }
-
-            tmp.dump ();
 
             Get_Assignment (operation, tmp);
 
