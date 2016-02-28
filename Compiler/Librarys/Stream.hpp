@@ -63,8 +63,9 @@ class Stream
         size_t avaliable ();
 
         bool check_next (const std::initializer_list <Data_T>& next);
-
         bool check_next (const Data_T next[], const size_t len);
+
+        bool compare (const Data_T element, const size_t shift);
 
         size_t          place () /*const*/;
         size_t          size  () /*const*/;
@@ -301,6 +302,18 @@ bool Stream <Data_T> :: check_next (const Data_T next[], const size_t len)
     {
         if (data_[place_ + i] != next[i]) return false;
     }
+
+    return true;
+}
+
+//===============================================================================
+
+template <typename Data_T>
+bool Stream <Data_T> :: compare (const Data_T element, const size_t shift)
+{
+    if (shift < avaliable ()) return false;
+
+    if (data_[place_ + shift] != element) return false;
 
     return true;
 }

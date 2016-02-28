@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cassert>
-#include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
+#include "..//Headers//FrontEnd//Token.hpp"
 
 //}==============================================================================
 
@@ -77,6 +77,7 @@ class AstNode
         AstNode& move (AstNode& from);
 
         Token&                  key ();
+        //size_t               size ();
         Vector <AstNode*>& children ();
 
         bool ok   ();
@@ -339,12 +340,12 @@ void AstNode :: dump (FILE* out /* = stdout */)
     fprintf (out, "\n====================DUMP====================\n");
 
     fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
-    //std::cout << "[" << key_ << "];\n";
+    std::cout << "[" << key_ << "];\n";
 
     if (parent_)
     {
         fprintf (out, "   parent = [%p]", parent_);
-        //std::cout << "[" << parent_ -> key_ << "];\n";
+        std::cout << "[" << parent_ -> key_ << "];\n";
     }
 
     else
@@ -355,7 +356,7 @@ void AstNode :: dump (FILE* out /* = stdout */)
     for (size_t i = 0; i < children_.size (); i++)
     {
         fprintf (out, "   child[%d] = [%p]", i, children_[i]);
-        //std::cout << "[" << children_[i] -> key_ << "];\n";
+        std::cout << "[" << children_[i] -> key_ << "];\n";
     }
 
     fprintf (out, "============================================\n\n");

@@ -85,7 +85,7 @@ void Get_Value (AstNode& current, Stream <Token>& example)
 {
     AstNode value; //else with out; throw
 
-    /*if (example.check () && example[example.place ()].type == Sub)
+    if (example.check () && example[example.place ()].type == Sub)
     {
         example++;
 
@@ -97,7 +97,7 @@ void Get_Value (AstNode& current, Stream <Token>& example)
         example++;
 
         //value = +Get_Value (example); *+1
-    }*/
+    }
 
     /*else*/ if (example.check () && example[example.place ()].type == OpenBracket)
     {
@@ -150,43 +150,46 @@ void Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example)
 
 void Get_Add_Sub (AstNode& current, Stream <Token>& example)
 {
-    AstNode value;
-    Get_Mul_Div_Mod (value, example);
+    //AstNode addNode (Add, 0);
+    //AstNode subNode (Sub, 0);
 
-    AstNode operation;
+    AstNode/***/ operation /*= nullptr*/;
 
-    if (example.check () && (example[example.place ()].type == Add ||
-                             example[example.place ()].type == Sub))
+    /*if (example.check () && (example.compare (Token (Add), 1) ||
+                             example.compare (Token (Sub), 1))
     {
-        operation.insert (value);
+        if (example.compare (Token (Add), 1))
+            operation = &addNode;
 
-        if (example.check () && (example[example.place ()].type == Add))
-            operation.key () = { Add, 0 };
+        if (example.compare (Token (Sub), 1))
+            operation = &subNode;
 
-        if (example.check () && (example[example.place ()].type == Sub))
-            operation.key () = { Sub, 0 };
-
-        while (example.check () && (example[example.place ()].type == Add ||
-                                    example[example.place ()].type == Sub))
+        do
         {
+            AstNode value;
+            Get_Mul_Div_Mod (value, example);
+            operation.insert (value);
+
             int sign = example[example.place ()].type;
 
             example++;
 
             if (sign != operation.key ().type)
             {
-                value.move (operation);
-                            operation.key () = sign;
-
-                value.insert (operation);
+                if (sign == Add) operation = &addNode;
+                if (sign == Sub) operation = &subNode;
             }
-
-            Get_Mul_Div_Mod (value, example);
-            operation.insert (value);
         }
-    }
+        while (example.check () && (example[example.place ()].type == Add ||
+                                    example[example.place ()].type == Sub))
+    }*/
 
-    current.move (value);
+    //else
+    //{
+        Get_Mul_Div_Mod (operation, example);
+    //}
+
+    current.move (operation);
 }
 
 void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example)
