@@ -2,9 +2,9 @@
 
 //{==============================================================================
 
-#define DETOUR \
+#define DETOUR(action) \
 for (size_t i = 0; i < current -> children ().size (); i++)\
-    CreateAsm (current -> children ()[i], write);
+    action
 
 //}==============================================================================
 
@@ -20,11 +20,45 @@ void CreateAsm (AstNode* current, FILE* write)
 
     switch (current -> key ().type)
     {
-        case Add:        { DETOUR fprintf (write, "add;\n"); break; }
-        case Sub:        { DETOUR fprintf (write, "sub;\n"); break; }
-        case Mul:        { DETOUR fprintf (write, "mul;\n"); break; }
-        case Div:        { DETOUR fprintf (write, "div;\n"); break; }
-        case Mod:        { DETOUR fprintf (write, "mod;\n"); break; }
+        case Add:
+        {
+            DETOUR (CreateAsm (current -> children ()[i], write);)
+            DETOUR (fprintf (write, "add;\n");)
+
+            break;
+        }
+
+        case Sub:
+        {
+            DETOUR (CreateAsm (current -> children ()[i], write);)
+            DETOUR (fprintf (write, "sub;\n");)
+
+            break;
+        }
+
+        case Sub:
+        {
+            DETOUR (CreateAsm (current -> children ()[i], write);)
+            DETOUR (fprintf (write, "mul;\n");)
+
+            break;
+        }
+
+        case Sub:
+        {
+            DETOUR (CreateAsm (current -> children ()[i], write);)
+            DETOUR (fprintf (write, "div;\n");)
+
+            break;
+        }
+
+        case Sub:
+        {
+            DETOUR (CreateAsm (current -> children ()[i], write);)
+            DETOUR (fprintf (write, "mod;\n");)
+
+            break;
+        }
 
         case Assignment:
         {

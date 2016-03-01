@@ -92,20 +92,21 @@ std::ostream& operator << (std::ostream& os, Token const &m)
 
     switch (m.type)
     {
-        case     Digit: { sprintf (tmp, "%d",     m.value); break; }
+        case       Digit: { sprintf (tmp, "%d",     m.value); break; }
 
-        case       Var: { sprintf (tmp, "var_%d", m.value); break; }
-        case     Equal: { sprintf (tmp, "==");              break; }
-        case  NotEqual: { sprintf (tmp, "!=");              break; }
-        case       And: { sprintf (tmp, "&&");              break; }
-        case        Or: { sprintf (tmp, "||");              break; }
-        case LessEqual: { sprintf (tmp, "<=");              break; }
-        case MoreEqual: { sprintf (tmp, ">=");              break; }
-        case        If: { sprintf (tmp, "if");              break; }
-        case      Else: { sprintf (tmp, "else");            break; }
-        case     While: { sprintf (tmp, "while");           break; }
-        case       Int: { sprintf (tmp, "int");             break; }
-        case      None: { sprintf (tmp, "none");            break; }
+        case         Var: { sprintf (tmp, "var_%d", m.value); break; }
+        case       Equal: { sprintf (tmp, "==");              break; }
+        case    NotEqual: { sprintf (tmp, "!=");              break; }
+        case         And: { sprintf (tmp, "&&");              break; }
+        case          Or: { sprintf (tmp, "||");              break; }
+        case   LessEqual: { sprintf (tmp, "<=");              break; }
+        case   MoreEqual: { sprintf (tmp, ">=");              break; }
+        case          If: { sprintf (tmp, "if");              break; }
+        case        Else: { sprintf (tmp, "else");            break; }
+        case       While: { sprintf (tmp, "while");           break; }
+        case         Int: { sprintf (tmp, "int");             break; }
+        case Declaration: { sprintf (tmp, "declaration");     break; }
+        case        None: { sprintf (tmp, "none");            break; }
 
         default:        { sprintf (tmp, "%c", m.type);      break; }
     }

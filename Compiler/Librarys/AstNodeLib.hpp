@@ -90,69 +90,77 @@ string BtInf (const Token value)
 {
     char tmp[5] = "";
 
-    switch (value.type)
+    if (value.type == Digit ||
+        value.type == Var)
     {
-        case Digit:
+        SetColor ("darkgreen", "darkgreen", "#98FF66");
+
+        switch (value.type)
         {
-            SetColor ("darkgreen", "darkgreen", "#98FF66");
+            case Digit: { sprintf (tmp, "%d\n",     value.value); break; }
+            case   Var: { sprintf (tmp, "var_%d\n", value.value); break; }
 
-            sprintf (tmp, "%d\n", value.value);
-
-            break;
+            default: break;
         }
+    }
 
-        case   Var:
+    else if (value.type == If    ||
+             value.type == While ||
+             value.type == Int)
+    {
+        SetColor ("blue", "blue", "lightblue");
+
+        switch (value.type)
         {
-            SetColor ("darkgreen", "darkgreen", "#98FF66");
+            case    If: { sprintf (tmp, "if\n");    break; }
+            case While: { sprintf (tmp, "while\n"); break; }
+            case   Int: { sprintf (tmp, "int\n");   break; }
 
-            sprintf (tmp, "var_%d\n", value.value);
-
-            break;
+            default: break;
         }
+    }
 
-        case    If:
+    else if (value.type == None ||
+             value.type == Declaration)
+    {
+        SetColor ("grey", "grey", "lightgrey");
+    }
+
+    else if (value.type == Add        ||
+             value.type == Sub        ||
+             value.type == Mul        ||
+             value.type == Div        ||
+             value.type == Mod        ||
+             value.type == Assignment ||
+             value.type == Equal      ||
+             value.type == NotEqual   ||
+             value.type == And        ||
+             value.type == Or         ||
+             value.type == Less       ||
+             value.type == More       ||
+             value.type == LessEqual  ||
+             value.type == MoreEqual)
+    {
+        SetColor ("red", "red", "#FFCCC9");
+
+        switch (value.type)
         {
-            SetColor ("blue", "blue", "lightblue");
+            case        Add: { sprintf (tmp, "+\n");  break; }
+            case        Sub: { sprintf (tmp, "-\n");  break; }
+            case        Mul: { sprintf (tmp, "*\n");  break; }
+            case        Div: { sprintf (tmp, "/\n");  break; }
+            case        Mod: { sprintf (tmp, "%\n");  break; }
+            case Assignment: { sprintf (tmp, "=\n");  break; }
+            case      Equal: { sprintf (tmp, "==\n"); break; }
+            case   NotEqual: { sprintf (tmp, "!=\n"); break; }
+            case        And: { sprintf (tmp, "&&\n"); break; }
+            case         Or: { sprintf (tmp, "||\n"); break; }
+            case       Less: { sprintf (tmp, "<\n");  break; }
+            case       More: { sprintf (tmp, ">\n");  break; }
+            case  LessEqual: { sprintf (tmp, "<=\n"); break; }
+            case  MoreEqual: { sprintf (tmp, ">=\n"); break; }
 
-            sprintf (tmp, "if\n");
-
-            break;
-        }
-
-        case While:
-        {
-            SetColor ("blue", "blue", "lightblue");
-
-            sprintf (tmp, "while\n");
-
-            break;
-        }
-
-        case  None:
-        {
-            SetColor ("grey", "grey", "grey");
-
-            break;
-        }
-
-        default:
-        {
-            SetColor ("red", "red", "#FFCCC9");
-
-            switch (value.type)
-            {
-                case Add:        { sprintf (tmp, "+\n");  break; }
-                case Sub:        { sprintf (tmp, "-\n");  break; }
-                case Mul:        { sprintf (tmp, "*\n");  break; }
-                case Div:        { sprintf (tmp, "/\n");  break; }
-                case Assignment: { sprintf (tmp, "=\n");  break; }
-                case Equal:      { sprintf (tmp, "==\n"); break; }
-                case    Or:      { sprintf (tmp, "||\n"); break; }
-
-                default: break;
-            }
-
-            break;
+            default: break;
         }
     }
 
