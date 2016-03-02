@@ -44,7 +44,7 @@ int main (int argc, const char* argv[])
 
         TreeGenerate (root, code);
 
-        //AsmGenerate (root);
+        AsmGenerate (root);
 
         DotDump (root, "EX1.dot");
     }

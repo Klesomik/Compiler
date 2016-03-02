@@ -407,7 +407,11 @@ void Get_NewVar (AstNode& current, Stream <Token>& example)
 
     AstNode value;
 
-    Get_Number (value, example);
+    example.dump ();
+
+    Get_Assignment (value, example);
+
+    example++;
 
     current.insert (value);
 }

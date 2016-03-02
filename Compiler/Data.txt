@@ -1,4 +1,7 @@
 jmp main;
 label main;
 push %2;
+push 8;
+push 9;
+þ(;
 eof;
