@@ -56,6 +56,9 @@ int main (int argc, const char* argv[])
 
         DotDump (root, "EX1.dot");
     }
+    catch (std::exception)
+    {
+    }
     catch (const char* message)
     {
         CATCH
