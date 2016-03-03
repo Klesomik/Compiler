@@ -9,6 +9,7 @@
 #include "Librarys//AbstractSyntaxTree.hpp"
 #include "Headers//FrontEnd//LexicialAnalyzer.hpp"
 #include "Headers//FrontEnd//SyntaxAnalyzer.hpp"
+#include "Headers//FrontEnd//TreeCheck.hpp"
 #include "Headers//BackEnd//Compiler.hpp"
 
 //}==============================================================================
@@ -17,8 +18,9 @@ using namespace std;
 
 //{==============================================================================
 
-inline void Hello_C   (std::string& example) { printf ("Input name of C file: ");   std::cin >> example; }
+inline void Hello_C   (std::string& example) { printf ("Input name of C   file: "); std::cin >> example; }
 inline void Hello_Asm (std::string& example) { printf ("Input name of Asm file: "); std::cin >> example; }
+inline void Hello_Log (std::string& example) { printf ("Input name of Log file: "); std::cin >> example; }
 
 //}==============================================================================
 
@@ -42,15 +44,24 @@ int main (int argc, const char* argv[])
 
         AstNode root ({ None, None });
 
+        std::string example;
+        Hello_Log (example);
+
+        Log.rename (example);
+
         TreeGenerate (root, code);
 
-        AsmGenerate (root);
+        Check check (root);
+        //AsmGenerate (root);
 
         DotDump (root, "EX1.dot");
     }
     catch (const char* message)
     {
         CATCH
+    }
+    catch (const int message)
+    {
     }
     catch (...)
     {

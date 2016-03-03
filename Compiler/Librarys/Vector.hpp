@@ -48,9 +48,6 @@ class Vector
 
         void expand ();
 
-        bool ok   ();
-        void dump ();
-
      public:
         Vector ();
         Vector (const size_t mySize);
@@ -80,6 +77,9 @@ class Vector
         size_t capacity () /*const*/;
         size_t     size () /*const*/;
         Data_T*    data () /*const*/;
+
+        bool ok   ();
+        void dump ();
 };
 
 //}==============================================================================
@@ -87,13 +87,20 @@ class Vector
 template <typename Data_T>
 void Vector <Data_T> :: dump ()
 {
-    printf ("\n=====================DUMP=====================\n");
+    printf ("\n=============DUMP=============\n");
+
+    printf ("Vector (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
 
     printf ("capacity = %d;\n", capacity_);
     printf ("size     = %d;\n",     size_);
     printf ("data     = 0x%p;\n",   data_);
 
-    printf ("==============================================\n\n");
+    for (size_t i = 0; i < size_; i++)
+    {
+        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << data_[i] << "|\n";
+    }
+
+    printf ("==============================\n\n");
 }
 
 //===============================================================================

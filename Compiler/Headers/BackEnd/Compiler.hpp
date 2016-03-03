@@ -7,6 +7,7 @@ void Give_Add_Sub_Mul_Div_Mod (AstNode* current, FILE* write, const char* comman
 void Give_Assignment          (AstNode* current, FILE* write);
 void Give_If                  (AstNode* current, FILE* write, int& jmp);
 void Give_While               (AstNode* current, FILE* write, int& jmp);
+void Give_Declaration         (AstNode* current, FILE* write);
 
 //}==============================================================================
 
@@ -33,7 +34,7 @@ void CreateAsm (AstNode* current, FILE* write)
 
         case While:       { Give_While (current, write, jmp); break; }
 
-        case Declaration: { for (size_t i = 0; i < current -> children ().size (); i++) CreateAsm (current -> children ()[i], write); break; }
+        case Declaration: { Give_Declaration (current, write); break; }
         case Int:         { break; }
 
         default:          { cout << current -> key ().type << "\n"; throw "default: error"; }
@@ -46,7 +47,7 @@ void Give_Add_Sub_Mul_Div_Mod (AstNode* current, FILE* write, const char* comman
         CreateAsm (current -> children ()[i], write);
 
     for (size_t i = 0; i < current -> children ().size () - 1; i++)
-        fprintf (write, "%s;\n");
+        fprintf (write, "%s;\n", command);
 }
 
 void Give_Assignment (AstNode* current, FILE* write)
@@ -98,4 +99,12 @@ void Give_While (AstNode* current, FILE* write, int& jmp)
 
     fprintf (write, "jmp %d;\n", copy_1);
     fprintf (write, "label %d;\n", copy_2);
+}
+
+void Give_Declaration (AstNode* current, FILE* write)
+{
+    CreateAsm (current -> children ()[0], write);
+    CreateAsm (current -> children ()[2], write);
+
+    fprintf (write, "pop %c%d;\n", '%', current -> children ()[1] -> key ().value);
 }

@@ -99,7 +99,7 @@ void Get_Value (AstNode& current, Stream <Token>& example)
         //value = +Get_Value (example); *+1
     }
 
-    /*else*/ if (example.check () && example[example.place ()].type == OpenBracket)
+    else if (example.check () && example[example.place ()].type == OpenBracket)
     {
         example++;
 
@@ -273,8 +273,6 @@ void Get_And (AstNode& current, Stream <Token>& example)
 
     while (example.check () && example[example.place ()].type == And)
     {
-        int sign = example[example.place ()].type;
-
         example++;
 
         AstNode operation;
@@ -293,8 +291,6 @@ void Get_Or (AstNode& current, Stream <Token>& example)
 
     while (example.check () && example[example.place ()].type == Or)
     {
-        int sign = example[example.place ()].type;
-
         example++;
 
         AstNode operation;
@@ -406,8 +402,6 @@ void Get_NewVar (AstNode& current, Stream <Token>& example)
     example++;
 
     AstNode value;
-
-    example.dump ();
 
     Get_Assignment (value, example);
 

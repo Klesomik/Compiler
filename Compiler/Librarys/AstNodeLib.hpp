@@ -145,20 +145,20 @@ string BtInf (const Token value)
 
         switch (value.type)
         {
-            case        Add: { sprintf (tmp, "+\n");  break; }
-            case        Sub: { sprintf (tmp, "-\n");  break; }
-            case        Mul: { sprintf (tmp, "*\n");  break; }
-            case        Div: { sprintf (tmp, "/\n");  break; }
-            case        Mod: { sprintf (tmp, "%\n");  break; }
-            case Assignment: { sprintf (tmp, "=\n");  break; }
-            case      Equal: { sprintf (tmp, "==\n"); break; }
-            case   NotEqual: { sprintf (tmp, "!=\n"); break; }
-            case        And: { sprintf (tmp, "&&\n"); break; }
-            case         Or: { sprintf (tmp, "||\n"); break; }
-            case       Less: { sprintf (tmp, "<\n");  break; }
-            case       More: { sprintf (tmp, ">\n");  break; }
-            case  LessEqual: { sprintf (tmp, "<=\n"); break; }
-            case  MoreEqual: { sprintf (tmp, ">=\n"); break; }
+            case        Add: { sprintf (tmp, "+\n");        break; }
+            case        Sub: { sprintf (tmp, "-\n");        break; }
+            case        Mul: { sprintf (tmp, "*\n");        break; }
+            case        Div: { sprintf (tmp, "/\n");        break; }
+            case        Mod: { sprintf (tmp, "%c\n", '%');  break; }
+            case Assignment: { sprintf (tmp, "=\n");        break; }
+            case      Equal: { sprintf (tmp, "==\n");       break; }
+            case   NotEqual: { sprintf (tmp, "!=\n");       break; }
+            case        And: { sprintf (tmp, "&&\n");       break; }
+            case         Or: { sprintf (tmp, "||\n");       break; }
+            case       Less: { sprintf (tmp, "<\n");        break; }
+            case       More: { sprintf (tmp, ">\n");        break; }
+            case  LessEqual: { sprintf (tmp, "<=\n");       break; }
+            case  MoreEqual: { sprintf (tmp, ">=\n");       break; }
 
             default: break;
         }

@@ -1,45 +1,80 @@
+#ifndef LogHTML_hpp
+    #define LogHTML_hpp
+
+//{==============================================================================
+
 #include <stdio.h>
 #include <cstring>
 #include <map>
 #include <iostream>
 #include <cstdlib>
+#include <cstdarg>
+
+//}==============================================================================
+
+//{==============================================================================
 
 using namespace std;
+
+//}==============================================================================
+
+//{==============================================================================
 
 class LogHTML
 {
     private:
         FILE* file_;
 
+        std::string name_;
+
+        LogHTML (const LogHTML& from);
+
     public:
-        LogHTML (const char* title);
+        LogHTML (const char* title, const char* mode);
+        LogHTML ();
 
         ~LogHTML ();
 
-        void open  (const char* title);
-        void close ();
+        void open   (); /* const char* title */
+        void close  ();
+        void rename (std::string& set_name);
 
-        void setColor (const char* color);
-        void setSize  (const size_t size);
-        void setStyle (const char* style);
+        void setColor     (const char* color);
+        void setFontColor (const char* color);
+        void setSize      (const size_t size);
+        void setStyle     (const char* style);
 
-        void output (const char* message);
+        void output (char* message, ...);
 
         void out ();
+
+        std::string name ();
 };
 
-LogHTML :: LogHTML (const char* title):
-    file_ (fopen (title, "w"))
-    { fprintf (file_, "<pre>\n"); }
+//}==============================================================================
+
+LogHTML :: LogHTML (const char* title, const char* mode):
+    file_ (fopen (title, mode)),
+    name_ (title)
+    {
+        assert (file_);
+
+        fprintf (file_, "<pre>\n");
+    }
+
+LogHTML :: LogHTML ():
+    file_ (nullptr),
+    name_ ()
+    {}
 
 LogHTML :: ~LogHTML ()
 {
     close ();
 }
 
-void LogHTML :: open  (const char* title)
+void LogHTML :: open  ()
 {
-    if (!file_) file_ = fopen (title, "w");
+    if (!file_) file_ = fopen (name_.c_str (), "w");
 }
 
 void LogHTML :: close ()
@@ -51,9 +86,19 @@ void LogHTML :: close ()
     }
 }
 
+void LogHTML :: rename (std::string& set_name)
+{
+    name_ = set_name;
+}
+
 void LogHTML :: setColor (const char* color)
 {
     fprintf (file_, "<font color = %s>\n", color);
+}
+
+void LogHTML :: setFontColor (const char* color)
+{
+    fprintf (file_, "<body bgcolor = %s>\n", color);
 }
 
 void LogHTML :: setSize (const size_t size)
@@ -66,12 +111,38 @@ void LogHTML :: setStyle (const char* style)
     fprintf (file_, "<font face = %s>\n", style);
 }
 
-void LogHTML :: output (const char* message)
+void LogHTML :: output (char* message, ...)
 {
-    fprintf (file_, "%s\n", message);
+    va_list args;
+    va_start (args, message);
+
+    for (char* ptr = message; *ptr; ptr++)
+    {
+        if (*ptr == '%')
+        {
+            switch (*++ptr)
+            {
+                case 'd': { int value    = va_arg (args, int);    fprintf (file_, "%d", value); break; }
+
+                case 'f': { double value = va_arg (args, double); fprintf (file_, "%f", value); break; }
+
+                default:  { break; }
+            }
+        }
+
+        else fprintf (file_, "%c", *ptr);
+    }
+
+    va_end (args);
 }
 
 void LogHTML :: out ()
 {
-    printf ("%s", file_ -> _base);
 }
+
+std::string LogHTML :: name ()
+{
+    return name_;
+}
+
+#endif

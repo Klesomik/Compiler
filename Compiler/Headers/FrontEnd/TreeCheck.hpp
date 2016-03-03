@@ -1,12 +1,19 @@
+#ifndef TreeCheck_hpp
+    #define TreeCheck_hpp
+
+#include "..//..//Librarys//LogHTML.hpp"
+
+int error_count = 0;
+
+LogHTML Log;
+
 class Check
 {
     private:
-        AstNode root;
-
-        Vector <int> data;
+        Vector <int> data_;
 
     public:
-        Check (AstNode& set_root);
+        Check (AstNode& root);
 
         void Detour (AstNode* current);
 
@@ -15,58 +22,84 @@ class Check
         void Check_Var       (AstNode* current);
 };
 
-Check (AstNode& set_root):
-    root (set_root)
+Check :: Check (AstNode& root):
+    data_ ()
     {
-        data.push_back (0);
+        data_.push_back (0);
+
+        Log.setFontColor ("black");
+        Log.setSize (1200);
+        Log.setColor ("yellow");
 
         for (size_t i = 0; i < root.children ().size (); i++)
             Detour (root.children ()[i]);
+
+        Log.output ("=== Build finished: %d errors ===\n", error_count);
     }
 
 void Check :: Detour (AstNode* current)
 {
     switch (current -> key ().type)
     {
-        case None:      { Check_None      (current); break; }
-        case Declarate: { Check_Declarate (current); break; }
-        case Var:       { Check_Var       (current); break; }
+        case None:        { Check_None      (current); break; }
+        case Declaration: { Check_Declarate (current); break; }
+        case Var:         { Check_Var       (current); break; }
+
+        default:
+        {
+            for (size_t i = 0; i < current -> children ().size (); i++)
+                Detour (current -> children ()[i]);
+
+            break;
+        }
     }
 }
 
-void Check_None (AstNode* current)
+void Check :: Check_None (AstNode* current)
 {
-    data.push_back (0);
+    data_.push_back (0);
 
     for (size_t i = 0; i < current -> children ().size (); i++)
         Detour (current -> children ()[i]);
 
-    while (data.back () != 0) data.pop ();
+    while (data_.back () != 0) data_.pop ();
 }
 
-void Check_Declarate (AstNode* current)
+void Check :: Check_Declarate (AstNode* current)
 {
     int deskriptor = current -> children ()[1] -> key ().value;
 
-    for (size_t i = data.size () - 1; data[i] != 0; i++)
+    for (size_t i = data_.size () - 1; data_[i] != 0; i--)
     {
-        if (data[i] == deskriptor) throw "error";
+        if (data_[i] == deskriptor)
+        {
+            Log.output ("Variable var_%d was declared before\n", deskriptor);
+
+            error_count++;
+        }
     }
 
-    data.push_back (deskriptor);
+    data_.push_back (deskriptor);
 
     Detour (current -> children ()[2]);
 }
 
-void Check_Var (AstNode* current)
+void Check :: Check_Var (AstNode* current)
 {
     int deskriptor = current -> key ().value;
 
     bool first = false;
-    for (size_t i = data.size () - 1; data[i] != 0; i++)
+    for (size_t i = data_.size () - 1; data_[i] != 0; i--)
     {
-        if (data[i] == deskriptor) first = true;
+        if (data_[i] == deskriptor) first = true;
     }
 
-    if (!first) throw "error";
+    if (!first)
+    {
+        Log.output ("Variable var_%d wasn't declared before\n", deskriptor);
+
+        error_count++;
+    }
 }
+
+#endif
