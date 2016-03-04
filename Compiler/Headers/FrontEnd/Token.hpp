@@ -18,6 +18,8 @@ enum Lexemes
     While,
     Int,
     Declaration,
+    Include,
+    Define,
     None,
 
     OpenBracket  = '(',
@@ -41,16 +43,19 @@ enum Lexemes
 
 struct Token
 {
-    int  type;
+    int type;
 
     union
     {
-        int value;
+        int        value;
+        const char* name;
     };
 
     Token ();
-    Token (int setType);
-    Token (int setType, int setValue);
+    Token (const int setType);
+    Token (const int setType, const int setValue);
+    Token (const char* setName);
+    Token (const int setType, const char* setName);
 
     //std::ostream& operator << (std::ostream& os);
 };
@@ -70,6 +75,16 @@ Token :: Token (int setType):
 Token :: Token (int setType, int setValue):
     type  (setType),
     value (setValue)
+    {}
+
+Token :: Token (const char* setName):
+    type (),
+    name (setName)
+    {}
+
+Token :: Token (const int setType, const char* setName):
+    type (setType),
+    name (setName)
     {}
 
 bool operator == (const Token& a, const Token& b);
@@ -108,7 +123,7 @@ std::ostream& operator << (std::ostream& os, Token const &m)
         case Declaration: { sprintf (tmp, "declaration");     break; }
         case        None: { sprintf (tmp, "none");            break; }
 
-        default:        { sprintf (tmp, "%c", m.type);      break; }
+        default:          { sprintf (tmp, "%c", m.type);      break; }
     }
 
     return os << tmp;

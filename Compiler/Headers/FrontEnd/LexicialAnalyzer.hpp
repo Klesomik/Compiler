@@ -39,6 +39,9 @@ map <string, int> KeyWords = { {   "if",     If },
                                { "while", While },
                                {   "int",   Int } };
 
+map <string, int> PreProc = { { "#include", Include },
+                              {  "#define",  Define } };
+
 map <string, int> Variables = {};
 
 //}==============================================================================

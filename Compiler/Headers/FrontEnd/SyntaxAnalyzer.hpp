@@ -31,27 +31,44 @@
 
 //}
 
-//{==============================================================================
+class SyntaxAnalyzer
+{
+    private:
+        size_t error_;
 
-void Get_Number                        (AstNode& current, Stream <Token>& example);
-void Get_Variable                      (AstNode& current, Stream <Token>& example);
-void Get_Value                         (AstNode& current, Stream <Token>& example);
-void Get_Mul_Div_Mod                   (AstNode& current, Stream <Token>& example);
-void Get_Add_Sub                       (AstNode& current, Stream <Token>& example);
-void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example);
-void Get_And                           (AstNode& current, Stream <Token>& example);
-void Get_Or                            (AstNode& current, Stream <Token>& example);
-void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example);
-void Get_Assignment                    (AstNode& current, Stream <Token>& example);
-void Get_If_Else                       (AstNode& current, Stream <Token>& example);
-void Get_While                         (AstNode& current, Stream <Token>& example);
-void Get_NewVar                        (AstNode& current, Stream <Token>& example);
-void Get_Lexem                         (AstNode& current, Stream <Token>& example);
-void Get_Block                         (AstNode& current, Stream <Token>& example);
+    public:
+        SyntaxAnalyzer (AstNode& root, Stream <Token>& code);
 
-//}==============================================================================
+        void Get_Number                        (AstNode& current, Stream <Token>& example);
+        void Get_Variable                      (AstNode& current, Stream <Token>& example);
+        void Get_Value                         (AstNode& current, Stream <Token>& example);
+        void Get_Mul_Div_Mod                   (AstNode& current, Stream <Token>& example);
+        void Get_Add_Sub                       (AstNode& current, Stream <Token>& example);
+        void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example);
+        void Get_And                           (AstNode& current, Stream <Token>& example);
+        void Get_Or                            (AstNode& current, Stream <Token>& example);
+        void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example);
+        void Get_Assignment                    (AstNode& current, Stream <Token>& example);
+        void Get_If_Else                       (AstNode& current, Stream <Token>& example);
+        void Get_While                         (AstNode& current, Stream <Token>& example);
+        void Get_NewVar                        (AstNode& current, Stream <Token>& example);
+        void Get_Lexem                         (AstNode& current, Stream <Token>& example);
+        void Get_Block                         (AstNode& current, Stream <Token>& example);
+};
 
-void Get_Number (AstNode& current, Stream <Token>& example)
+SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code)
+{
+    while (code.check ())
+    {
+        AstNode current ({ None, None });
+
+        Get_Block (current, code);
+
+        root.insert (current);
+    }
+}
+
+void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type == Digit)
@@ -66,7 +83,7 @@ void Get_Number (AstNode& current, Stream <Token>& example)
     if (!first) THROW ("expected integer");
 }
 
-void Get_Variable (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Variable (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type == Var)
@@ -81,7 +98,7 @@ void Get_Variable (AstNode& current, Stream <Token>& example)
     if (!first) THROW ("expected name of variable");
 }
 
-void Get_Value (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
 {
     AstNode value; //else with out; throw
 
@@ -123,7 +140,7 @@ void Get_Value (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     Get_Value (value, example);
@@ -159,7 +176,7 @@ void Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void Get_Add_Sub (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Add_Sub (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     Get_Mul_Div_Mod (value, example);
@@ -194,7 +211,7 @@ void Get_Add_Sub (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     Get_Add_Sub (value, example);
@@ -231,7 +248,7 @@ void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& exampl
     current.move (value);
 }
 
-void Get_Equal_NotEqual (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Equal_NotEqual (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     Get_Less_LessEqual_More_MoreEqual (value, example);
@@ -266,7 +283,7 @@ void Get_Equal_NotEqual (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void Get_And (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_And (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     Get_Equal_NotEqual (value, example);
@@ -284,7 +301,7 @@ void Get_And (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void Get_Or (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Or (AstNode& current, Stream <Token>& example)
 {
     AstNode value;
     Get_And (value, example);
@@ -302,7 +319,7 @@ void Get_Or (AstNode& current, Stream <Token>& example)
     current.move (value);
 }
 
-void Get_Assignment (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Assignment (AstNode& current, Stream <Token>& example)
 {
     AstNode operation;
 
@@ -330,7 +347,7 @@ void Get_Assignment (AstNode& current, Stream <Token>& example)
     current.move (operation);
 }
 
-void Get_If_Else (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example)
 {
     example++;
 
@@ -361,7 +378,7 @@ void Get_If_Else (AstNode& current, Stream <Token>& example)
     }
 }
 
-void Get_While (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example)
 {
     example++;
 
@@ -385,7 +402,7 @@ void Get_While (AstNode& current, Stream <Token>& example)
     Get_Lexem (current, example);
 }
 
-void Get_NewVar (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example)
 {
     current.insert (example[example.place ()]);
 
@@ -410,7 +427,7 @@ void Get_NewVar (AstNode& current, Stream <Token>& example)
     current.insert (value);
 }
 
-void Get_Lexem (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example)
 {
     Stream <Token> tmp;
 
@@ -472,7 +489,7 @@ void Get_Lexem (AstNode& current, Stream <Token>& example)
     }
 }
 
-void Get_Block (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Block (AstNode& current, Stream <Token>& example)
 {
     if (example.check () && example[example.place ()].type == Begin)
     {

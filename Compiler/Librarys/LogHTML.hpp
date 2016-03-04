@@ -3,7 +3,7 @@
 
 //{==============================================================================
 
-#include <stdio.h>
+#include <cstdio>
 #include <cstring>
 #include <map>
 #include <iostream>
@@ -25,7 +25,8 @@ class LogHTML
     private:
         FILE* file_;
 
-        std::string name_;
+        const char* name_;
+        const char* mode_;
 
         LogHTML (const LogHTML& from);
 
@@ -37,7 +38,7 @@ class LogHTML
 
         void open   (); /* const char* title */
         void close  ();
-        void rename (std::string& set_name);
+        void rename (const char* set_name);
 
         void setColor     (const char* color);
         void setFontColor (const char* color);
@@ -74,7 +75,7 @@ LogHTML :: ~LogHTML ()
 
 void LogHTML :: open  ()
 {
-    if (!file_) file_ = fopen (name_.c_str (), "w");
+    if (!file_) file_ = fopen (name_, "w");
 }
 
 void LogHTML :: close ()
@@ -86,7 +87,7 @@ void LogHTML :: close ()
     }
 }
 
-void LogHTML :: rename (std::string& set_name)
+void LogHTML :: rename (const char* set_name)
 {
     name_ = set_name;
 }

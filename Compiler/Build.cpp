@@ -18,9 +18,9 @@ using namespace std;
 
 //{==============================================================================
 
-inline void Hello_C   (std::string& example) { printf ("Input name of C   file: "); std::cin >> example; }
-inline void Hello_Asm (std::string& example) { printf ("Input name of Asm file: "); std::cin >> example; }
-inline void Hello_Log (std::string& example) { printf ("Input name of Log file: "); std::cin >> example; }
+inline void Hello_C   (std::string& example) { printf ("Input name of C   file: "); getline (cin, example, '\n'); }
+inline void Hello_Asm (std::string& example) { printf ("Input name of Asm file: "); getline (cin, example, '\n'); }
+inline void Hello_Log (std::string& example) { printf ("Input name of Log file: "); getline (cin, example, '\n'); }
 
 //}==============================================================================
 
@@ -47,7 +47,7 @@ int main (int argc, const char* argv[])
         std::string example;
         Hello_Log (example);
 
-        Log.rename (example);
+        Log.rename (example.c_str ());
 
         TreeGenerate (root, code);
 
