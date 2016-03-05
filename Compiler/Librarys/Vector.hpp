@@ -372,6 +372,22 @@ void Vector <Data_T> :: insert (const Data_T value, const size_t place)
 //===============================================================================
 
 template <typename Data_T>
+void Vector <Data_T> :: erase (const size_t place)
+{
+    OK_VECT
+    assert (place < size_);
+
+    for (size_t i = place + 1; i < size_; i++)
+        data_[i] = data_[i - 1];
+
+    resize (size_ - 1);
+
+    OK_VECT
+}
+
+//===============================================================================
+
+template <typename Data_T>
 void Vector <Data_T> :: fill (const Data_T value)
 {
     OK_VECT

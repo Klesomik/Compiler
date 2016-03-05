@@ -1,7 +1,0 @@
-jmp main;
-label main;
-push 8;
-push 9;
-add;
-pop %2;
-eof;

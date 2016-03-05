@@ -77,7 +77,8 @@ class AstNode
         AstNode& move (AstNode& from);
 
         Token&                  key ();
-        //size_t               size ();
+        size_t                 size ();
+        AstNode*             parent ();
         Vector <AstNode*>& children ();
 
         bool ok   ();
@@ -233,21 +234,19 @@ AstNode& AstNode :: insert (AstNode& from)
 
 //===============================================================================
 
-/*void AstNode :: erase ()
+void AstNode :: erase ()
 {
     OK_ASTNODE
 
+    parent_ -> children ().erase (parent_ -> position (this));
     parent_ = nullptr;
+
     children_.clear ();
-
-    int number = parent_[this];
-
-    if (number != -1) parent_[number] = nullptr;
 
     for (size_t i = 0; i < children_.size (); i++) delete children_[i];
 
     OK_ASTNODE
-}*/
+}
 
 //===============================================================================
 
@@ -379,6 +378,24 @@ Token& AstNode :: key ()
     OK_ASTNODE
 
     return key_;
+}
+
+//===============================================================================
+
+size_t AstNode :: size ()
+{
+    OK_ASTNODE
+
+    return children_.size ();
+}
+
+//===============================================================================
+
+AstNode* AstNode :: parent ()
+{
+    OK_ASTNODE
+
+    return parent_;
 }
 
 //===============================================================================

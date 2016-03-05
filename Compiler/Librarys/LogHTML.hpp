@@ -26,36 +26,36 @@ class LogHTML
         FILE* file_;
 
         const char* name_;
-        const char* mode_;
 
         LogHTML (const LogHTML& from);
 
+        LogHTML& operator = (LogHTML& from);
+
     public:
-        LogHTML (const char* title, const char* mode);
+        LogHTML (const char* title);
         LogHTML ();
 
         ~LogHTML ();
 
-        void open   (); /* const char* title */
-        void close  ();
-        void rename (const char* set_name);
+        void open  (const char* title);
+        void close ();
 
         void setColor     (const char* color);
         void setFontColor (const char* color);
         void setSize      (const size_t size);
         void setStyle     (const char* style);
 
-        void output (char* message, ...);
+        void output (const char* message, ...);
 
         void out ();
 
-        std::string name ();
+        const char* name ();
 };
 
 //}==============================================================================
 
-LogHTML :: LogHTML (const char* title, const char* mode):
-    file_ (fopen (title, mode)),
+LogHTML :: LogHTML (const char* title):
+    file_ (fopen (title, "w")),
     name_ (title)
     {
         assert (file_);
@@ -73,9 +73,17 @@ LogHTML :: ~LogHTML ()
     close ();
 }
 
-void LogHTML :: open  ()
+void LogHTML :: open  (const char* title)
 {
-    if (!file_) file_ = fopen (name_, "w");
+    if (!file_)
+    {
+        file_ = fopen (title, "w");
+        name_ = title;
+
+        assert (file_);
+
+        fprintf (file_, "<pre>\n");
+    }
 }
 
 void LogHTML :: close ()
@@ -85,11 +93,6 @@ void LogHTML :: close ()
         fclose (file_);
                 file_ = nullptr;
     }
-}
-
-void LogHTML :: rename (const char* set_name)
-{
-    name_ = set_name;
 }
 
 void LogHTML :: setColor (const char* color)
@@ -112,12 +115,12 @@ void LogHTML :: setStyle (const char* style)
     fprintf (file_, "<font face = %s>\n", style);
 }
 
-void LogHTML :: output (char* message, ...)
+void LogHTML :: output (const char* message, ...)
 {
     va_list args;
     va_start (args, message);
 
-    for (char* ptr = message; *ptr; ptr++)
+    for (const char* ptr = message; *ptr; ptr++)
     {
         if (*ptr == '%')
         {
@@ -141,7 +144,7 @@ void LogHTML :: out ()
 {
 }
 
-std::string LogHTML :: name ()
+const char* LogHTML :: name ()
 {
     return name_;
 }

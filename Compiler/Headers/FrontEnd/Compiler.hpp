@@ -1,14 +1,16 @@
-#include "..//..//Librarys//LogHTML.hpp"
+//#include "Preprocessor.hpp"
+#include "SyntaxAnalyzer.hpp"
+#include "SemanticAnalyzer.hpp"
 
 class Compiler
 {
-    private:
-        LogHTML Log;
-
     public:
-        Compiler (AstNode& root);
+        Compiler (AstNode& root, Stream <Token>& code);
 };
 
-Compiler :: Compiler (AstNode& root)
+Compiler :: Compiler (AstNode& root, Stream <Token>& code)
 {
+    //Preprocessor          preprocessor (code);
+    SyntaxAnalyzer     syntax_analyzer (root, code);
+    SemanticAnalyzer semantic_analyzer (root);
 }

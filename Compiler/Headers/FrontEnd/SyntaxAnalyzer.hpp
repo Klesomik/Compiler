@@ -56,17 +56,18 @@ class SyntaxAnalyzer
         void Get_Block                         (AstNode& current, Stream <Token>& example);
 };
 
-SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code)
-{
-    while (code.check ())
+SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code):
+    error_ (0)
     {
-        AstNode current ({ None, None });
+        while (code.check ())
+        {
+            AstNode current ({ None, None });
 
-        Get_Block (current, code);
+            Get_Block (current, code);
 
-        root.insert (current);
+            root.insert (current);
+        }
     }
-}
 
 void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
 {

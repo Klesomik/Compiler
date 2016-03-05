@@ -6,7 +6,7 @@ class SemanticAnalyzer
     private:
         Vector <int> data_;
 
-        size_t error;
+        size_t error_;
 
     public:
         SemanticAnalyzer (AstNode& root);
@@ -19,18 +19,19 @@ class SemanticAnalyzer
 };
 
 SemanticAnalyzer :: SemanticAnalyzer (AstNode& root):
-    data_ ()
+    data_  (),
+    error_ (0)
     {
         data_.push_back (0);
 
-        Log.setFontColor ("black");
-        Log.setSize (1200);
-        Log.setColor ("yellow");
+        Inform.log_file.setFontColor ("black");
+        Inform.log_file.setSize (1200);
+        Inform.log_file.setColor ("yellow");
 
         for (size_t i = 0; i < root.children ().size (); i++)
             Detour (root.children ()[i]);
 
-        Log.output ("=== Build finished: %d errors ===\n", error_count);
+        Inform.log_file.output ("=== Build finished: %d errors ===\n", error_);
     }
 
 void SemanticAnalyzer :: Detour (AstNode* current)
@@ -69,9 +70,9 @@ void SemanticAnalyzer :: Check_Declarate (AstNode* current)
     {
         if (data_[i] == deskriptor)
         {
-            Log.output ("Variable var_%d was declared before\n", deskriptor);
+            Inform.log_file.output ("Variable var_%d was declared before\n", deskriptor);
 
-            error_count++;
+            error_++;
         }
     }
 
@@ -92,9 +93,9 @@ void SemanticAnalyzer :: Check_Var (AstNode* current)
 
     if (!first)
     {
-        Log.output ("Variable var_%d wasn't declared before\n", deskriptor);
+        Inform.log_file.output ("Variable var_%d wasn't declared before\n", deskriptor);
 
-        error_count++;
+        error_++;
     }
 }
 
