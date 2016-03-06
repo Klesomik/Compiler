@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cassert>
+#include "Vector.hpp"
 #include "..//Headers//FrontEnd//Token.hpp"
 
 //}==============================================================================
@@ -121,18 +122,31 @@ AstNode :: AstNode (AstNode& from):
 
 AstNode :: ~AstNode ()
 {
+    cout << "AstNode\n";
+
     OK_ASTNODE
 
-    if (parent_) parent_ = nullptr;
+    cout << "1\n";
+
+    if (parent_)
+    {
+        cout << "2.5\n";
+
+        parent_ = nullptr;
+    }
+
+    cout << "2\n";
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        if (children_[i])
-        {
-            delete children_[i];
-                   children_[i] = nullptr;
-        }
+        printf ("i = %d\n", i);
+
+        delete children_[i];
     }
+
+    cout << "3\n";
+
+    children_.resize (0);
 }
 
 //===============================================================================
@@ -238,12 +252,24 @@ void AstNode :: erase ()
 {
     OK_ASTNODE
 
-    parent_ -> children ().erase (parent_ -> position (this));
-    parent_ = nullptr;
+    cout << "Ok\n";
+
+    for (size_t i = 0; i < children_.size (); i++)
+    {
+        printf ("===%d===\n", i);
+
+        delete children_[i];
+               children_[i] = nullptr;
+
+        printf ("=======\n");
+    }
+
+    cout << "Ok\n";
 
     children_.clear ();
 
-    for (size_t i = 0; i < children_.size (); i++) delete children_[i];
+    parent_ -> children ().erase (parent_ -> position (this));
+    parent_ = nullptr;
 
     OK_ASTNODE
 }
@@ -268,8 +294,13 @@ void AstNode :: erase ()
 AstNode& AstNode :: move (AstNode& from)
 {
     OK_ASTNODE
+    assert (!parent_);
 
-    for (size_t i = 0; i < children_.size (); i++) delete children_[i];
+    for (size_t i = 0; i < children_.size (); i++)
+    {
+        delete children_[i];
+               children_[i] = nullptr;
+    }
 
     children_.resize (from.children_.size ());
 
@@ -278,8 +309,8 @@ AstNode& AstNode :: move (AstNode& from)
     for (size_t i = 0; i < children_.size (); i++)
     {
         children_[i] = from.children_[i];
-                       from.children_[i] -> parent_ = this;
-                       from.children_[i] = nullptr;
+        children_[i] -> parent_ = this;
+        from.children_[i] = nullptr;
     }
 
     from.children_.clear ();
@@ -306,9 +337,9 @@ bool AstNode :: ok ()
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        if (children_[i] && (children_[i] -> parent_ != this))
+        if (children_[i] -> parent_ != this)
         {
-            DO_ASTNODE ({ throw "left_ -> parent_ != this"; },
+            DO_ASTNODE ({ throw "children_[i] -> parent_ != this"; },
                         { return false; })
         }
     }
@@ -338,8 +369,10 @@ void AstNode :: dump (FILE* out /* = stdout */)
 
     fprintf (out, "\n====================DUMP====================\n");
 
-    fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
     std::cout << "[" << key_ << "];\n";
+    std::cout << "size = " << children_.size () << "\n";
+
+    //fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
 
     if (parent_)
     {

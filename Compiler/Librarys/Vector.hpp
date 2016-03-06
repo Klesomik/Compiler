@@ -189,6 +189,8 @@ Vector <Data_T> :: Vector (const size_t mySize, const Data_T value):
 template <typename Data_T>
 Vector <Data_T> :: ~Vector ()
 {
+    std::cout << "Vector\n";
+
     if (data_ != nullptr)
     {
         delete[] data_;

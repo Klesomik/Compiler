@@ -8,8 +8,19 @@ class Optimizer
 
 Optimizer:: Optimizer (AstNode& root)
 {
-    for (size_t i = 0; i < root.children ().size (); i++)
-        detour (root.children ()[i]);
+    try
+    {
+        for (size_t i = 0; i < root.children ().size (); i++)
+            detour (root.children ()[i]);
+    }
+    catch (const char* message)
+    {
+        printf ("%s\n", message);
+    }
+    catch (char const* message)
+    {
+        printf ("%s\n", message);
+    }
 }
 
 int Optimizer:: detour (AstNode* current)
@@ -26,12 +37,14 @@ int Optimizer:: detour (AstNode* current)
 
         case   Add:
         {
-            int answer = 0;
+            int answer = current -> children ()[0] -> key ().value;
 
-            for (size_t i = 0; i < current -> children ().size (); i++)
+            for (size_t i = 1; i < current -> size (); i++)
                 answer += detour (current -> children ()[i]);
 
-            current -> parent () -> insert (answer);
+            AstNode tmp ({ Digit, answer });
+            current -> parent () -> insert (tmp);
+
             current -> erase ();
 
             break;
@@ -39,12 +52,14 @@ int Optimizer:: detour (AstNode* current)
 
         case   Sub:
         {
-            int answer = 0;
+            int answer = current -> children ()[0] -> key ().value;
 
-            for (size_t i = 0; i < current -> children ().size (); i++)
+            for (size_t i = 1; i < current -> size (); i++)
                 answer -= detour (current -> children ()[i]);
 
-            current -> parent () -> insert (answer);
+            AstNode tmp ({ Digit, answer });
+            current -> parent () -> insert (tmp);
+
             current -> erase ();
 
             break;
@@ -52,25 +67,31 @@ int Optimizer:: detour (AstNode* current)
 
         case   Mul:
         {
-            int answer = 0;
+            int answer = current -> children ()[0] -> key ().value;
 
-            for (size_t i = 0; i < current -> children ().size (); i++)
+            for (size_t i = 1; i < current -> size (); i++)
                 answer *= detour (current -> children ()[i]);
 
-            current -> parent () -> insert (answer);
+            AstNode tmp ({ Digit, answer });
+            current -> parent () -> insert (tmp);
+
             current -> erase ();
+
+            current -> parent () -> dump ();
 
             break;
         }
 
         case   Div:
         {
-            int answer = 0;
+            int answer = current -> children ()[0] -> key ().value;
 
-            for (size_t i = 0; i < current -> children ().size (); i++)
+            for (size_t i = 1; i < current -> size (); i++)
                 answer /= detour (current -> children ()[i]);
 
-            current -> parent () -> insert (answer);
+            AstNode tmp ({ Digit, answer });
+            current -> parent () -> insert (tmp);
+
             current -> erase ();
 
             break;
@@ -78,12 +99,14 @@ int Optimizer:: detour (AstNode* current)
 
         case   Mod:
         {
-            int answer = 0;
+            int answer = current -> children ()[0] -> key ().value;
 
-            for (size_t i = 0; i < current -> children ().size (); i++)
+            for (size_t i = 1; i < current -> size (); i++)
                 answer %= detour (current -> children ()[i]);
 
-            current -> parent () -> insert (answer);
+            AstNode tmp ({ Digit, answer });
+            current -> parent () -> insert (tmp);
+
             current -> erase ();
 
             break;
@@ -91,8 +114,10 @@ int Optimizer:: detour (AstNode* current)
 
         default:
         {
-            for (size_t i = 0; i < current -> children ().size (); i++)
+            for (size_t i = 0; i < current -> size (); i++)
                 detour (current -> children ()[i]);
         }
     }
+
+    return 0;
 }

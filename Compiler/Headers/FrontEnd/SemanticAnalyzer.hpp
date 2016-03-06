@@ -59,7 +59,7 @@ void SemanticAnalyzer :: Check_None (AstNode* current)
     for (size_t i = 0; i < current -> children ().size (); i++)
         Detour (current -> children ()[i]);
 
-    while (data_.back () != 0) data_.pop ();
+    while (data_.back () != 0) data_.pop (); //pop_back
 }
 
 void SemanticAnalyzer :: Check_Declarate (AstNode* current)

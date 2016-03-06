@@ -29,8 +29,6 @@ int main (int argc, const char* argv[])
 
         LexicialAnalyzer lexicial_analyzer (code);
 
-        code.dump ();
-
         AstNode root ({ None, None });
 
         Compiler compiler (root, code);
@@ -41,7 +39,7 @@ int main (int argc, const char* argv[])
 
         DotDump (root, "EX1.dot");
     }
-    catch (std::exception)
+    catch (std::exception& message)
     {
     }
     catch (const char* message)
