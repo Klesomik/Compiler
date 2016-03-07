@@ -27,95 +27,117 @@ int Optimizer:: detour (AstNode* current)
 {
     switch (current -> key ().type)
     {
-        case  None:
+        case Digit:
         {
-            for (size_t i = 0; i < current -> children ().size (); i++)
-                detour (current -> children ()[i]);
-        }
-
-        case Digit: { return current -> key ().value; }
-
-        case   Add:
-        {
-            int answer = current -> children ()[0] -> key ().value;
-
-            for (size_t i = 1; i < current -> size (); i++)
-                answer += detour (current -> children ()[i]);
-
-            AstNode tmp ({ Digit, answer });
-            current -> parent () -> insert (tmp);
+            int val = current -> key ().value;
 
             current -> erase ();
 
-            break;
+            return val;
+        }
+
+        case   Add:
+        {
+            int answer = 0;
+
+            for (size_t i = 0; i < current -> size (); i++)
+            {
+                cout << "answer = " << answer << "\n";
+
+                answer += detour (current -> children ()[i]);
+            }
+
+            cout << "answer = " << answer << "\n";
+
+            if (current -> size () == 0)
+            {
+                AstNode tmp ({ Digit, answer });
+                current -> parent () -> insert (tmp);
+
+                current -> erase ();
+            }
+
+            return answer;
         }
 
         case   Sub:
         {
-            int answer = current -> children ()[0] -> key ().value;
+            int answer = 0;
 
-            for (size_t i = 1; i < current -> size (); i++)
+            for (size_t i = 0; i < current -> size (); i++)
                 answer -= detour (current -> children ()[i]);
 
-            AstNode tmp ({ Digit, answer });
-            current -> parent () -> insert (tmp);
+            if (current -> size () == 0)
+            {
+                AstNode tmp ({ Digit, answer });
+                current -> parent () -> insert (tmp);
 
-            current -> erase ();
+                current -> erase ();
+            }
 
-            break;
+            return answer;
         }
 
         case   Mul:
         {
-            int answer = current -> children ()[0] -> key ().value;
+            int answer = 0;
 
-            for (size_t i = 1; i < current -> size (); i++)
+            for (size_t i = 0; i < current -> size (); i++)
                 answer *= detour (current -> children ()[i]);
 
-            AstNode tmp ({ Digit, answer });
-            current -> parent () -> insert (tmp);
+            if (current -> size () == 0)
+            {
+                AstNode tmp ({ Digit, answer });
+                current -> parent () -> insert (tmp);
 
-            current -> erase ();
+                current -> erase ();
+            }
 
-            current -> parent () -> dump ();
-
-            break;
+            return answer;
         }
 
         case   Div:
         {
-            int answer = current -> children ()[0] -> key ().value;
+            int answer = 0;
 
-            for (size_t i = 1; i < current -> size (); i++)
+            for (size_t i = 0; i < current -> size (); i++)
                 answer /= detour (current -> children ()[i]);
 
-            AstNode tmp ({ Digit, answer });
-            current -> parent () -> insert (tmp);
+            if (current -> size () == 0)
+            {
+                AstNode tmp ({ Digit, answer });
+                current -> parent () -> insert (tmp);
 
-            current -> erase ();
+                current -> erase ();
+            }
 
-            break;
+            return answer;
         }
 
         case   Mod:
         {
-            int answer = current -> children ()[0] -> key ().value;
+            int answer = 0;
 
-            for (size_t i = 1; i < current -> size (); i++)
+            for (size_t i = 0; i < current -> size (); i++)
                 answer %= detour (current -> children ()[i]);
 
-            AstNode tmp ({ Digit, answer });
-            current -> parent () -> insert (tmp);
+            if (current -> size () == 0)
+            {
+                AstNode tmp ({ Digit, answer });
+                current -> parent () -> insert (tmp);
 
-            current -> erase ();
+                current -> erase ();
+            }
 
-            break;
+            return answer;
         }
 
         default:
         {
             for (size_t i = 0; i < current -> size (); i++)
                 detour (current -> children ()[i]);
+
+            break;
         }
     }
 

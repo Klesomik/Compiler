@@ -56,8 +56,6 @@ struct Token
     Token (const int setType, const int setValue);
     Token (const char* setName);
     Token (const int setType, const char* setName);
-
-    //std::ostream& operator << (std::ostream& os);
 };
 
 //}==============================================================================

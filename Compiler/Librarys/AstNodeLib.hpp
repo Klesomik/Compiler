@@ -7,7 +7,6 @@
 #include <cstring>
 #include <iostream>
 #include "Dotter.h"
-#include "..//Headers//FrontEnd//LexicialAnalyzer.hpp"
 
 //}==============================================================================
 
@@ -97,7 +96,7 @@ string BtInf (const Token value)
 
         switch (value.type)
         {
-            case Digit: { sprintf (tmp, "%d\n",     value.value); break; }
+            case Digit: { sprintf (tmp, "%d\n", value.value); break; }
             case   Var: { sprintf (tmp, "var_%d\n", value.value); break; }
 
             default: break;

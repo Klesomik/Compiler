@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <iostream>
 #include <cassert>
-#include "Vector.hpp"
+#include <vector>
 #include "..//Headers//FrontEnd//Token.hpp"
 
 //}==============================================================================
@@ -52,13 +52,13 @@ class AstNode
 
         AstNode* parent_;
 
-        Vector <AstNode*> children_;
+        std::vector <AstNode*> children_;
 
         AstNode (AstNode& from);
 
         AstNode& operator =  (AstNode& from);
 
-        int position (AstNode* child); //[]
+        int position (AstNode* child);
 
     public:
         AstNode ();
@@ -66,7 +66,7 @@ class AstNode
 
         ~AstNode ();
 
-        /*const*/AstNode* operator [] (const size_t child);
+        AstNode* operator [] (const size_t child);
 
         AstNode& insert ();
         AstNode& insert (const Token& value);
@@ -74,13 +74,13 @@ class AstNode
 
         void erase ();
 
-        AstNode& copy (const AstNode& from); //old
+        AstNode& copy (const AstNode& from);
         AstNode& move (AstNode& from);
 
         Token&                  key ();
         size_t                 size ();
         AstNode*             parent ();
-        Vector <AstNode*>& children ();
+        std::vector <AstNode*>& children ();
 
         bool ok   ();
         void dump (FILE* out = stdout);
@@ -122,31 +122,21 @@ AstNode :: AstNode (AstNode& from):
 
 AstNode :: ~AstNode ()
 {
-    cout << "AstNode\n";
-
     OK_ASTNODE
 
-    cout << "1\n";
-
-    if (parent_)
-    {
-        cout << "2.5\n";
-
-        parent_ = nullptr;
-    }
-
-    cout << "2\n";
+    if (parent_) parent_ = nullptr;
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        printf ("i = %d\n", i);
-
         delete children_[i];
+               children_[i] = nullptr;
+               children_.erase (children_.begin () + i);
     }
 
-    cout << "3\n";
-
     children_.resize (0);
+    children_.clear ();
+
+    OK_ASTNODE
 }
 
 //===============================================================================
@@ -171,7 +161,7 @@ AstNode& AstNode :: operator = (AstNode& from)
 
 //===============================================================================
 
-/*const*/AstNode* AstNode :: operator [] (const size_t child)
+AstNode* AstNode :: operator [] (const size_t child)
 {
     OK_ASTNODE
 
@@ -208,7 +198,7 @@ AstNode& AstNode :: insert  ()
 {
     OK_ASTNODE
 
-    AstNode from; //AstNode from = AstNode ();
+    AstNode from;
 
     OK_ASTNODE
 
@@ -252,24 +242,13 @@ void AstNode :: erase ()
 {
     OK_ASTNODE
 
-    cout << "Ok\n";
+    int i = parent_ -> position (this);
 
-    for (size_t i = 0; i < children_.size (); i++)
-    {
-        printf ("===%d===\n", i);
+    parent_ -> children ().erase (parent_ -> children ().begin () + i);
 
-        delete children_[i];
-               children_[i] = nullptr;
-
-        printf ("=======\n");
-    }
-
-    cout << "Ok\n";
-
-    children_.clear ();
-
-    parent_ -> children ().erase (parent_ -> position (this));
     parent_ = nullptr;
+
+    this -> ~AstNode ();
 
     OK_ASTNODE
 }
@@ -294,7 +273,12 @@ void AstNode :: erase ()
 AstNode& AstNode :: move (AstNode& from)
 {
     OK_ASTNODE
-    assert (!parent_);
+
+    if (parent_)
+    {
+        DO_ASTNODE ({ throw "parent_"; },
+                    { assert (false);  })
+    }
 
     for (size_t i = 0; i < children_.size (); i++)
     {
@@ -351,57 +335,21 @@ bool AstNode :: ok ()
 
 void AstNode :: dump (FILE* out /* = stdout */)
 {
-    int mode = -1;
-
-    #if defined (DEBUG_ASTNODE)
-
-        #undef DEBUG_ASTNODE
-
-        mode = 0;
-
-    #elif defined (RELEASE_ASTNODE)
-
-        #undef RELEASE_ASTNODE
-
-        mode = 1;
-
-    #endif
-
     fprintf (out, "\n====================DUMP====================\n");
 
+    fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
+
     std::cout << "[" << key_ << "];\n";
-    std::cout << "size = " << children_.size () << "\n";
 
-    //fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
-
-    if (parent_)
-    {
-        fprintf (out, "   parent = [%p]", parent_);
-        std::cout << "[" << parent_ -> key_ << "];\n";
-    }
-
-    else
-    {
-        fprintf (out, "   parent = [%p];\n", parent_);
-    }
+    fprintf (out, "    parent = [%p];\n", parent_);
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        fprintf (out, "   child[%d] = [%p]", i, children_[i]);
-        std::cout << "[" << children_[i] -> key_ << "];\n";
+        fprintf (out, "    child[%d] = [%p]", i, children_[i]);
+        std::cout << "[" << children_[i] -> key () << "]\n";
     }
 
     fprintf (out, "============================================\n\n");
-
-    if (mode)
-    {
-        #define RELEASE_ASTNODE
-    }
-
-    else
-    {
-        #define DEBUG_ASTNODE
-    }
 }
 
 //===============================================================================
@@ -433,11 +381,24 @@ AstNode* AstNode :: parent ()
 
 //===============================================================================
 
-Vector <AstNode*>& AstNode :: children ()
+std::vector <AstNode*>& AstNode :: children ()
 {
     OK_ASTNODE
 
     return children_;
+}
+
+bool operator == (const AstNode& a, const AstNode& b);
+bool operator != (const AstNode& a, const AstNode& b);
+
+bool operator == (const AstNode& a, const AstNode& b)
+{
+    return (&a == &b);
+}
+
+bool operator != (const AstNode& a, const AstNode& b)
+{
+    return !(&a == &b);
 }
 
 #include "AstNodeLib.hpp"
