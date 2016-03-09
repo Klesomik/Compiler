@@ -242,11 +242,14 @@ void AstNode :: erase ()
 {
     OK_ASTNODE
 
-    int i = parent_ -> position (this);
+    if (parent_)
+    {
+        int i = parent_ -> position (this);
 
-    parent_ -> children ().erase (parent_ -> children ().begin () + i);
+        parent_ -> children ().erase (parent_ -> children ().begin () + i);
 
-    parent_ = nullptr;
+        parent_ = nullptr;
+    }
 
     this -> ~AstNode ();
 

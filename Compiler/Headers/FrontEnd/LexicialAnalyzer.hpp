@@ -15,33 +15,13 @@ using namespace std;
 class LexicialAnalyzer
 {
     private:
-        map <string, int> operators_ = { {  "{",        Begin },
-                                         {  "}",          End },
-                                         {  ";",   EndOfToken },
-                                         {  "(",  OpenBracket },
-                                         {  ")", CloseBracket },
-                                         {  "*",          Mul },
-                                         {  "/",          Div },
-                                         {  "%",          Mod },
-                                         {  "+",          Add },
-                                         {  "-",          Sub },
-                                         { "==",        Equal },
-                                         { "!=",     NotEqual },
-                                         { "&&",          And },
-                                         { "||",           Or },
-                                         {  "=",   Assignment },
-                                         {  "<",         Less },
-                                         { "<=",    LessEqual },
-                                         {  ">",         More },
-                                         { ">=",    MoreEqual } };
+        #define DEER(id, name, word) { word, id }
 
-        map <string, int> keyWords_ = { {   "if",     If },
-                                        {  "else",  Else },
-                                        { "while", While },
-                                        {   "int",   Int } };
+        map <string, int> commands_ = {
+                                          #include "CList.hpp"
+                                      }
 
-        map <string, int> preProc_ = { { "#include", Include },
-                                      {  "#define",  Define } };
+        #undef DEER(id, name, word)
 
         map <string, int> names_;
 
@@ -66,9 +46,29 @@ LexicialAnalyzer :: LexicialAnalyzer (Stream <Token>& code):
         Parser (example, code);
     }
 
+bool LexicialAnalyzer :: IsSpace (const char symbol)
+{
+    return (iscntrl (symbol) || ' ');
+}
+
+bool LexicialAnalyzer :: IsDigit (const char symbol)
+{
+    return isdigit (symbol);
+}
+
+bool LexicialAnalyzer :: IsAlpha (const char symbol)
+{
+    return isalpha (symbol);
+}
+
+bool LexicialAnalyzer :: IsPunct (const char symbol)
+{
+    return ispunct (symbol);
+}
+
 void LexicialAnalyzer :: Skip (Stream <char>& example)
 {
-    while (example.check () && isspace (example[example.place ()]))
+    while (example.check () && IsSpace (example[example.place ()]))
     {
         char digit = 0;
         example >> digit;
@@ -78,7 +78,7 @@ void LexicialAnalyzer :: Skip (Stream <char>& example)
 void LexicialAnalyzer :: Number (Stream <char>& example, Stream <Token>& code)
 {
     int value = 0;
-    while (example.check () && isdigit (example[example.place ()]))
+    while (example.check () && IsDigit (example[example.place ()]))
     {
         char digit = 0;
         example >> digit;
@@ -100,7 +100,7 @@ void LexicialAnalyzer :: Word (Stream <char>& example, Stream <Token>& code)
         value.push_back (symbol);
     }
 
-    int hash_value = keyWords_[value];
+    int hash_value = commands_[value];
 
     if (hash_value) code.push_back ({ hash_value, 0 });
 
@@ -139,16 +139,16 @@ void LexicialAnalyzer :: Parser (Stream <char>& example, Stream <Token>& code)
 {
     while (example.check ())
     {
-        if (isspace (example[example.place ()])) //iscntrl
+        if (isspace (example[example.place ()]))
             Skip (example);
 
         else if (isdigit (example[example.place ()]))
             Number (example, code);
 
-        else if (isalpha (example[example.place ()]))
+        else if (IsAlpha (example[example.place ()]))
             Word (example, code);
 
-        else if (ispunct (example[example.place ()]))
+        else if (IsPunct (example[example.place ()]))
             Operator (example, code);
 
         else

@@ -33,7 +33,7 @@ int main (int argc, const char* argv[])
 
         Compiler compiler (root, code);
 
-        Optimizer optimizer (root);
+        //Optimizer optimizer (root);
 
         //AsmGenerate (root);
 

@@ -25,9 +25,9 @@
 // Get_Less_LessEqual_More_MoreEqual ::= Get_Add_Sub | Get_Add_Sub < Get_Add_Sub | Get_Add_Sub <= Get_Add_Sub| Get_Add_Sub > Get_Add_Sub | Get_Add_Sub >= Get_Add_Sub
 // Get_Add_Sub                       ::= Get_Mul_Div_Mod | Get_Mul_Div_Mod + Get_Mul_Div_Mod | Get_Mul_Div_Mod - Get_Mul_Div_Mod
 // Get_Mul_Div_Mod                   ::= Get_Value | Get_Value * Get_Value | Get_Value / Get_Value | Get_Value % Get_Value
-// Get_Value                         ::= +Get_Value | -Get_Value | (Get_Assignment) | Get_Variable | Get_Number
+// Get_Value                         ::= +Get_Value | -Get_Value | (Get_Assignment) | Get_Name | Get_Number
 // Get_Number                        ::= ['0'-'9']
-// Get_Variable                      ::= ['a'-'z']
+// Get_Name                      ::= ['a'-'z']
 
 //}
 
@@ -39,8 +39,10 @@ class SyntaxAnalyzer
     public:
         SyntaxAnalyzer (AstNode& root, Stream <Token>& code);
 
+        bool IsLexem (const int token);
+
         void Get_Number                        (AstNode& current, Stream <Token>& example);
-        void Get_Variable                      (AstNode& current, Stream <Token>& example);
+        void Get_Name                      (AstNode& current, Stream <Token>& example);
         void Get_Value                         (AstNode& current, Stream <Token>& example);
         void Get_Mul_Div_Mod                   (AstNode& current, Stream <Token>& example);
         void Get_Add_Sub                       (AstNode& current, Stream <Token>& example);
@@ -69,6 +71,11 @@ SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code):
         }
     }
 
+bool SyntaxAnalyzer :: IsLexem (Stream <Token>& example, const int token)
+{
+    return (example[example.place ()].type == token);
+}
+
 void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
@@ -84,7 +91,7 @@ void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
     if (!first) THROW ("expected integer");
 }
 
-void SyntaxAnalyzer :: Get_Variable (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
     if (example.check () && example[example.place ()].type == Var)
@@ -130,8 +137,10 @@ void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
 
     else if (example.check () && example[example.place ()].type == Var)
     {
-        Get_Variable (value, example);
+        Get_Name (value, example);
     }
+
+    else if (Get_Function ());
 
     else
     {
@@ -331,7 +340,7 @@ void SyntaxAnalyzer :: Get_Assignment (AstNode& current, Stream <Token>& example
         while (example.check_next ({ Token (Var), Token (Assignment) }))
         {
             AstNode value;
-            Get_Variable (value, example);
+            Get_Name (value, example);
 
             example++;
 
@@ -411,7 +420,7 @@ void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example)
 
     AstNode operation;
 
-    Get_Variable (operation, example);
+    Get_Name (operation, example);
 
     current.insert (operation);
 
@@ -503,6 +512,75 @@ void SyntaxAnalyzer :: Get_Block (AstNode& current, Stream <Token>& example)
     }
 
     else throw "expected '{'";
+}
+
+void SyntaxAnalyzer :: Get_Params (AstNode& current, Stream <Token>& example)
+{
+    do
+    {
+        if (IsLexem (example, Int))
+        {
+            AstNode operation ({ Declaration });
+
+            operation.insert ({ Int });
+
+            AstNode value;
+            Get_Name (value, example);
+
+            operation.insert (value);
+
+            current.insert (operation);
+        }
+    }
+    while (IsLexem (example, Comma))
+}
+
+void SyntaxAnalyzer :: Get_Code (AstNode& current, Stream <Token>& example)
+{
+    AstNode operation ({ Declaration });
+
+    if (IsLexem (example, Int))
+    {
+        operation.insert ({ Int });
+
+        example++;
+
+        AstNode value;
+
+        Get_Name (value, example);
+
+        operation.insert (value);
+
+        if (IsLexem (example, OpenBracket))
+        {
+            AstNode params;
+
+            Get_Params (params, example);
+
+            operation.insert (params);
+
+            AstNode code;
+
+            Get_Block (code, example);
+
+            operation.insert (code);
+        }
+
+        else if (IsLexem (example, Assignment))
+        {
+            example++;
+
+            AstNode var;
+
+            Get_Assignment (var, example);
+
+            example++;
+
+            current.insert (var);
+        }
+    }
+
+    else if (IsLexem (example, Void))
 }
 
 #endif

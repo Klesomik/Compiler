@@ -3,39 +3,14 @@
 
 //{==============================================================================
 
+#define DEER(id, name, word) name = id,
+
 enum Lexemes
 {
-    Digit = 0,
-    Var,
-    Equal,
-    NotEqual,
-    And,
-    Or,
-    LessEqual,
-    MoreEqual,
-    If,
-    Else,
-    While,
-    Int,
-    Declaration,
-    Include,
-    Define,
-    None,
-
-    OpenBracket  = '(',
-    CloseBracket = ')',
-    Mul          = '*',
-    Div          = '/',
-    Mod          = '%',
-    Add          = '+',
-    Sub          = '-',
-    Assignment   = '=',
-    Less         = '<',
-    More         = '>',
-    Begin        = '{',
-    End          = '}',
-    EndOfToken   = ';'
+    #include "CList.hpp"
 };
+
+#undef DEER(id, name, word)
 
 //}==============================================================================
 
@@ -44,6 +19,7 @@ enum Lexemes
 struct Token
 {
     int type;
+    int line;
 
     union
     {
@@ -62,26 +38,31 @@ struct Token
 
 Token :: Token ():
     type  (),
+    line  (),
     value ()
     {}
 
 Token :: Token (int setType):
     type  (setType),
+    line  (),
     value (0)
     {}
 
 Token :: Token (int setType, int setValue):
     type  (setType),
+    line  (),
     value (setValue)
     {}
 
 Token :: Token (const char* setName):
     type (),
+    line (),
     name (setName)
     {}
 
 Token :: Token (const int setType, const char* setName):
     type (setType),
+    line (),
     name (setName)
     {}
 
@@ -103,25 +84,20 @@ std::ostream& operator << (std::ostream& os, Token const &m)
 {
     char tmp[9] = "";
 
-    switch (m.type)
+    if (m.type == Digit) sprintf (tmp, "%d", m.value);
+
+    else if (m.type == Var) sprintf (tmp, "var_%d", m.value);
+
+    else
     {
-        case       Digit: { sprintf (tmp, "%d",     m.value); break; }
+        #define DEER(id, name, word) case id: { sprintf (tmp, word); break; }
 
-        case         Var: { sprintf (tmp, "var_%d", m.value); break; }
-        case       Equal: { sprintf (tmp, "==");              break; }
-        case    NotEqual: { sprintf (tmp, "!=");              break; }
-        case         And: { sprintf (tmp, "&&");              break; }
-        case          Or: { sprintf (tmp, "||");              break; }
-        case   LessEqual: { sprintf (tmp, "<=");              break; }
-        case   MoreEqual: { sprintf (tmp, ">=");              break; }
-        case          If: { sprintf (tmp, "if");              break; }
-        case        Else: { sprintf (tmp, "else");            break; }
-        case       While: { sprintf (tmp, "while");           break; }
-        case         Int: { sprintf (tmp, "int");             break; }
-        case Declaration: { sprintf (tmp, "declaration");     break; }
-        case        None: { sprintf (tmp, "none");            break; }
+        switch (m.type)
+        {
+            #include "CList.hpp"
+        }
 
-        default:          { sprintf (tmp, "%c", m.type);      break; }
+        #undef DEER(id, name, word)
     }
 
     return os << tmp;
