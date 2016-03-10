@@ -18,53 +18,39 @@ enum Lexemes
 
 struct Token
 {
-    int type;
-    int line;
-
-    union
-    {
-        int        name_id;
-        int        value;
-        const char* name;
-    };
+    int  type;
+    int value;
+    int  line;
 
     Token ();
     Token (const int setType);
     Token (const int setType, const int setValue);
-    Token (const char* setName);
-    Token (const int setType, const char* setName);
 };
 
 //}==============================================================================
 
 Token :: Token ():
     type  (),
-    line  (),
-    value ()
+    value (),
+    line  ()
     {}
 
-Token :: Token (int setType):
+Token :: Token (const int setType):
     type  (setType),
-    line  (),
-    value (0)
+    value (0),
+    line  ()
     {}
 
-Token :: Token (int setType, int setValue):
+Token :: Token (const int setType, const int setValue):
     type  (setType),
-    line  (),
-    value (setValue)
+    value (setValue),
+    line  ()
     {}
 
-Token :: Token (const char* setName):
-    type (),
-    line (),
-    name (setName)
-    {}
-
-Token :: Token (const int setType, const char* setName):
-    type (setType),
-    line (),
-    name (setName)
+Token :: Token (const int setType, const int setValue, const int setLine):
+    type  (setType),
+    value (setValue),
+    line  (setLine)
     {}
 
 bool operator == (const Token& a, const Token& b);
