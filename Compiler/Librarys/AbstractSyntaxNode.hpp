@@ -60,6 +60,8 @@ class AstNode
 
         int position (AstNode* child);
 
+        void clear ();
+
     public:
         AstNode ();
         AstNode (const Token& value);
@@ -98,7 +100,7 @@ AstNode :: AstNode ():
 
 AstNode :: AstNode (const Token& value):
     key_      (value),
-    parent_   (nullptr),
+    parent_   (nulcommands_lptr),
     children_ ()
     { OK_ASTNODE }
 
@@ -124,17 +126,7 @@ AstNode :: ~AstNode ()
 {
     OK_ASTNODE
 
-    if (parent_) parent_ = nullptr;
-
-    for (size_t i = 0; i < children_.size (); i++)
-    {
-        delete children_[i];
-               children_[i] = nullptr;
-               children_.erase (children_.begin () + i);
-    }
-
-    children_.resize (0);
-    children_.clear ();
+    clear ();
 
     OK_ASTNODE
 }
@@ -251,7 +243,7 @@ void AstNode :: erase ()
         parent_ = nullptr;
     }
 
-    this -> ~AstNode ();
+    clear ();
 
     OK_ASTNODE
 }
@@ -389,6 +381,25 @@ std::vector <AstNode*>& AstNode :: children ()
     OK_ASTNODE
 
     return children_;
+}
+
+void clear ()
+{
+    OK_ASTNODE
+
+    if (parent_) parent_ = nullptr;
+
+    for (size_t i = 0; i < children_.size (); i++)
+    {
+        delete children_[i];
+               children_[i] = nullptr;
+               children_.erase (children_.begin () + i);
+    }
+
+    children_.resize (0);
+    children_.clear ();
+
+    OK_ASTNODE
 }
 
 bool operator == (const AstNode& a, const AstNode& b);

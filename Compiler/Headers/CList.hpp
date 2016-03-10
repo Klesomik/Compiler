@@ -1,4 +1,6 @@
-//DEER(id, name, word)
+//DEER(id, name, read, write)
+//DEER_DEFAULT(id, name, word) DEER(id, name, printf (word), fscanf (word))
+
 
 DEER ( 0,        Digit,         "")
 DEER ( 1,          Var,         "")
@@ -22,7 +24,7 @@ DEER (18,  OpenBracket,        "(")
 DEER (19, CloseBracket,        ")")
 DEER (20,          Mul,        "*")
 DEER (21,          Div,        "/")
-DEER (22,          Mod,        "%")
+DEER (22,          Mod,        "\\%")
 DEER (23,          Add,        "+")
 DEER (24,          Sub,        "-")
 DEER (25,   Assingment,        "=")

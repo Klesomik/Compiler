@@ -1,5 +1,17 @@
 #pragma once
 
+FILE* asm_file;
+
+void Source :: Hello_Asm (std::string& example)
+{
+    printf ("Input name of Asm file: ");
+
+    getline (std::cin, example, '\n');
+}
+
+fclose (asm_file);
+        asm_file = nullptr;
+
 //{==============================================================================
 
 void CreateAsm                (AstNode* current, FILE* write);

@@ -1,83 +1,77 @@
 #ifndef DeerLib_hpp
     #define DeerLib_hpp
 
-#include "..//..//Librarys//LogHTML.hpp"
+//{==============================================================================
 
-class Source
+#include "..//Librarys//LogHTML.hpp"
+
+//}==============================================================================
+
+//{==============================================================================
+
+template <typename Data_T>
+bool check (Stream <Data_T>& example);
+
+template <typename Data_T>
+size_t avaliable (Stream <Data_T>& example);
+
+template <typename Data_T>
+bool check_next (Stream <Data_T>& example, const std::initializer_list <Data_T>& next);
+
+template <typename Data_T>
+bool compare (Stream <Data_T>& example, const Data_T& element, const size_t shift);
+
+//}==============================================================================
+
+//===============================================================================
+
+template <typename Data_T>
+bool check (Stream <Data_T>& example)
 {
-    private:
-        Source (const Source& from);
+    return (example.place () < example.size ());
+}
 
-        Source& operator = (Source& from);
+//===============================================================================
 
-    public:
-        FILE*   c_file;
-        FILE* asm_file;
+template <typename Data_T>
+size_t avaliable (Stream <Data_T>& example)
+{
+    return (example.size () - example.place ());
+}
 
-        LogHTML log_file;
+//===============================================================================
 
-        Source  ();
-        ~Source ();
+template <typename Data_T>
+bool check_next (Stream <Data_T>& example, const std::initializer_list <Data_T>& next)
+{
+    return check_next (next.begin (), next.size ());
+}
 
-        void Hello_C   (std::string& example);
-        void Hello_Asm (std::string& example);
-        void Hello_Log (std::string& example);
-};
+//===============================================================================
 
-Source :: Source ():
-    c_file   (nullptr),
-    asm_file (nullptr),
-    log_file ()
+template <typename Data_T>
+bool check_next (Stream <Data_T>& example, const Data_T next[], const size_t len)
+{
+    if (avaliable (example) < len) return false;
+
+    for (size_t i = 0; i < len; i++)
     {
-        std::string   c_name;
-        std::string asm_name;
-        std::string log_name;
-
-        Hello_C     (c_name);
-        Hello_Asm (asm_name);
-        Hello_Log (log_name);
-
-        c_file = fopen (c_name.c_str (), "r");
-        assert (c_file);
-
-        asm_file = fopen (asm_name.c_str (), "w");
-        assert (asm_file);
-
-        log_file.open (log_name.c_str ());
+        if (example[example.place () + i] != next[i]) return false;
     }
 
-Source :: ~Source ()
-{
-    fclose (c_file);
-            c_file = nullptr;
-
-    fclose (asm_file);
-            asm_file = nullptr;
-
-    log_file.close ();
+    return true;
 }
 
-void Source :: Hello_C (std::string& example)
+//===============================================================================
+
+template <typename Data_T>
+bool compare (Stream <Data_T>& example, const Data_T& element, const size_t shift)
 {
-    printf ("Input name of C   file: ");
+    if (shift < avaliable (example)) return false;
 
-    getline (cin, example, '\n');
+    if (example[example.place () + shift] != element) return false;
+
+    return true;
 }
-
-void Source :: Hello_Asm (std::string& example)
-{
-    printf ("Input name of Asm file: ");
-
-    getline (cin, example, '\n');
-}
-
-void Source :: Hello_Log (std::string& example)
-{
-    printf ("Input name of Log file: ");
-
-    getline (cin, example, '\n');
-}
-
-Source Inform;
 
 #endif

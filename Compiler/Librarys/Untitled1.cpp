@@ -1,9 +1,6 @@
-#include "AbstractSyntaxTree.hpp"
-#include <set>
+#include "Stream.hpp"
 
 int main ()
 {
-    std::set <AstNode> data;
-
     return 0;
 }

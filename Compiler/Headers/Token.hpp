@@ -10,7 +10,7 @@ enum Lexemes
     #include "CList.hpp"
 };
 
-#undef DEER(id, name, word)
+#undef DEER
 
 //}==============================================================================
 
@@ -23,6 +23,7 @@ struct Token
 
     union
     {
+        int        name_id;
         int        value;
         const char* name;
     };
@@ -95,9 +96,11 @@ std::ostream& operator << (std::ostream& os, Token const &m)
         switch (m.type)
         {
             #include "CList.hpp"
+
+            default: { break; }
         }
 
-        #undef DEER(id, name, word)
+        #undef DEER
     }
 
     return os << tmp;

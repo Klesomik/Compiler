@@ -18,20 +18,14 @@ class SemanticAnalyzer
         void Check_Var       (AstNode* current);
 };
 
-SemanticAnalyzer :: SemanticAnalyzer (AstNode& root):
-    data_  (),
-    error_ (0)
+SemanticAnalyzer :: SemanticAnalyzer (AstNode& root, LogHTML& log):
+    data_     (),
+    error_    (0)
     {
         data_.push_back (0);
 
-        Inform.log_file.setFontColor ("black");
-        Inform.log_file.setSize (1200);
-        Inform.log_file.setColor ("yellow");
-
         for (size_t i = 0; i < root.children ().size (); i++)
             Detour (root.children ()[i]);
-
-        Inform.log_file.output ("=== Build finished: %d errors ===\n", error_);
     }
 
 void SemanticAnalyzer :: Detour (AstNode* current)
