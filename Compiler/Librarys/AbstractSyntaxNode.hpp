@@ -415,6 +415,4 @@ bool operator != (const AstNode& a, const AstNode& b)
     return !(&a == &b);
 }
 
-#include "AstNodeLib.hpp"
-
 #endif
