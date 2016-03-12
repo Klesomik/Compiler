@@ -6,7 +6,7 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "AstNodeLib.hpp"
+#include "..//Librarys//AbstractSyntaxNode.hpp"
 #include "..//Librarys//LogHTML.hpp"
 #include "Dotter.h"
 

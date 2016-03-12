@@ -16,7 +16,7 @@
 class Compiler
 {
     private:
-        LogHTML& log_;
+        LogHTML log_;
 
     public:
         Compiler  (AstNode& root, Stream <Token>& code);

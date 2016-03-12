@@ -16,7 +16,7 @@
 class LexicialAnalyzer
 {
     private:
-        #define DEER(id, name, word) { word, id },
+        #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) { word, id },
 
         std::map <std::string, int> commands_ = {
                                                     #include "..//CList.hpp"

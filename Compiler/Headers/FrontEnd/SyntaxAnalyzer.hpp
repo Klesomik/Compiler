@@ -7,7 +7,7 @@
 #include "LexicialAnalyzer.hpp"
 #include "..//..//Librarys//Debug.hpp"
 #include "..//..//Librarys//Stream.hpp"
-#include "..//..//Librarys//AbstractSyntaxTree.hpp"
+#include "..//..//Librarys//AbstractSyntaxNode.hpp"
 
 //}==============================================================================
 
@@ -34,31 +34,31 @@
 class SyntaxAnalyzer
 {
     public:
-        SyntaxAnalyzer (AstNode& root, Stream <Token>& code);
+        SyntaxAnalyzer (AstNode& root, Stream <Token>& code, LogHTML& log);
 
         bool IsLexem (const int token);
-
         void Hello_C (std::string& example);
+        void Error   (const char* message);
 
-        void Get_Number                        (AstNode& current, Stream <Token>& example);
-        void Get_Name                          (AstNode& current, Stream <Token>& example);
-        void Get_Function                      (AstNode& current, Stream <Token>& example);
-        void Get_Value                         (AstNode& current, Stream <Token>& example);
-        void Get_Mul_Div_Mod                   (AstNode& current, Stream <Token>& example);
-        void Get_Add_Sub                       (AstNode& current, Stream <Token>& example);
-        void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example);
-        void Get_And                           (AstNode& current, Stream <Token>& example);
-        void Get_Or                            (AstNode& current, Stream <Token>& example);
-        void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example);
-        void Get_Assignment                    (AstNode& current, Stream <Token>& example);
-        void Get_If_Else                       (AstNode& current, Stream <Token>& example);
-        void Get_While                         (AstNode& current, Stream <Token>& example);
-        void Get_NewVar                        (AstNode& current, Stream <Token>& example);
-        void Get_Lexem                         (AstNode& current, Stream <Token>& example);
-        void Get_Block                         (AstNode& current, Stream <Token>& example);
+        void Get_Number                        (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Name                          (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Function                      (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Value                         (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Mul_Div_Mod                   (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Add_Sub                       (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_And                           (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Or                            (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Equal_NotEqual                (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Assignment                    (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_If_Else                       (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_While                         (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_NewVar                        (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Lexem                         (AstNode& current, Stream <Token>& example, LogHTML& log);
+        void Get_Block                         (AstNode& current, Stream <Token>& example, LogHTML& log);
 };
 
-SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code)
+SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code, LogHTML& log)
 {
     try
     {
@@ -66,7 +66,7 @@ SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code)
         {
             AstNode current ({ Block, Block });
 
-            Get_Block (current, code);
+            Get_Block (current, code, log);
 
             root.insert (current);
         }
@@ -94,7 +94,16 @@ void SyntaxAnalyzer :: Hello_C (std::string& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Error (const char* message)
+{
+    log.output ("%s\n", message);
+
+    throw "error";
+}
+
+//===============================================================================
+
+void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     bool first = false;
     if (example.check () && IsLexem (example, Digit))
@@ -106,17 +115,12 @@ void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
         example++;
     }
 
-    if (!first)
-    {
-        Inform.log_file.output ("Expected integer\n");
-
-        throw "error";
-    }
+    if (!first) Error ("Expected integer");
 }
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     bool first = false;
     if (example.check () && IsLexem (example, Name))
@@ -128,40 +132,30 @@ void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example)
         example++;
     }
 
-    if (!first)
-    {
-        Inform.log_file.output ("Expected name of variable\n");
-
-        throw "error";
-    }
+    if (!first) Error ("Expected name of variable");
 }
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Function (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Function (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     bool first = false;
-    if (example.check () && check_next (example, { Name, OpenBracket }))
+    if (example.check () && example.check_next ({ Name, OpenBracket }))
     {
         first = true;
 
         current.key () = { Call };
+        current.insert ({ example[example.place ()].type, example[example.place ()].value });
 
-        AstNode function ({ example[example.place ()].type });
+        AstNode function ({ Params });
 
         example++;
 
-        if (example.check ()) example++;
-        else throw "error";
-
         do
         {
-            if (!IsLexem (example, Name))
-            {
-                Inform.log_file.output ("Expected name\n");
+            example++;
 
-                throw "error";
-            }
+            if (!IsLexem (example, Name)) Error ("Expected name");
 
             function.insert ({ example[example.place ()].type, example[example.place ()].value });
 
@@ -169,20 +163,19 @@ void SyntaxAnalyzer :: Get_Function (AstNode& current, Stream <Token>& example)
         }
         while (example.check () && IsLexem (example, Comma))
 
+        if (example[example.place ()].type != CloseBracket) Error ("Expected ')'");
+
         example++;
+
+        current.insert (function);
     }
 
-    if (!first)
-    {
-        Inform.log_file.output ("Expected name of function\n");
-
-        throw "error";
-    }
+    if (!first) Error ("Expected name of function");
 }
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value; //else with out; throw
 
@@ -207,11 +200,7 @@ void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
         Get_Assignment (value, example);
 
         if (example.check () && example[example.place ()].type != CloseBracket)
-        {
-            Inform.log_file.output ("Forgot ')'\n");
-
-            throw "error";
-        }
+            Error ("Forgot ')'");
 
         example++;
     }
@@ -221,7 +210,7 @@ void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
         Get_Name (value, example);
     }
 
-    else if (check_next (example, { Name, OpenBracket })) //Name
+    else if (example.check () && check_next (example, { Name, OpenBracket }))
     {
         Get_Function (value, example);
     }
@@ -236,7 +225,7 @@ void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Mul_Div_Mod (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value;
     Get_Value (value, example);
@@ -274,7 +263,7 @@ void SyntaxAnalyzer :: Get_Mul_Div_Mod (AstNode& current, Stream <Token>& exampl
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Add_Sub (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Add_Sub (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value;
     Get_Mul_Div_Mod (value, example);
@@ -311,7 +300,7 @@ void SyntaxAnalyzer :: Get_Add_Sub (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value;
     Get_Add_Sub (value, example);
@@ -350,7 +339,7 @@ void SyntaxAnalyzer :: Get_Less_LessEqual_More_MoreEqual (AstNode& current, Stre
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Equal_NotEqual (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Equal_NotEqual (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value;
     Get_Less_LessEqual_More_MoreEqual (value, example);
@@ -387,7 +376,7 @@ void SyntaxAnalyzer :: Get_Equal_NotEqual (AstNode& current, Stream <Token>& exa
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_And (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_And (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value;
     Get_Equal_NotEqual (value, example);
@@ -407,7 +396,7 @@ void SyntaxAnalyzer :: Get_And (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Or (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Or (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode value;
     Get_And (value, example);
@@ -427,7 +416,7 @@ void SyntaxAnalyzer :: Get_Or (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Assignment (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Assignment (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     AstNode operation;
 
@@ -457,7 +446,7 @@ void SyntaxAnalyzer :: Get_Assignment (AstNode& current, Stream <Token>& example
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     example++;
 
@@ -490,7 +479,7 @@ void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     example++;
 
@@ -516,7 +505,7 @@ void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     current.insert (example[example.place ()]);
 
@@ -543,7 +532,7 @@ void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
     Stream <Token> tmp;
 
@@ -578,7 +567,7 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example)
 
         else if (example[example.place ()].type == Int)
         {
-            AstNode operation ({ Declaration, 0 });
+            AstNode operation ({ DeclVar, 0 });
 
             Get_NewVar (operation, example);
 
@@ -607,8 +596,10 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example)
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Block (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Block (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
+    current.key () = { Block };
+
     if (example.check () && example[example.place ()].type == Begin)
     {
         example++;
@@ -619,20 +610,24 @@ void SyntaxAnalyzer :: Get_Block (AstNode& current, Stream <Token>& example)
         example++;
     }
 
-    else throw "expected '{'";
+    else Error ("Expected '{'");
 }
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Params (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_Params (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
+    example++;
+
     do
     {
         if (IsLexem (example, Int))
         {
-            AstNode operation ({ Declaration });
+            AstNode operation ({ DeclVar });
 
             operation.insert ({ Int });
+
+            example++;
 
             AstNode value;
             Get_Name (value, example);
@@ -643,13 +638,15 @@ void SyntaxAnalyzer :: Get_Params (AstNode& current, Stream <Token>& example)
         }
     }
     while (IsLexem (example, Comma))
+
+    example++;
 }
 
 //===============================================================================
 
-void SyntaxAnalyzer :: Get_Code (AstNode& current, Stream <Token>& example)
+void SyntaxAnalyzer :: Get_NewFunc (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
-    AstNode operation ({ Declaration });
+    current.key () = { DeclFunc };
 
     if (IsLexem (example, Int))
     {
@@ -658,41 +655,50 @@ void SyntaxAnalyzer :: Get_Code (AstNode& current, Stream <Token>& example)
         example++;
 
         AstNode value;
-
-        Get_Name (value, example);
-
+        Get_Name         (value, example);
         operation.insert (value);
 
-        if (IsLexem (example, OpenBracket))
+        AstNode params ({ Params });
+        Get_Params     (params, example, log);
+        current.insert (params);
+
+        if (IsLexem (example, EndOfToken)) return;
+
+        if (IsLexem (example, EndOfToken))
         {
-            AstNode params;
-
-            Get_Params (params, example);
-
-            operation.insert (params);
-
-            AstNode code;
-
-            Get_Block (code, example);
-
-            operation.insert (code);
-        }
-
-        else if (IsLexem (example, Assignment))
-        {
-            example++;
-
-            AstNode var;
-
-            Get_Assignment (var, example);
-
-            example++;
-
-            current.insert (var);
+            AstNode block;
+            Get_Block      (block, example, log);
+            current.insert (block);
         }
     }
+}
 
-    else if (IsLexem (example, Void))
+//===============================================================================
+
+void SyntaxAnalyzer :: Get_Code (AstNode& current, Stream <Token>& example, LogHTML& log)
+{
+    AstNode operation;
+
+    if (example.check () && example.check_next ({ Int, Name, OpenBracket }))
+    {
+        Get_NewFunc (operation, example, log);
+    }
+
+    else if (example.check () && example.check_next ({ Int, Name, Assingment }))
+    {
+        Gen_NewVar (operation, example, log);
+    }
+
+    else if (example.check () && example.check_next ({ Int, Name, EndOfToken }))
+    {
+        Gen_NewVar (operation, example, log);
+    }
+
+    else
+    {
+    }
+
+    current.insert (opeartion);
 }
 
 #endif

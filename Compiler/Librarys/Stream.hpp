@@ -65,8 +65,9 @@ class Stream
         Stream <Data_T>  operator ++ (int);
         Stream <Data_T>& operator -- ();
         Stream <Data_T>  operator -- (int);
-        Stream <Data_T>& operator = (const Stream <Data_T>& from);
-        Stream <Data_T>& operator = (const Vector <Data_T>& from);
+        Stream <Data_T>& operator  = (const Stream <Data_T>& from);
+        Stream <Data_T>& operator  = (const Vector <Data_T>& from);
+        Stream <Data_T>& operator += (const size_t jump);
 
         void push_back (const Data_T& value);
 
@@ -245,6 +246,21 @@ Stream <Data_T>& Stream <Data_T> :: operator = (const Vector <Data_T>& from)
 
     data_  = from.data_;
     place_ = 0;
+
+    OK_STREAM
+
+    return (*this);
+}
+
+//===============================================================================
+
+template <typename Data_T>
+Stream <Data_T>& Stream <Data_T> :: operator += (const size_t jump)
+{
+    OK_STREAM
+    assert (jump <= avaliable);
+
+    place_ += jump;
 
     OK_STREAM
 

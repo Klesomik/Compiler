@@ -3,7 +3,7 @@
 
 //{==============================================================================
 
-#define DEER(id, name, word) name = id,
+#define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) name = id,
 
 enum Lexemes
 {
@@ -25,6 +25,7 @@ struct Token
     Token ();
     Token (const int setType);
     Token (const int setType, const int setValue);
+    Token (const int setType, const int setValue, const int setLine);
 };
 
 //}==============================================================================
