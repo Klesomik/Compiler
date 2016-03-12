@@ -38,6 +38,8 @@ class SyntaxAnalyzer
 
         bool IsLexem (const int token);
 
+        void Hello_C (std::string& example);
+
         void Get_Number                        (AstNode& current, Stream <Token>& example);
         void Get_Name                          (AstNode& current, Stream <Token>& example);
         void Get_Function                      (AstNode& current, Stream <Token>& example);
@@ -54,21 +56,25 @@ class SyntaxAnalyzer
         void Get_NewVar                        (AstNode& current, Stream <Token>& example);
         void Get_Lexem                         (AstNode& current, Stream <Token>& example);
         void Get_Block                         (AstNode& current, Stream <Token>& example);
-
-        void Hello_C (std::string& example);
 };
 
-SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code):
+SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code)
+{
+    try
     {
         while (code.check ())
         {
-            AstNode current ({ None, None });
+            AstNode current ({ Block, Block });
 
             Get_Block (current, code);
 
             root.insert (current);
         }
     }
+    catch (...)
+    {
+    }
+}
 
 //===============================================================================
 
@@ -88,17 +94,10 @@ void SyntaxAnalyzer :: Hello_C (std::string& example)
 
 //===============================================================================
 
-size_t SyntaxAnalyzer :: error ()
-{
-    return error_;
-}
-
-//===============================================================================
-
 void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
-    if (example.check () && example[example.place ()].type == Digit)
+    if (example.check () && IsLexem (example, Digit))
     {
         first = true;
 
@@ -109,9 +108,9 @@ void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
 
     if (!first)
     {
-        error_++;
-
         Inform.log_file.output ("Expected integer\n");
+
+        throw "error";
     }
 }
 
@@ -120,7 +119,7 @@ void SyntaxAnalyzer :: Get_Number (AstNode& current, Stream <Token>& example)
 void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
-    if (example.check () && example[example.place ()].type == Var)
+    if (example.check () && IsLexem (example, Name))
     {
         first = true;
 
@@ -131,9 +130,9 @@ void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example)
 
     if (!first)
     {
-        error_++;
-
         Inform.log_file.output ("Expected name of variable\n");
+
+        throw "error";
     }
 }
 
@@ -142,28 +141,42 @@ void SyntaxAnalyzer :: Get_Name (AstNode& current, Stream <Token>& example)
 void SyntaxAnalyzer :: Get_Function (AstNode& current, Stream <Token>& example)
 {
     bool first = false;
-    if (example.check () && check_next (example, { Var, OpenBracket }))
+    if (example.check () && check_next (example, { Name, OpenBracket }))
     {
         first = true;
 
+        current.key () = { Call };
+
+        AstNode function ({ example[example.place ()].type });
+
+        example++;
+
+        if (example.check ()) example++;
+        else throw "error";
+
         do
         {
-            if (!IsLexem (example, Int) && !IsLexem (example, Void)) throw "";
+            if (!IsLexem (example, Name))
+            {
+                Inform.log_file.output ("Expected name\n");
 
-            if (!IsLexem (example, Name) && !IsLexem (example, Void)
+                throw "error";
+            }
+
+            function.insert ({ example[example.place ()].type, example[example.place ()].value });
+
+            example++;
         }
-        while (check (example) && IsLexem (example, Comma))
-
-        current.key () = example[example.place ()];
+        while (example.check () && IsLexem (example, Comma))
 
         example++;
     }
 
     if (!first)
     {
-        error_++;
-
         Inform.log_file.output ("Expected name of function\n");
+
+        throw "error";
     }
 }
 
@@ -195,20 +208,20 @@ void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example)
 
         if (example.check () && example[example.place ()].type != CloseBracket)
         {
-            error_++;
-
             Inform.log_file.output ("Forgot ')'\n");
+
+            throw "error";
         }
 
         example++;
     }
 
-    else if (example.check () && example[example.place ()].type == Var)
+    else if (example.check () && example[example.place ()].type == Name)
     {
         Get_Name (value, example);
     }
 
-    else if (check_next (example, { Var, OpenBracket })) //Name
+    else if (check_next (example, { Name, OpenBracket })) //Name
     {
         Get_Function (value, example);
     }
@@ -418,11 +431,11 @@ void SyntaxAnalyzer :: Get_Assignment (AstNode& current, Stream <Token>& example
 {
     AstNode operation;
 
-    if (example.check_next ({ Token (Var), Token (Assignment) }))
+    if (example.check_next ({ Token (Name), Token (Assignment) }))
     {
         operation.key () = { Assignment, 0 };
 
-        while (example.check_next ({ Token (Var), Token (Assignment) }))
+        while (example.check_next ({ Token (Name), Token (Assignment) }))
         {
             AstNode value;
             Get_Name (value, example);
@@ -538,7 +551,7 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example)
     {
         if (example[example.place ()].type == Begin)
         {
-            AstNode grayNode ({ None, None });
+            AstNode grayNode ({ Block, Block });
 
             Get_Block (grayNode, example);
 

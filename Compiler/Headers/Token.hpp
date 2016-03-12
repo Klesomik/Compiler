@@ -37,7 +37,7 @@ Token :: Token ():
 
 Token :: Token (const int setType):
     type  (setType),
-    value (0),
+    value (),
     line  ()
     {}
 
@@ -59,7 +59,7 @@ std::ostream& operator << (std::ostream& os, Token const &m);
 
 bool operator == (const Token& a, const Token& b)
 {
-    return a.type == b.type; // && a.value == b.value
+    return a.type == b.type;
 }
 
 bool operator != (const Token& a, const Token& b)
@@ -67,29 +67,19 @@ bool operator != (const Token& a, const Token& b)
     return !(a == b);
 }
 
-std::ostream& operator << (std::ostream& os, Token const &m)
+std::ostream& operator << (std::ostream& os, const Token& value)
 {
-    char tmp[9] = "";
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) \
+    case id: { return os << string (word); }
 
-    if (m.type == Digit) sprintf (tmp, "%d", m.value);
-
-    else if (m.type == Var) sprintf (tmp, "var_%d", m.value);
-
-    else
+    switch (value.type)
     {
-        #define DEER(id, name, word) case id: { sprintf (tmp, word); break; }
+        #include "CList.hpp"
 
-        switch (m.type)
-        {
-            #include "CList.hpp"
-
-            default: { break; }
-        }
-
-        #undef DEER
+        default: { throw "operator << was broken"; }
     }
 
-    return os << tmp;
+    #undef DEER
 }
 
 #endif
