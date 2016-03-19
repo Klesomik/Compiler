@@ -35,11 +35,11 @@ Compiler :: Compiler (AstNode& root, Stream <Token>& code):
 
         log_.open (name.c_str ());
 
-        log.setFontColor ("black");
-        log.setSize      (100);
-        log.setColor     ("yellow");
+        log_.setFontColor ("black");
+        log_.setSize      (100);
+        log_.setColor     ("yellow");
 
-        log.output ("===== Build started =====\n");
+        log_.output ("===== Build started =====\n");
 
         Preprocessor          preprocessor (code, log_);
         SyntaxAnalyzer     syntax_analyzer (root, code, log_);

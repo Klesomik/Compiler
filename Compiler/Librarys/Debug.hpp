@@ -87,7 +87,7 @@ void ErrorDump :: Throw (const char* set_file_throw, const char* set_function_th
 
 void ErrorDump :: Wrapper (const char* label)
 {
-    size_t indent = 0;
+    /*size_t indent = 0;
 
     indent += sprintf (message + indent, "Message was tried at\n");
 
@@ -103,7 +103,7 @@ void ErrorDump :: Wrapper (const char* label)
 
     indent += sprintf (message + indent, "%s\n", label);
 
-    sprintf (message + indent, "Message was wrapped in Wrapper\n");
+    sprintf (message + indent, "Message was wrapped in Wrapper\n");*/
 
     throw message;
 }

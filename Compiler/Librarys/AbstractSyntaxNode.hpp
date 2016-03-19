@@ -100,7 +100,7 @@ AstNode :: AstNode ():
 
 AstNode :: AstNode (const Token& value):
     key_      (value),
-    parent_   (nulcommands_lptr),
+    parent_   (nullptr),
     children_ ()
     { OK_ASTNODE }
 
@@ -383,7 +383,7 @@ std::vector <AstNode*>& AstNode :: children ()
     return children_;
 }
 
-void clear ()
+void AstNode :: clear ()
 {
     OK_ASTNODE
 

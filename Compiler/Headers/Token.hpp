@@ -3,6 +3,15 @@
 
 //{==============================================================================
 
+#include <cstdio>
+#include <iostream>
+
+//}==============================================================================
+
+//{==============================================================================
+
+#define DEER_EXTRA(id, name, word, fontcolor, color, fillcolor, shape, style) name = id,
+
 #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) name = id,
 
 enum Lexemes
@@ -10,6 +19,7 @@ enum Lexemes
     #include "CList.hpp"
 };
 
+#undef DEER_EXTRA
 #undef DEER
 
 //}==============================================================================
@@ -56,7 +66,7 @@ Token :: Token (const int setType, const int setValue, const int setLine):
 
 bool operator == (const Token& a, const Token& b);
 bool operator != (const Token& a, const Token& b);
-std::ostream& operator << (std::ostream& os, Token const &m);
+std::ostream& operator << (std::ostream& os, const Token& m);
 
 bool operator == (const Token& a, const Token& b)
 {
@@ -70,8 +80,11 @@ bool operator != (const Token& a, const Token& b)
 
 std::ostream& operator << (std::ostream& os, const Token& value)
 {
+    #define DEER_EXTRA(id, name, word, fontcolor, color, fillcolor, shape, style) \
+    case id: { return os << std::string (word); }
+
     #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) \
-    case id: { return os << string (word); }
+    case id: { return os << std::string (word); }
 
     switch (value.type)
     {
@@ -80,6 +93,7 @@ std::ostream& operator << (std::ostream& os, const Token& value)
         default: { throw "operator << was broken"; }
     }
 
+    #undef DEER_EXTRA
     #undef DEER
 }
 

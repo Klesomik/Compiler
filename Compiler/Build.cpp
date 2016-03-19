@@ -33,9 +33,9 @@ int main (int argc, const char* argv[])
 
         Compiler compiler (root, code);
 
-        //Optimizer optimizer (root);
+        Optimizer optimizer (root);
 
-        //AsmGenerate (root);
+        AsmGenerate (root);
 
         DotDump (root, "EX1.dot");
     }

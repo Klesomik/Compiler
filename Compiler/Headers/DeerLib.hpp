@@ -8,7 +8,8 @@
 #include <iostream>
 #include "..//Librarys//AbstractSyntaxNode.hpp"
 #include "..//Librarys//LogHTML.hpp"
-#include "Dotter.h"
+#include "..//Librarys//Dotter//Dotter.h"
+#include "Token.hpp"
 
 //}==============================================================================
 
@@ -101,6 +102,15 @@ void RenderNode (AstNode* current, const size_t number)
 
 std::string BtInf (const Token& value)
 {
+    #define DEER_EXTRA(id, name, word, fontcolor, color, fillcolor, shape, style) \
+    case id:\
+    {\
+        SetStyle (shape, style);\
+        SetColor (fontcolor, color, fillcolor);\
+    \
+        return string (word);\
+    }
+
     #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) \
     case id:\
     {\
@@ -116,6 +126,8 @@ std::string BtInf (const Token& value)
 
         default: { throw "BtInf was broken"; }
     }
+
+    #undef DEER_EXTRA
 
     #undef DEER
 }
