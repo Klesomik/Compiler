@@ -484,7 +484,7 @@ void dtLink (const int FromNode, const int ToNode, const char Label [], const ne
 
 void dtRender (const char From [], const char To [], const char Type [], const bool Show)
 {
-    const int ComandSize = 100;
+    const int ComandSize = 1000;
 
     char Comand [ComandSize] = "";
 

@@ -6,7 +6,6 @@
 #include <cstring>
 #include <map>
 #include "..//..//Librarys//Stream.hpp"
-#include "..//DeerLib.hpp"
 #include "..//Token.hpp"
 
 //}==============================================================================
@@ -24,11 +23,12 @@ class LexicialAnalyzer
                                                 };
 
         #undef DEER
+        #undef DEER_EXTRA
 
         std::map <std::string, int> names_;
 
     public:
-        LexicialAnalyzer (Stream <Token>& code);
+        LexicialAnalyzer (FILE* c_file, Stream <Token>& code);
 
         bool IsSpace  (const char symbol);
         bool IsDigit  (const char symbol);
@@ -42,40 +42,20 @@ class LexicialAnalyzer
         void OperatorUnary  (Stream <char>& example, Stream <Token>& code);
         void OperatorBinary (Stream <char>& example, Stream <Token>& code);
         void Parser         (Stream <char>& example, Stream <Token>& code);
-
-        void Hello_C (std::string& example);
 };
 
 //}==============================================================================
 
-LexicialAnalyzer :: LexicialAnalyzer (Stream <Token>& code):
+LexicialAnalyzer :: LexicialAnalyzer (FILE* c_file, Stream <Token>& code):
     names_ ({})
     {
-        std::string name;
-        Hello_C (name);
-
-        FILE* c_file = fopen (name.c_str (), "r");
-        assert (c_file);
-
         Stream <char> example;
 
         for (char symbol = 0; fscanf (c_file, "%c", &symbol) != EOF;)
             example.push_back (symbol);
 
-        fclose (c_file);
-                c_file = nullptr;
-
         Parser (example, code);
     }
-
-//===============================================================================
-
-void LexicialAnalyzer :: Hello_C (std::string& example)
-{
-    printf ("Input name of C file: ");
-
-    getline (std::cin, example, '\n');
-}
 
 //===============================================================================
 
@@ -179,9 +159,9 @@ void LexicialAnalyzer :: Word (Stream <char>& example, Stream <Token>& code)
 
         else
         {
-            code.push_back ({ Name, names_.size () + 1 });
+            code.push_back ({ Name, names_.size () - 1 });
 
-            names_[value] = names_.size () + 1;
+            names_[value] = names_.size () - 1;
         }
     }
 }
@@ -244,7 +224,7 @@ void LexicialAnalyzer :: Parser (Stream <char>& example, Stream <Token>& code)
         {
             std::cout << example[example.place ()] << "\n\n";
 
-            THROW ("Unknown symbol");
+            throw "Unknown symbol";
         }
     }
 }

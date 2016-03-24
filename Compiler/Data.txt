@@ -1,0 +1,9 @@
+int main ()
+{
+    int a = foo (5 + 5);
+}
+
+int foo (int x)
+{
+    int y = x * x;
+}

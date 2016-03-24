@@ -6,7 +6,6 @@
 #include <cstdio>
 #include <iostream>
 #include "..//Token.hpp"
-#include "..//..//Librarys//Debug.hpp"
 #include "..//..//Librarys//Stream.hpp"
 #include "..//..//Librarys//AbstractSyntaxNode.hpp"
 #include "..//..//Librarys//LogHTML.hpp"
@@ -40,7 +39,6 @@ class SyntaxAnalyzer
 
         bool IsLexem (Stream <Token>& example, const int token);
         void Hello_C (std::string& example);
-        void Error   (const char* message, LogHTML& log);
 
         void Get_Number                        (AstNode& current, Stream <Token>& example, LogHTML& log);
         void Get_Name                          (AstNode& current, Stream <Token>& example, LogHTML& log);
@@ -69,9 +67,9 @@ SyntaxAnalyzer :: SyntaxAnalyzer (AstNode& root, Stream <Token>& code, LogHTML& 
     {
         while (code.check ())
         {
-            AstNode current ({ Block, Block });
+            AstNode current;
 
-            Get_Block (current, code, log);
+            Get_Code (current, code, log);
 
             root.insert (current);
         }
@@ -96,15 +94,6 @@ void SyntaxAnalyzer :: Hello_C (std::string& example)
     printf ("Input name of C   file: ");
 
     getline (std::cin, example, '\n');
-}
-
-//===============================================================================
-
-void SyntaxAnalyzer :: Error (const char* message, LogHTML& log)
-{
-    log.output ("%s\n", message);
-
-    throw message;
 }
 
 //===============================================================================
@@ -144,23 +133,39 @@ void SyntaxAnalyzer :: Get_Function (AstNode& current, Stream <Token>& example, 
         current.key () = { Call };
         current.insert ({ example[example.place ()].type, example[example.place ()].value });
 
-        AstNode function ({ Params });
-
         example++;
+
+        AstNode function ({ Params });
 
         do
         {
             example++;
 
-            if (!IsLexem (example, Name)) Error ("Expected name", log);
+            Stream <Token> tmp;
 
-            function.insert ({ example[example.place ()].type, example[example.place ()].value });
+            while (example.place () <= example.size () - 2 && !IsLexem (example, Comma))
+            {
+                tmp.push_back (example[example.place ()]);
 
-            example++;
+                example++;
+            }
+
+            AstNode operation;
+
+            Get_Assignment (operation, tmp, log);
+
+            function.insert (operation);
         }
         while (example.check () && IsLexem (example, Comma));
 
-        if (example[example.place ()].type != CloseBracket) Error ("Expected ')'", log);
+        if (!IsLexem (example, CloseBracket))
+        {
+            example.dump ();
+
+            std::cout << example[example.place ()] << "\n";
+
+            Error ("Expected ')'", log);
+        }
 
         example++;
 
@@ -204,15 +209,26 @@ void SyntaxAnalyzer :: Get_Value (AstNode& current, Stream <Token>& example, Log
             example++;
         }
 
+        else if (example.check_next ({ Name, OpenBracket }))
+        {
+            Stream <Token> tmp;
+
+            while (example.check () && example[example.place ()].type != EndOfToken)
+            {
+                tmp.push_back (example[example.place ()]);
+
+                example++;
+            }
+
+            Get_Function (value, tmp, log);
+
+            //example++;
+        }
+
         else if (IsLexem (example, Name))
         {
             Get_Name (value, example, log);
         }
-
-        /*else if (example.check () && example.check_next ({ Name, OpenBracket }))
-        {
-            Get_Function (value, example, log);
-        }*/
 
         else if (IsLexem (example, Digit))
         {
@@ -515,14 +531,8 @@ void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example, Lo
     Get_Name (operation, example, log);
     current.insert (operation);
 
-    //if (!example.check () || example[example.place ()].type != Assingment) return;
-
-    //example++;
-
     if (example.check () && IsLexem (example, Assingment))
     {
-        cout << __LINE__ << "\n";
-
         example++;
 
         Stream <Token> tmp;
@@ -534,17 +544,11 @@ void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example, Lo
             example++;
         }
 
-        tmp.dump ();
-
         AstNode value;
-        Get_Add_Sub (value, tmp, log);
+        Get_Assignment (value, tmp, log);
 
-        //current.insert (value);
-
-        cout << __LINE__ << "\n";
+        current.insert (value);
     }
-
-    cout << __LINE__ << "\n";
 
     example++;
 }
@@ -586,13 +590,9 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
 
         else if (example[example.place ()].type == Int)
         {
-            cout << "1\n";
-
             AstNode operation ({ DeclVar, 0 });
 
             Get_NewVar (operation, example, log);
-
-            cout << "2\n";
 
             current.insert (operation);
         }
@@ -702,23 +702,19 @@ void SyntaxAnalyzer :: Get_NewFunc (AstNode& current, Stream <Token>& example, L
 
 void SyntaxAnalyzer :: Get_Code (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
-    AstNode operation;
-
     if (example.check ())
     {
         if (example.check_next ({ Int, Name, OpenBracket }))
-            Get_NewFunc (operation, example, log);
+            Get_NewFunc (current, example, log);
 
         else if (example.check_next ({ Int, Name, Assingment }))
-            Get_NewVar (operation, example, log);
+            Get_NewVar (current, example, log);
 
         else if (example.check_next ({ Int, Name, EndOfToken }))
-            Get_NewVar (operation, example, log);
+            Get_NewVar (current, example, log);
 
         else Error ("Expected declaration of function or variable", log);
     }
-
-    current.insert (operation);
 }
 
 #endif

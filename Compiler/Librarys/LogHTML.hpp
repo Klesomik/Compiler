@@ -4,17 +4,8 @@
 //{==============================================================================
 
 #include <cstdio>
-#include <cstring>
-#include <map>
-#include <iostream>
 #include <cstdlib>
 #include <cstdarg>
-
-//}==============================================================================
-
-//{==============================================================================
-
-using namespace std;
 
 //}==============================================================================
 
@@ -147,6 +138,15 @@ void LogHTML :: out ()
 const char* LogHTML :: name ()
 {
     return name_;
+}
+
+void Error (const char* message, LogHTML& log);
+
+void Error (const char* message, LogHTML& log)
+{
+    log.output ("%s\n", message);
+
+    throw message;
 }
 
 #endif

@@ -18,7 +18,6 @@
 
 #if defined (DEBUG_STREAM)
 
-    #include "Debug.hpp"
     #define DO_STREAM(codeDebug, codeTest)  codeDebug
     #define OK_STREAM ok ();
 
@@ -72,6 +71,10 @@ class Stream
         void push_back (const Data_T& value);
 
         void seek  (const size_t value);
+
+        bool empty ();
+
+        Data_T& back ();
 
         size_t           place ();
         size_t           size  ();
@@ -244,7 +247,7 @@ Stream <Data_T>& Stream <Data_T> :: operator = (const Vector <Data_T>& from)
 {
     OK_STREAM
 
-    data_  = from.data_;
+    data_  = from.data ();
     place_ = 0;
 
     OK_STREAM
@@ -290,6 +293,26 @@ void Stream <Data_T> :: seek (const size_t value)
     place_ = value;
 
     OK_STREAM
+}
+
+//===============================================================================
+
+template <typename Data_T>
+bool Stream <Data_T> :: empty ()
+{
+    OK_STREAM
+
+    return data_.empty ();
+}
+
+//===============================================================================
+
+template <typename Data_T>
+Data_T& Stream <Data_T> :: back ()
+{
+    OK_STREAM
+
+    return data_.back ();
 }
 
 //===============================================================================

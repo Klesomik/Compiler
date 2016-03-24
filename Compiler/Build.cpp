@@ -4,20 +4,37 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "Librarys//Debug.hpp"
 #include "Librarys//Stream.hpp"
-#include "Headers//FrontEnd//DeerLib.hpp"
-#include "Librarys//AbstractSyntaxTree.hpp"
-#include "Headers//FrontEnd//Compiler.hpp"
+#include "Librarys//AbstractSyntaxNode.hpp"
+#include "Headers//FrontEnd//LexicialAnalyzer.hpp"
+#include "Headers//Compiler.hpp"
 #include "Headers//FrontEnd//Optimizer.hpp"
+#include "Headers//Assembler.hpp"
 
 //}==============================================================================
 
-using namespace std;
+//{==============================================================================
+
+inline void Hello_C    (std::string& example)
+{ printf ("Input name of C    file: "); getline (std::cin, example, '\n'); }
+
+inline void Hello_Log  (std::string& example)
+{ printf ("Input name of Log  file: "); getline (std::cin, example, '\n'); }
+
+inline void Hello_Asm  (std::string& example)
+{ printf ("Input name of Asm  file: "); getline (std::cin, example, '\n'); }
+
+inline void Hello_Byte (std::string& example)
+{ printf ("Input name of Byte file: "); getline (std::cin, example, '\n'); }
+
+//}==============================================================================
 
 //{==============================================================================
 
-//void AsmGenerate (AstNode& root);
+void C_to_Token         (Stream <Token>& code);
+void Token_to_AST       (Stream <Token>& code, AstNode& root);
+void AST_optimizer      (AstNode& root);
+void AST_to_Asm_to_Byte (AstNode& root);
 
 //}==============================================================================
 
@@ -27,31 +44,27 @@ int main (int argc, const char* argv[])
     {
         Stream <Token> code;
 
-        LexicialAnalyzer lexicial_analyzer (code);
+        AstNode root ({ Block, Block });
 
-        AstNode root ({ None, None });
+        C_to_Token   (code);
+        Token_to_AST (code, root);
 
-        Compiler compiler (root, code);
-
-        Optimizer optimizer (root);
-
-        AsmGenerate (root);
-
-        DotDump (root, "EX1.dot");
+        RenderTree (root, "EX3.dot");
     }
     catch (std::exception& message)
     {
     }
     catch (const char* message)
     {
-        CATCH
+        std::cout << message << std::endl;
     }
     catch (const int message)
     {
+        std::cout << message << std::endl;
     }
     catch (...)
     {
-        printf ("Unknown error\n");
+        std::cout << "Unknown error\n" << std::endl;
     }
 
     return 0;
@@ -59,7 +72,52 @@ int main (int argc, const char* argv[])
 
 //===============================================================================
 
-/*void AsmGenerate (AstNode& root)
+void C_to_Token (Stream <Token>& code)
+{
+    std::string name;
+    Hello_C (name);
+
+    FILE* c_file = fopen (name.c_str (), "r");
+    assert (c_file);
+
+    LexicialAnalyzer lexicial_analyzer (c_file, code);
+
+    fclose (c_file);
+            c_file = nullptr;
+}
+
+//===============================================================================
+
+void Token_to_AST (Stream <Token>& code, AstNode& root)
+{
+    std::string name;
+    Hello_Log (name);
+
+    LogHTML log (name.c_str ());
+
+    log.setFontColor ("black");
+    log.setSize      (100);
+    log.setColor     ("yellow");
+
+    log.output ("===== Build started  =====\n");
+
+    Compiler compiler (root, code, log);
+
+    log.output ("===== Build finished =====\n");
+
+    log.close ();
+}
+
+//===============================================================================
+
+void AST_optimizer (AstNode& root)
+{
+    Optimizer optimizer (root);
+}
+
+//===============================================================================
+
+void AST_to_Asm_to_Byte (AstNode& root)
 {
     std::string Asm_name;
     Hello_Asm (Asm_name);
@@ -67,13 +125,22 @@ int main (int argc, const char* argv[])
     FILE* asm_code = fopen (Asm_name.c_str (), "w");
     assert (asm_code);
 
+    std::string Byte_name;
+    Hello_Byte (Byte_name);
+
+    FILE* byte_code = fopen (Byte_name.c_str (), "w");
+    assert (byte_code);
+
     fprintf (asm_code, "jmp main;\n");
     fprintf (asm_code, "label main;\n");
 
-    for (size_t i = 0; i < root.children ().size (); i++)
-        CreateAsm (root.children ()[i], asm_code);
+    Assembler assembler (root, asm_code, byte_code);
 
     fprintf (asm_code, "eof;\n");
 
     fclose (asm_code);
-}*/
+            asm_code = nullptr;
+
+    fclose (byte_code);
+            byte_code = nullptr;
+}

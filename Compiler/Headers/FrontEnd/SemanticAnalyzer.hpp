@@ -1,62 +1,61 @@
 #ifndef TreeCheck_hpp
     #define TreeCheck_hpp
 
+//TODO: counting size of RAM in Boa
+
 class SemanticAnalyzer
 {
     private:
         Vector <int> data_;
 
-        size_t error_;
-
     public:
-        SemanticAnalyzer (AstNode& root);
+        SemanticAnalyzer (AstNode& root, LogHTML& log);
 
-        void Detour (AstNode* current);
+        void Detour (AstNode* current, LogHTML& log);
 
-        void Check_None      (AstNode* current);
-        void Check_Declarate (AstNode* current);
-        void Check_Var       (AstNode* current);
+        void Check_Block   (AstNode* current, LogHTML& log);
+        void Check_DeclVar (AstNode* current, LogHTML& log);
+        void Check_Name    (AstNode* current, LogHTML& log);
 };
 
 SemanticAnalyzer :: SemanticAnalyzer (AstNode& root, LogHTML& log):
-    data_     (),
-    error_    (0)
+    data_     ()
     {
-        data_.push_back (0);
+        data_.push_back (-1);
 
-        for (size_t i = 0; i < root.children ().size (); i++)
-            Detour (root.children ()[i]);
+        for (size_t i = 0; i < root.size (); i++)
+            Detour (root[i], log);
     }
 
-void SemanticAnalyzer :: Detour (AstNode* current)
+void SemanticAnalyzer :: Detour (AstNode* current, LogHTML& log)
 {
     switch (current -> key ().type)
     {
-        case None:        { Check_None      (current); break; }
-        case Declaration: { Check_Declarate (current); break; }
-        case Var:         { Check_Var       (current); break; }
+        case Block:   { Check_Block   (current, log); break; }
+        case DeclVar: { Check_DeclVar (current, log); break; }
+        case Name:    { Check_Name    (current, log); break; }
 
         default:
         {
             for (size_t i = 0; i < current -> children ().size (); i++)
-                Detour (current -> children ()[i]);
+                Detour (current -> children ()[i], log);
 
             break;
         }
     }
 }
 
-void SemanticAnalyzer :: Check_None (AstNode* current)
+void SemanticAnalyzer :: Check_Block (AstNode* current, LogHTML& log)
 {
-    data_.push_back (0);
+    data_.push_back (-1);
 
-    for (size_t i = 0; i < current -> children ().size (); i++)
-        Detour (current -> children ()[i]);
+    for (size_t i = 0; i < current -> size (); i++)
+        Detour (current[i], log);
 
-    while (data_.back () != 0) data_.pop (); //pop_back
+    while (data_.back () != -1) data_.pop_back ();
 }
 
-void SemanticAnalyzer :: Check_Declarate (AstNode* current)
+void SemanticAnalyzer :: Check_DeclVar (AstNode* current, LogHTML& log)
 {
     int deskriptor = current -> children ()[1] -> key ().value;
 
@@ -64,18 +63,16 @@ void SemanticAnalyzer :: Check_Declarate (AstNode* current)
     {
         if (data_[i] == deskriptor)
         {
-            Inform.log_file.output ("Variable var_%d was declared before\n", deskriptor);
-
-            error_++;
+            log.output ("Variable var_%d was declared before\n", deskriptor);
         }
     }
 
     data_.push_back (deskriptor);
 
-    Detour (current -> children ()[2]);
+    Detour (current -> children ()[2], log);
 }
 
-void SemanticAnalyzer :: Check_Var (AstNode* current)
+void SemanticAnalyzer :: Check_Name (AstNode* current, LogHTML& log)
 {
     int deskriptor = current -> key ().value;
 
@@ -87,9 +84,7 @@ void SemanticAnalyzer :: Check_Var (AstNode* current)
 
     if (!first)
     {
-        Inform.log_file.output ("Variable var_%d wasn't declared before\n", deskriptor);
-
-        error_++;
+        log.output ("Variable var_%d wasn't declared before\n", deskriptor);
     }
 }
 

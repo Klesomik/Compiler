@@ -6,8 +6,8 @@
 
 #include <cstdio>
 #include <cassert>
-#include "..//Librarys//Vector.hpp"
-#include "..//Librarys//Stack.hpp"
+#include "..//..//Librarys//Vector.hpp"
+#include "..//..//Librarys//Stack.hpp"
 
 //}==============================================================================
 
@@ -201,7 +201,7 @@ void Cpu :: play ()
 
         switch (code_[i])
         {
-            #include "CommandsList.hpp"
+            #include "..//CommandsList.hpp"
 
             default: { return; }
         }

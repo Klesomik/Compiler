@@ -5,6 +5,7 @@
 
 #include <cstdio>
 #include <cassert>
+#include <iostream>
 #include "Memory.hpp"
 
 //new (size_t addres)
@@ -52,7 +53,7 @@ class Vector
         Vector ();
         Vector (const size_t mySize);
         Vector (const Vector&  from);
-        Vector (const size_t mySize, const Data_T value);
+        Vector (const size_t mySize, const Data_T& value);
 
         ~Vector ();
 
@@ -60,7 +61,7 @@ class Vector
 
         Data_T& at (const size_t i);
         void push_back (const Data_T value);
-        Data_T pop ();
+        Data_T& pop_back ();
 
         bool empty ();
         void clear ();
@@ -83,50 +84,6 @@ class Vector
 };
 
 //}==============================================================================
-
-template <typename Data_T>
-void Vector <Data_T> :: dump ()
-{
-    printf ("\n=============DUMP=============\n");
-
-    printf ("Vector (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
-
-    printf ("capacity = %d;\n", capacity_);
-    printf ("size     = %d;\n",     size_);
-    printf ("data     = 0x%p;\n",   data_);
-
-    for (size_t i = 0; i < size_; i++)
-    {
-        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << data_[i] << "|\n";
-    }
-
-    printf ("==============================\n\n");
-}
-
-//===============================================================================
-
-template <typename Data_T>
-bool Vector <Data_T> :: ok ()
-{
-    if ((size_ > 0) && (data_ == nullptr) && (capacity_ > 0))
-    {
-        #ifdef DEBUG_VECT
-
-            return false;
-
-        #endif
-
-        #ifdef TEST_VECT
-
-            throw "size_ > 0 && data_ == nullptr && capacity_ > 0";
-
-        #endif
-    }
-
-    else return true;
-}
-
-//===============================================================================
 
 template <typename Data_T>
 Vector <Data_T> :: Vector ():
@@ -172,7 +129,7 @@ Vector <Data_T> :: Vector (const Vector& from):
 //===============================================================================
 
 template <typename Data_T>
-Vector <Data_T> :: Vector (const size_t mySize, const Data_T value):
+Vector <Data_T> :: Vector (const size_t mySize, const Data_T& value):
     data_     (new Data_T[capacity_]),
     capacity_ (mySize),
     size_     (mySize)
@@ -272,7 +229,7 @@ void Vector <Data_T> :: push_back (const Data_T value)
 //===============================================================================
 
 template <typename Data_T>
-Data_T Vector <Data_T> :: pop ()
+Data_T& Vector <Data_T> :: pop_back ()
 {
     OK_VECT
 
@@ -476,6 +433,50 @@ Data_T* Vector <Data_T> :: data () /*const*/
     OK_VECT
 
     return data_;
+}
+
+//===============================================================================
+
+template <typename Data_T>
+void Vector <Data_T> :: dump ()
+{
+    printf ("\n=============DUMP=============\n");
+
+    printf ("Vector (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
+
+    printf ("capacity = %d;\n", capacity_);
+    printf ("size     = %d;\n",     size_);
+    printf ("data     = 0x%p;\n",   data_);
+
+    for (size_t i = 0; i < size_; i++)
+    {
+        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << data_[i] << "|\n";
+    }
+
+    printf ("==============================\n\n");
+}
+
+//===============================================================================
+
+template <typename Data_T>
+bool Vector <Data_T> :: ok ()
+{
+    if ((size_ > 0) && (data_ == nullptr) && (capacity_ > 0))
+    {
+        #ifdef DEBUG_VECT
+
+            return false;
+
+        #endif
+
+        #ifdef TEST_VECT
+
+            throw "size_ > 0 && data_ == nullptr && capacity_ > 0";
+
+        #endif
+    }
+
+    else return true;
 }
 
 #endif /* VECTOR_H_INCLUDED */
