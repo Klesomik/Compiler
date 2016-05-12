@@ -9,9 +9,9 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
-#include "..//Headers//Token.hpp"
+#include "..//Headers//FrontEnd//Token.hpp"
 #include "..//Librarys//LogHTML.hpp"
-#include "..//Librarys//Dotter//Dotter.h"
+#include "C:\Users\User\Desktop\Dotter\Dotter.h"
 
 //}==============================================================================
 
@@ -342,7 +342,7 @@ void AstNode :: dump (FILE* out /* = stdout */)
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        fprintf (out, "    child[%d] = [%p]", i, children_[i]);
+        fprintf (out, "    child[%zu] = [%p]", i, children_[i]);
         std::cout << "[" << children_[i] -> key () << "]\n";
     }
 
@@ -384,6 +384,8 @@ std::vector <AstNode*>& AstNode :: children ()
 
     return children_;
 }
+
+//===============================================================================
 
 void AstNode :: clear ()
 {
@@ -446,7 +448,7 @@ void SetColor (const char* first, const char* second, const char* third)
 
 //===============================================================================
 
-void RenderTree (AstNode& root, const string& file_name)
+void RenderTree (AstNode& root, const std::string& file_name)
 {
     dtBegin (file_name.c_str ());
 
@@ -506,34 +508,43 @@ void RenderNode (AstNode* current, const size_t number)
 
 std::string BtInf (const Token& value)
 {
-    #define DEER_EXTRA(id, name, word, fontcolor, color, fillcolor, shape, style) \
+    #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
     case id:\
     {\
         SetStyle (shape, style);\
         SetColor (fontcolor, color, fillcolor);\
     \
-        return string (word);\
+        return std::string (word);\
     }
 
-    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style) \
+    #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
     case id:\
     {\
         SetStyle (shape, style);\
         SetColor (fontcolor, color, fillcolor);\
     \
-        return string (word);\
+        return std::string (word);\
+    }
+
+    #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
+    case id:\
+    {\
+        SetStyle (shape, style);\
+        SetColor (fontcolor, color, fillcolor);\
+    \
+        return std::string (word);\
     }
 
     switch (value.type)
     {
-        #include "..//Headers//CList.hpp"
+        #include "..//Headers//FrontEnd//CList.hpp"
 
         default: { throw "BtInf was broken"; }
     }
 
-    #undef DEER_EXTRA
-
-    #undef DEER
+    #undef DEER_0
+    #undef DEER_1
+    #undef DEER_2
 }
 
 #endif

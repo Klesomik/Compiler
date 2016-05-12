@@ -1,12 +1,20 @@
+typedef std::pair <bool, int> ret_t;
+
 class Optimizer
 {
     public:
         Optimizer (AstNode& root);
 
-        int detour (AstNode* current);
+        ret_t check_Add (AstNode* current);
+        ret_t check_Sub (AstNode* current);
+        ret_t check_Mul (AstNode* current);
+        ret_t check_Div (AstNode* current);
+        ret_t check_Mod (AstNode* current);
+
+        ret_t detour (AstNode* current);
 };
 
-Optimizer:: Optimizer (AstNode& root)
+Optimizer :: Optimizer (AstNode& root)
 {
     try
     {
@@ -15,131 +23,197 @@ Optimizer:: Optimizer (AstNode& root)
     }
     catch (const char* message)
     {
-        printf ("%s\n", message);
+        std::cout << message << "\n";
     }
-    catch (char const* message)
+    catch (const std::string message)
     {
-        printf ("%s\n", message);
+        std::cout << message << "\n";
+    }
+    catch (const int message)
+    {
+        std::cout << message << "\n";
     }
 }
 
-int Optimizer:: detour (AstNode* current)
+ret_t Optimizer :: detour (AstNode* current)
 {
     switch (current -> key ().type)
     {
-        case Digit:
-        {
-            int val = current -> key ().value;
+        case Digit: { current -> erase (); return ret_t  (true, current -> key ().value); }
 
-            current -> erase ();
-
-            return val;
-        }
-
-        case   Add:
-        {
-            int answer = 0;
-
-            for (size_t i = 0; i < current -> size (); i++)
-            {
-                cout << "answer = " << answer << "\n";
-
-                answer += detour (current -> children ()[i]);
-            }
-
-            cout << "answer = " << answer << "\n";
-
-            if (current -> size () == 0)
-            {
-                AstNode tmp ({ Digit, answer });
-                current -> parent () -> insert (tmp);
-
-                current -> erase ();
-            }
-
-            return answer;
-        }
-
-        case   Sub:
-        {
-            int answer = 0;
-
-            for (size_t i = 0; i < current -> size (); i++)
-                answer -= detour (current -> children ()[i]);
-
-            if (current -> size () == 0)
-            {
-                AstNode tmp ({ Digit, answer });
-                current -> parent () -> insert (tmp);
-
-                current -> erase ();
-            }
-
-            return answer;
-        }
-
-        case   Mul:
-        {
-            int answer = 0;
-
-            for (size_t i = 0; i < current -> size (); i++)
-                answer *= detour (current -> children ()[i]);
-
-            if (current -> size () == 0)
-            {
-                AstNode tmp ({ Digit, answer });
-                current -> parent () -> insert (tmp);
-
-                current -> erase ();
-            }
-
-            return answer;
-        }
-
-        case   Div:
-        {
-            int answer = 0;
-
-            for (size_t i = 0; i < current -> size (); i++)
-                answer /= detour (current -> children ()[i]);
-
-            if (current -> size () == 0)
-            {
-                AstNode tmp ({ Digit, answer });
-                current -> parent () -> insert (tmp);
-
-                current -> erase ();
-            }
-
-            return answer;
-        }
-
-        case   Mod:
-        {
-            int answer = 0;
-
-            for (size_t i = 0; i < current -> size (); i++)
-                answer %= detour (current -> children ()[i]);
-
-            if (current -> size () == 0)
-            {
-                AstNode tmp ({ Digit, answer });
-                current -> parent () -> insert (tmp);
-
-                current -> erase ();
-            }
-
-            return answer;
-        }
+        case Add: { return check_Add (current); }
+        case Sub: { return check_Sub (current); }
+        case Mul: { return check_Mul (current); }
+        case Div: { return check_Div (current); }
+        case Mod: { return check_Mod (current); }
 
         default:
         {
             for (size_t i = 0; i < current -> size (); i++)
-                detour (current -> children ()[i]);
+            {
+                ret_t eps = detour (current -> children ()[i]);
+
+                if (eps.first) current -> insert ({ Digit, eps.second });
+            }
 
             break;
         }
     }
 
-    return 0;
+    return ret_t (false, current -> key ().value);
+}
+
+ret_t Optimizer :: check_Add (AstNode* current)
+{
+    int answer = 0;
+
+    bool now = false;
+    for (size_t i = 0; i < current -> size ();)
+    {
+        ret_t eps = detour (current -> children ()[i]);
+
+        if (eps.first)
+        {
+            answer += eps.second;
+
+            now = true;
+        }
+
+        else i++;
+    }
+
+    if (current -> size () == 0)
+    {
+        current -> erase ();
+
+        return ret_t (true, answer);
+    }
+
+    else if (now) current -> insert ({ Digit, answer });
+
+    return ret_t (false, answer);
+}
+
+ret_t Optimizer :: check_Sub (AstNode* current)
+{
+    int answer = 0;
+
+    bool now = false;
+    for (size_t i = 0; i < current -> size ();)
+    {
+        ret_t eps = detour (current -> children ()[i]);
+
+        if (eps.first)
+        {
+            answer -= eps.second;
+
+            now = true;
+        }
+
+        else i++;
+    }
+
+    if (current -> size () == 0)
+    {
+        current -> erase ();
+
+        return ret_t (true, answer);
+    }
+
+    else if (now) current -> insert ({ Digit, answer });
+
+    return ret_t (false, answer);
+}
+
+ret_t Optimizer :: check_Mul (AstNode* current)
+{
+    int answer = 1;
+
+    bool now = false;
+    for (size_t i = 0; i < current -> size ();)
+    {
+        ret_t eps = detour (current -> children ()[i]);
+
+        if (eps.first)
+        {
+            answer *= eps.second;
+
+            now = true;
+        }
+
+        else i++;
+    }
+
+    if (current -> size () == 0)
+    {
+        current -> erase ();
+
+        return ret_t (true, answer);
+    }
+
+    else if (now) current -> insert ({ Digit, answer });
+
+    return ret_t (false, answer);
+}
+
+ret_t Optimizer :: check_Div (AstNode* current)
+{
+    int answer = 0;
+
+    bool now = false;
+    for (size_t i = 0; i < current -> size ();)
+    {
+        ret_t eps = detour (current -> children ()[i]);
+
+        if (eps.first)
+        {
+            answer /= eps.second;
+
+            now = true;
+        }
+
+        else i++;
+    }
+
+    if (current -> size () == 0)
+    {
+        current -> erase ();
+
+        return ret_t (true, answer);
+    }
+
+    else if (now) current -> insert ({ Digit, answer });
+
+    return ret_t (false, answer);
+}
+
+ret_t Optimizer :: check_Mod (AstNode* current)
+{
+    int answer = 0;
+
+    bool now = false;
+    for (size_t i = 0; i < current -> size ();)
+    {
+        ret_t eps = detour (current -> children ()[i]);
+
+        if (eps.first)
+        {
+            answer %= eps.second;
+
+            now = true;
+        }
+
+        else i++;
+    }
+
+    if (current -> size () == 0)
+    {
+        current -> erase ();
+
+        return ret_t (true, answer);
+    }
+
+    else if (now) current -> insert ({ Digit, answer });
+
+    return ret_t (false, answer);
 }

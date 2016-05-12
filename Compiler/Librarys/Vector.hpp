@@ -61,7 +61,7 @@ class Vector
 
         Data_T& at (const size_t i);
         void push_back (const Data_T value);
-        Data_T& pop_back ();
+        Data_T pop_back ();
 
         bool empty ();
         void clear ();
@@ -229,7 +229,7 @@ void Vector <Data_T> :: push_back (const Data_T value)
 //===============================================================================
 
 template <typename Data_T>
-Data_T& Vector <Data_T> :: pop_back ()
+Data_T Vector <Data_T> :: pop_back ()
 {
     OK_VECT
 

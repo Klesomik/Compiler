@@ -19,13 +19,15 @@ class Stack
         Stack ();
         Stack (const Stack &from);
 
-        void push  (const Data_T value);
+        void push  (const Data_T& value);
         Data_T pop ();
 
         Data_T& top ();
         size_t size ();
         void clear  ();
         bool empty  ();
+
+        Data_T& operator [] (const size_t i);
 
         void dump ();
 };
@@ -46,7 +48,7 @@ Stack <Data_T> :: Stack (const Stack &from)
 //===============================================================================
 
 template <typename Data_T>
-void Stack <Data_T> :: push (const Data_T value)
+void Stack <Data_T> :: push (const Data_T& value)
 { data_.push_back (value); }
 
 //===============================================================================
@@ -84,6 +86,16 @@ void Stack <Data_T> :: clear ()
 template <typename Data_T>
 bool Stack <Data_T> :: empty ()
 { return data_.empty (); }
+
+//===============================================================================
+
+template <typename Data_T>
+Data_T& Stack <Data_T> :: operator [] (const size_t i)
+{
+    return data_[i];
+}
+
+//===============================================================================
 
 template <typename Data_T>
 void Stack <Data_T> :: dump ()

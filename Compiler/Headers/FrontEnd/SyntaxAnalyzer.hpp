@@ -5,7 +5,7 @@
 
 #include <cstdio>
 #include <iostream>
-#include "..//Token.hpp"
+#include "Token.hpp"
 #include "..//..//Librarys//Stream.hpp"
 #include "..//..//Librarys//AbstractSyntaxNode.hpp"
 #include "..//..//Librarys//LogHTML.hpp"
@@ -37,8 +37,10 @@ class SyntaxAnalyzer
     public:
         SyntaxAnalyzer (AstNode& root, Stream <Token>& code, LogHTML& log);
 
-        bool IsLexem (Stream <Token>& example, const int token);
-        void Hello_C (std::string& example);
+        bool IsLexem    (Stream <Token>& example, const int token);
+        void FillStream (Stream <Token>& example, Stream <Token>& tmp, const int delim);
+        void Hello_C    (std::string& example);
+        void Error      (const char* message, LogHTML& log);
 
         void Get_Number                        (AstNode& current, Stream <Token>& example, LogHTML& log);
         void Get_Name                          (AstNode& current, Stream <Token>& example, LogHTML& log);
@@ -89,11 +91,32 @@ bool SyntaxAnalyzer :: IsLexem (Stream <Token>& example, const int token)
 
 //===============================================================================
 
+void SyntaxAnalyzer :: FillStream (Stream <Token>& example, Stream <Token>& tmp, const int delim)
+{
+    while (example.check () && !IsLexem (example, delim))
+    {
+        tmp.push_back (example[example.place ()]);
+
+        example++;
+    }
+}
+
+//===============================================================================
+
 void SyntaxAnalyzer :: Hello_C (std::string& example)
 {
     printf ("Input name of C   file: ");
 
     getline (std::cin, example, '\n');
+}
+
+//===============================================================================
+
+void SyntaxAnalyzer :: Error (const char* message, LogHTML& log)
+{
+    log.output (message);
+
+    throw message;
 }
 
 //===============================================================================
@@ -150,18 +173,19 @@ void SyntaxAnalyzer :: Get_Function (AstNode& current, Stream <Token>& example, 
                 example++;
             }
 
-            AstNode operation;
+            if (!tmp.empty ())
+            {
+                AstNode operation;
 
-            Get_Assignment (operation, tmp, log);
+                Get_Assignment (operation, tmp, log);
 
-            function.insert (operation);
+                function.insert (operation);
+            }
         }
         while (example.check () && IsLexem (example, Comma));
 
         if (!IsLexem (example, CloseBracket))
         {
-            example.dump ();
-
             std::cout << example[example.place ()] << "\n";
 
             Error ("Expected ')'", log);
@@ -477,7 +501,7 @@ void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example, L
 
         example++;
     }
-    tmp.push_back ({ End, 0 });
+    tmp.push_back ({ EndOfToken });
 
     example++;
 
@@ -497,32 +521,46 @@ void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example, L
 
 void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
+    std::cout << "1)\n";
+
     example++;
 
-    current.key () = { While, 0 };
+    current.key () = { While };
 
     example++;
 
     Stream <Token> tmp;
-    while (example.check () && example[example.place ()].type != CloseBracket)
+    while (example.check () && !IsLexem (example, CloseBracket))
     {
         tmp.push_back (example[example.place ()]);
 
         example++;
     }
-    tmp.push_back ({ End, 0 });
+    tmp.push_back ({ EndOfToken });
+
+    std::cout << "2)\n";
 
     example++;
 
+    std::cout << "3)\n";
+
+    tmp.dump ();
+
     Get_Lexem (current, tmp, log);
 
+    std::cout << "4)\n";
+
     Get_Lexem (current, example, log);
+
+    std::cout << "5)\n";
 }
 
 //===============================================================================
 
 void SyntaxAnalyzer :: Get_NewVar (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
+    current.key () = { DeclVar };
+
     current.insert (example[example.place ()]);
 
     example++;
@@ -561,7 +599,7 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
 
     if (example.check ())
     {
-        if (example[example.place ()].type == Begin)
+        if (IsLexem (example, Begin))
         {
             AstNode grayNode ({ Block, Block });
 
@@ -570,7 +608,7 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
             current.insert (grayNode);
         }
 
-        else if (example[example.place ()].type == If)
+        else if (IsLexem (example, If))
         {
             AstNode operation;
 
@@ -579,7 +617,7 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
             current.insert (operation);
         }
 
-        else if (example[example.place ()].type == While)
+        else if (IsLexem (example, While))
         {
             AstNode operation;
 
@@ -588,11 +626,43 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
             current.insert (operation);
         }
 
-        else if (example[example.place ()].type == Int)
+        else if (IsLexem (example, Int))
         {
-            AstNode operation ({ DeclVar, 0 });
+            AstNode operation;
 
             Get_NewVar (operation, example, log);
+
+            current.insert (operation);
+        }
+
+        else if (IsLexem (example, Return))
+        {
+            AstNode operation ({ Return });
+
+            example++;
+
+            while (example.check () && example[example.place ()].type != EndOfToken)
+            {
+                tmp.push_back (example[example.place ()]);
+
+                example++;
+            }
+
+            AstNode return_value;
+
+            Get_Assignment (return_value, tmp, log);
+
+            operation.insert (return_value);
+            current.insert   (operation);
+
+            example++;
+        }
+
+        else if (IsLexem (example, Break))
+        {
+            AstNode operation ({ Break });
+
+            example++;
 
             current.insert (operation);
         }
@@ -601,7 +671,7 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
         {
             AstNode operation;
 
-            while (example.check () && example[example.place ()].type != EndOfToken)
+            while (example.check () && !IsLexem (example, EndOfToken))
             {
                 tmp.push_back (example[example.place ()]);
 
@@ -640,10 +710,10 @@ void SyntaxAnalyzer :: Get_Block (AstNode& current, Stream <Token>& example, Log
 
 void SyntaxAnalyzer :: Get_ParamsDef (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
-    example++;
-
     do
     {
+        example++;
+
         if (IsLexem (example, Int))
         {
             AstNode operation ({ DeclVar });
@@ -656,10 +726,8 @@ void SyntaxAnalyzer :: Get_ParamsDef (AstNode& current, Stream <Token>& example,
             Get_Name (value, example, log);
 
             operation.insert (value);
-             current.insert (operation);
+            current.insert (operation);
         }
-
-        //else Error ("Expected int", log);
     }
     while (IsLexem (example, Comma));
 
@@ -686,7 +754,12 @@ void SyntaxAnalyzer :: Get_NewFunc (AstNode& current, Stream <Token>& example, L
     Get_ParamsDef  (params, example, log);
     current.insert (params);
 
-    if (IsLexem (example, EndOfToken)) return;
+    if (IsLexem (example, EndOfToken))
+    {
+        example++;
+
+        return;
+    }
 
     if (IsLexem (example, Begin))
     {

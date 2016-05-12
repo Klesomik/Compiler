@@ -1,8 +1,6 @@
 #include "Parser.hpp"
 #include "BackEnd.hpp"
 
-using namespace std;
-
 void Scan (Vector <char>& tmp);
 
 int main (int argc, const char* argv[])

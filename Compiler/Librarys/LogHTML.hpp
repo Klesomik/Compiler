@@ -4,6 +4,9 @@
 //{==============================================================================
 
 #include <cstdio>
+#include <cstring>
+#include <map>
+#include <iostream>
 #include <cstdlib>
 #include <cstdarg>
 
@@ -98,7 +101,7 @@ void LogHTML :: setFontColor (const char* color)
 
 void LogHTML :: setSize (const size_t size)
 {
-    fprintf (file_, "<font size = %d>\n", size);
+    fprintf (file_, "<font size = %zu>\n", size);
 }
 
 void LogHTML :: setStyle (const char* style)
@@ -117,9 +120,9 @@ void LogHTML :: output (const char* message, ...)
         {
             switch (*++ptr)
             {
-                case 'd': { int value    = va_arg (args, int);    fprintf (file_, "%d", value); break; }
-
+                case 'd': { int    value = va_arg (args,    int); fprintf (file_, "%d", value); break; }
                 case 'f': { double value = va_arg (args, double); fprintf (file_, "%f", value); break; }
+                case 's': { char*  value = va_arg (args,  char*); fprintf (file_, "%s", value); break; }
 
                 default:  { break; }
             }
@@ -140,13 +143,15 @@ const char* LogHTML :: name ()
     return name_;
 }
 
-void Error (const char* message, LogHTML& log);
+/*template <typename <Data_T>>
+std::ostream& operator << (LogHTML& log, const Data_T& value);
 
-void Error (const char* message, LogHTML& log)
+template <typename <Data_T>>
+LogHTML& operator << (LogHTML& log, const Data_T& value)
 {
-    log.output ("%s\n", message);
+    log.output ("%d", value);
 
-    throw message;
-}
+    return log;
+}*/
 
 #endif

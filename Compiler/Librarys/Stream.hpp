@@ -368,8 +368,8 @@ void Stream <Data_T> :: dump ()
 
     printf ("Stream (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
 
-    printf ("   size  = %d;\n", data_.size ());
-    printf ("   place = %d;\n\n", place_);
+    printf ("   size  = %zu;\n", data_.size ());
+    printf ("   place = %zu;\n\n", place_);
 
     for (size_t i = 0; i < data_.size (); i++)
     {

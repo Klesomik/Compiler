@@ -1,20 +1,28 @@
 #ifndef Assembler_hpp
     #define Assembler_hpp
 
-#include "FrontEnd//CodeGeneration.hpp"
-#include "BackEnd//ByteGeneration.hpp"
+#include <cstdio>
+#include "..//Librarys//Stream.hpp"
+#include "BackEnd//BoaLexicialAnalyzer.hpp"
+#include "BackEnd//BoaSyntaxAnalyzer.hpp"
 
 class Assembler
 {
     public:
-        Assembler (AstNode& root, FILE* boa, FILE* bit);
+        Assembler (FILE* boa, FILE* bit);
 };
 
-Assembler :: Assembler (AstNode& root, FILE* boa, FILE* bit)
+Assembler :: Assembler (FILE* boa, FILE* bit)
     {
-        CodeGeneration code_generation (root, boa);
+        Stream <BoaToken> code;
 
-        ByteGeneration byte_generation (boa, bit);
+        BoaLexicialAnalyzer lexicial;
+        lexicial.read (boa);
+        lexicial.parser (code);
+
+        BoaSyntaxAnalyzer syntax;
+        syntax.read (code);
+        syntax.write (bit);
     }
 
 #endif

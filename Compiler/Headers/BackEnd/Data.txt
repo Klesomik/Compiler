@@ -1,0 +1,31 @@
+jmp main
+
+label main
+
+push 5
+push 7
+push 9
+
+out sp
+
+call foo
+
+eof
+
+label foo
+
+push bp
+mov  bp, sp
+
+push $1
+push $2
+push $3
+
+mul
+mul
+
+top
+
+pop bp
+
+ret

@@ -1,0 +1,39 @@
+jmp main; //bp
+          //sp - count of top stack
+
+label main;
+
+push 5;
+push 7;
+push 9;
+
+call foo;
+
+eof;
+
+label foo; //x, y, z
+
+push bp;
+mov bp, sp; //bp = sp
+
+push $1; //push (stack[bp - 1])
+push $2;
+push $3;
+
+mul;
+mul;
+
+push $1;
+push $2;
+push $3;
+
+add;
+add;
+
+sub;
+
+pop ax;
+
+pop bp;
+
+ret;
