@@ -645,6 +645,29 @@ void SyntaxAnalyzer :: Get_Lexem (AstNode& current, Stream <Token>& example, Log
             example++;
         }
 
+        else if (IsLexem (example, Out))
+        {
+            AstNode operation ({ Out });
+
+            example++;
+
+            while (example.check () && example[example.place ()].type != EndOfToken)
+            {
+                tmp.push_back (example[example.place ()]);
+
+                example++;
+            }
+
+            AstNode out_value;
+
+            Get_Assignment (out_value, tmp, log);
+
+            operation.insert (out_value);
+            current.insert   (operation);
+
+            example++;
+        }
+
         else if (IsLexem (example, Break))
         {
             AstNode operation ({ Break });

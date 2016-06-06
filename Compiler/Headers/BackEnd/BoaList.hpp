@@ -9,7 +9,7 @@
 #define PRINT(cmd)         printf ("%s = %d;\n", #cmd, data_.cmd ())
 #define INPUT(type, what)  if (code_[i] == type) { i++; scanf  ("%d",  &what[code_[i]]); }
 #define OUTPUT(type, what) if (code_[i] == type) { i++; printf ("%d\n", what[code_[i]]); }
-#define CMP                { if (data_.size () >= 2) { int x = data_.pop (); int y = data_.pop (); if (x > y) { state_.mf_ = true; } if (x < y) { state_.lf_ = true; } if (x == y) { state_.ef_ = true; } data_.push (y); data_.push (x); } }
+#define CMP                { if (data_.size () >= 2) { state_.reset (); int x = data_.pop (); int y = data_.pop (); if (x > y) { state_.mf_ = true; } if (x < y) { state_.lf_ = true; } if (x == y) { state_.ef_ = true; } data_.push (y); data_.push (x); } }
 #define JUMP               i++; i = code_[i]; i--;
 #define EMPTY              data_.empty ()? printf ("yes\n") : printf ("no\n");
 #define SP_ADD             regist_[3]++;

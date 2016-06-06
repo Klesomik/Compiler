@@ -2,7 +2,8 @@
 
 int main (int argc, const char* argv[])
 {
-    system ("");
-    system ("");
-    system ("pause");
+    system ("Build.exe");
+    system ("Run.exe");
+
+    return 0;
 }

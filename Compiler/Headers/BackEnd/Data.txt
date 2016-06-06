@@ -1,15 +1,26 @@
-jmp 0
+call 0
+eof
 
-label 0 //
+label 0
 
-push 5
-push 5
+push bp
+mov bp, sp
+
+   push %0
+
+push 1001
+push 143
 
 call 1
 
+   pop %0
+
 out ax
 
-eof
+push 0
+pop ax
+
+ret
 
 label 1
 
@@ -20,63 +31,65 @@ push $1
 pop %2
 push $2
 pop %3
-label 1
 
-push %2
-push %3
-cmp_f
-pop
-pop
-jne 4
-je 5
-label 4
-push 1
-jmp 6
-label 5
-push 0
-label 6
-push 0
-cmp_f
-jne 2
-je 3
+;{========== while
 label 2
 
-push %2
+;{========== a <=> b
 push %3
+push %2
 cmp_f
 pop
 pop
-jm 7
-jle 8
-label 7
-push 1
-jmp 9
-label 8
-push 0
-label 9
-push 0
-cmp_f
-jne 10
-je 11
-label 10
+jne 3
+je 4
+label 3
+;}========== a <=> b
 
-push %2
+;{========== {
+;{========== if
+
+;{========== a <=> b
 push %3
+push %2
+cmp_f
+pop
+pop
+jm 5
+jle 6
+label 5
+;}========== a <=> b
+
+;{========== a = b
+;{========== a sub b
+push %3
+push %2
 sub
+;}========== a sub b
 dup
 pop %2
 pop
-jmp 12
-label 11
-push %3
+;}========== a = b
+jmp 7
+label 6
+
+;{========== a = b
+;{========== a sub b
 push %2
+push %3
 sub
+;}========== a sub b
 dup
 pop %3
 pop
-label 12
-jmp 1
-label 3
+;}========== a = b
+label 7
+;}========== if
+
+;{========== }
+jmp 2
+label 4
+;}========== while
 
 push %2
 pop ax

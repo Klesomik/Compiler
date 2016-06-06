@@ -1,4 +1,4 @@
-#include "BoaLexicialAnalyzer.hpp"
+//#include "BoaLexicialAnalyzer.hpp"
 #include "BoaSyntaxAnalyzer.hpp"
 #include "..//Cpu.hpp"
 
@@ -6,7 +6,7 @@ int main ()
 {
     try
     {
-        FILE* data = fopen ("Data.txt", "r");
+        /*FILE* data = fopen ("Data.txt", "r");
         Stream <BoaToken> code;
         BoaLexicialAnalyzer lexicial;
         lexicial.read (data);
@@ -17,7 +17,7 @@ int main ()
         BoaSyntaxAnalyzer syntax;
         syntax.read (code);
         syntax.write (bit);
-        fclose (bit);
+        fclose (bit);*/
 
         FILE* result = fopen ("Bit.txt", "r");
         Cpu cpu;

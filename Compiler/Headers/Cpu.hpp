@@ -8,6 +8,7 @@
 #include <cassert>
 #include "..//Librarys//Vector.hpp"
 #include "..//Librarys//Stack.hpp"
+#include "BackEnd//BoaToken.hpp"
 
 //}==============================================================================
 
@@ -153,6 +154,8 @@ void Cpu :: play ()
         #undef BOA_2
         #undef BOA_3
         #undef BOA_4
+
+        //system ("pause");
     }
 }
 

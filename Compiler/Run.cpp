@@ -1,34 +1,29 @@
-#include "Parser.hpp"
-#include "BackEnd.hpp"
+#include "Headers//Cpu.hpp"
 
-void Scan (Vector <char>& tmp);
+//{==============================================================================
+
+inline void Hello_Byte (std::string& example)
+{ printf ("Input name of Byte file: "); getline (std::cin, example, '\n'); }
+
+//Ú==============================================================================
 
 int main (int argc, const char* argv[])
 {
     try
     {
-        printf ("Deer: ");
+        std::string name_byte ("Materials//Byte.txt");
 
-        Vector <char> tmp;
-        Scan (tmp);
+        //Hello_Byte (name_byte);
 
-        Stream <char> example (tmp);
+        FILE* file_byte = fopen (name_byte.c_str (), "r");
 
-        Stream <Token> code;
-        Parser (example, code);
+        Cpu cpu;
+            cpu.read (file_byte);
+            cpu.play ();
 
-        BinaryNode <Token> root;
-        NewGetE (root, code);
+        fclose (file_byte);
 
-        FILE* asm_txt = fopen ("Data.txt", "w");
-
-        CreateAsm (root, asm_txt);
-
-        fclose (asm_txt);
-
-        //printf ("Result = %d\n", CreateAsm (root, asm_txt));
-
-        //DotDump (root, "EX1.dot");
+        system ("pause");
     }
     catch (const char* message)
     {
@@ -41,25 +36,3 @@ int main (int argc, const char* argv[])
 
     return 0;
 }
-
-void Scan (Vector <char>& tmp)
-{
-    while (true)
-    {
-        char symbol = (char) getchar ();
-
-        if (symbol == '\n') break;
-
-        tmp.push_back (symbol);
-    }
-}
-
-//Function for scan files
-//{==============================================================================
-
-inline void Hello_Boa () { printf ("Input name of Boa file: "); cin >> InIt.Boa; }
-inline void Hello_Fix () { printf ("Input name of Fix file: "); cin >> InIt.Fix; }
-inline void Hello_Asm () { printf ("Input name of Asm file: "); cin >> InIt.Asm; }
-
-//}==============================================================================
-

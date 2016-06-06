@@ -29,10 +29,10 @@ int main (int argc, const char* argv[])
 {
     try
     {
-        std::string name_c  ("Source.txt");
-        std::string name_log  ("Log.html");
-        std::string name_asm   ("Asm.txt");
-        std::string name_byte ("Byte.txt");
+        std::string name_c  ("Materials//Source.txt");
+        std::string name_log  ("Materials//Log.html");
+        std::string name_asm   ("Materials//Asm.txt");
+        std::string name_byte ("Materials//Byte.txt");
 
         //Hello_C    (name_c);
         //Hello_Log  (name_log);
@@ -49,7 +49,7 @@ int main (int argc, const char* argv[])
         fclose (file_asm);
         FILE* data = fopen (name_asm.c_str (), "r");
 
-        //Assembler assembler (data, file_byte);
+        Assembler assembler (data, file_byte);
 
         fclose (file_c);
         fclose (data);

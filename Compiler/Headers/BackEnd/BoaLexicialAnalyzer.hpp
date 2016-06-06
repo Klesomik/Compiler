@@ -67,12 +67,14 @@ class BoaLexicialAnalyzer
         void read   (FILE* data);
         void parser (Stream <BoaToken>& code_);
 
-        bool is_space  (const char symbol);
-        bool is_digit  (const char symbol);
-        bool is_alpha  (const char symbol);
-        bool is_symbol (const char symbol);
+        bool is_space   (const char symbol);
+        bool is_comment (const char symbol);
+        bool is_digit   (const char symbol);
+        bool is_alpha   (const char symbol);
+        bool is_symbol  (const char symbol);
 
         void skip   ();
+        void next   ();
         void number (Stream <BoaToken>& code_);
         void word   (Stream <BoaToken>& code_);
         void sign   (Stream <BoaToken>& code_);
@@ -97,6 +99,9 @@ void BoaLexicialAnalyzer :: parser (Stream <BoaToken>& code_)
     {
         if (is_space (buff_[buff_.place ()]))
             skip ();
+
+        else if (is_comment (buff_[buff_.place ()]))
+            next ();
 
         else if (is_digit (buff_[buff_.place ()]))
             number (code_);
@@ -123,6 +128,11 @@ bool BoaLexicialAnalyzer :: is_space (const char symbol)
     return (iscntrl (symbol) || (symbol == ' '));
 }
 
+bool BoaLexicialAnalyzer :: is_comment (const char symbol)
+{
+    return symbol == ';';
+}
+
 bool BoaLexicialAnalyzer :: is_digit (const char symbol)
 {
     return isdigit (symbol);
@@ -143,6 +153,15 @@ bool BoaLexicialAnalyzer :: is_symbol (const char symbol)
 void BoaLexicialAnalyzer :: skip ()
 {
     while (buff_.check () && is_space (buff_[buff_.place ()]))
+    {
+        char digit = 0;
+        buff_ >> digit;
+    }
+}
+
+void BoaLexicialAnalyzer :: next ()
+{
+    while (buff_.check () && buff_[buff_.place ()] != '\n')
     {
         char digit = 0;
         buff_ >> digit;

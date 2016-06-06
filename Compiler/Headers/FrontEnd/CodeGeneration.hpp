@@ -36,6 +36,7 @@ class CodeGeneration
         void give_DeclVar                                      (AstNode* current, FILE* write);
         void give_Call                                         (AstNode* current, FILE* write);
         void give_Return                                       (AstNode* current, FILE* write);
+        void give_Out                                          (AstNode* current, FILE* write);
 };
 
 //}==============================================================================
@@ -44,7 +45,9 @@ CodeGeneration :: CodeGeneration (AstNode& root, FILE* write, const size_t func)
     jmp_      (func),
     size_ram_ (0)
     {
-        fprintf (write, "jmp %d\n", 0);
+        jmp_++; //
+
+        fprintf (write, "call %d\n", 0);
         fprintf (write, "eof\n");
 
         for (size_t i = 0; i < root.size (); i++)
@@ -81,7 +84,7 @@ void CodeGeneration :: give_Add_Sub_Mul_Div_Mod (AstNode* current, FILE* write, 
 {
     fprintf (write, "\n;{========== a %s b\n", command);
 
-    for (size_t i = 0; i < current -> size (); i++)
+    for (int i = current -> size () - 1; i >= 0; i--)
         CreateAsm (current -> children ()[i], write);
 
     for (size_t i = 0; i < current -> size () - 1; i++)
@@ -96,7 +99,7 @@ void CodeGeneration :: give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNod
 {
     fprintf (write, "\n;{========== a <=> b\n");
 
-    for (size_t i = 0; i < current -> size (); i++)
+    for (int i = current -> size () - 1; i >= 0; i--)
         CreateAsm (current -> children ()[i], write);
 
     fprintf (write, "cmp_f\n");
@@ -105,22 +108,22 @@ void CodeGeneration :: give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNod
         fprintf (write, "pop\n");
 
     size_t copy_1 = jmp_++;
-    size_t copy_2 = jmp_++;
-    size_t copy_3 = jmp_++;
+    size_t copy_2 = jmp_;//++
+    //size_t copy_3 = jmp_++;
 
     fprintf (write, "%s %d\n",   if_comand, copy_1);
     fprintf (write, "%s %d\n", else_comand, copy_2);
 
     fprintf (write, "label %d\n",           copy_1);
 
-    fprintf (write, "push 1\n");
+    /*fprintf (write, "push 1\n");
     fprintf (write, "jmp %d\n",             copy_3);
 
     fprintf (write, "label %d\n",           copy_2);
 
     fprintf (write, "push 0\n");
 
-    fprintf (write, "label %d\n",           copy_3);
+    fprintf (write, "label %d\n",           copy_3);*/
 
     fprintf (write, ";}========== a <=> b\n");
 }
@@ -171,6 +174,8 @@ void CodeGeneration :: give_Assignment (AstNode* current, FILE* write)
 
 void CodeGeneration :: give_If (AstNode* current, FILE* write)
 {
+    fprintf (write, "\n;{========== if\n");
+
     switch (current -> children ()[0] -> key ().type)
     {
         case Equal:     { give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (current -> children ()[0], write,  "je", "jne"); break; }
@@ -183,37 +188,43 @@ void CodeGeneration :: give_If (AstNode* current, FILE* write)
         default: { CreateAsm (current -> children ()[0], write); break; }
     }
 
-    fprintf (write, "push 0\n");
-    fprintf (write, "cmp_f\n");
+    //fprintf (write, "push 0\n");
+    //fprintf (write, "cmp_f\n");
 
-    size_t copy_1 = jmp_++;
-    size_t copy_2 = jmp_++;
-    size_t copy_3 = jmp_++;
+    //size_t copy_1 = jmp_++;
+    //size_t copy_2 = jmp_++;
+    //size_t copy_3 = jmp_++;
 
-    fprintf (write, "jne %d\n", copy_1);
-    fprintf (write, "je %d\n",  copy_2);
+    //fprintf (write, "jne %d\n", copy_1);
+    //fprintf (write, "je %d\n",  copy_2);
 
-    fprintf (write, "label %d\n", copy_1);
+    //fprintf (write, "label %d\n", copy_1);
 
     CreateAsm (current -> children ()[1], write);
+    size_t theGreatCopy = jmp_++;
 
-    fprintf (write, "jmp %d\n", copy_3);
+    size_t if_exit = jmp_++;
+    fprintf (write, "jmp %d\n", /*copy_3*/ if_exit);
 
-    fprintf (write, "label %d\n", copy_2);
+    fprintf (write, "label %d\n", /*copy_2*/ theGreatCopy);
 
     if (current -> size () == 3)
         CreateAsm (current -> children ()[2], write);
 
-    fprintf (write, "label %d\n", copy_3);
+    fprintf (write, "label %d\n", /*copy_3*/ if_exit);
+
+    fprintf (write, ";}========== if\n");
 }
 
 //===============================================================================
 
 void CodeGeneration :: give_While (AstNode* current, FILE* write)
 {
+    fprintf (write, "\n;{========== while\n");
+
     size_t copy_1 = jmp_++;
-    size_t copy_2 = jmp_++;
-    size_t copy_3 = jmp_++;
+    //size_t copy_2 = jmp_++;
+    //size_t copy_3 = jmp_++;
 
     fprintf (write, "label %d\n", copy_1);
 
@@ -229,19 +240,23 @@ void CodeGeneration :: give_While (AstNode* current, FILE* write)
         default: { CreateAsm (current -> children ()[0], write); break; }
     }
 
-    fprintf (write, "push 0\n");
-    fprintf (write, "cmp_f\n");
+    //fprintf (write, "push 0\n");
+    //fprintf (write, "cmp_f\n");
 
-    fprintf (write, "jne %d\n", copy_2);
-    fprintf (write, "je %d\n",  copy_3);
+    //fprintf (write, "jne %d\n", copy_2);
+    //fprintf (write, "je %d\n",  copy_3);
 
-    fprintf (write, "label %d\n", copy_2);
+    //fprintf (write, "label %d\n", copy_2);
+
+    size_t theGreatCopy = jmp_++;
 
     CreateAsm (current -> children ()[1], write);
 
     fprintf (write, "jmp %d\n", copy_1);
 
-    fprintf (write, "label %d\n", copy_3);
+    fprintf (write, "label %d\n", /*copy_3*/ theGreatCopy);
+
+    fprintf (write, ";}========== while\n");
 }
 
 //===============================================================================
@@ -262,6 +277,8 @@ void CodeGeneration :: give_Name (AstNode* current, FILE* write)
 
 void CodeGeneration :: give_Block (AstNode* current, FILE* write)
 {
+    fprintf (write, "\n;{========== {");
+
     for (size_t i = 0; i < size_ram_; i++)
         fprintf (write, "push %%%d\n", i);
 
@@ -270,13 +287,15 @@ void CodeGeneration :: give_Block (AstNode* current, FILE* write)
 
     for (int i = size_ram_ - 1; i >= 0; i--)
         fprintf (write, "pop %%%d\n", i);
+
+    fprintf (write, "\n;{========== }\n");
 }
 
 //===============================================================================
 
 void CodeGeneration :: give_DeclFunc (AstNode* current, FILE* write)
 {
-    if (current -> size () == 4)
+    if (current -> size () == 4) //TODO: FIND bug with label++
     {
         fprintf (write, "\n");
         fprintf (write, "label %d\n\n", current -> children ()[1] -> key ().value);
@@ -284,7 +303,7 @@ void CodeGeneration :: give_DeclFunc (AstNode* current, FILE* write)
         fprintf (write, "push bp\n");
         fprintf (write, "mov bp, sp\n\n");
 
-        for (size_t i = 0; i < current -> children ()[2] -> size (); i++)
+        for (size_t i = 0; i < current -> children ()[2] -> size (); i++) //How many params
         {
             fprintf (write, "push $%d\n", i + 1);
             fprintf (write, "pop %%%d\n", current -> children ()[2] -> children ()[i] -> children ()[1] -> key ().value);
@@ -345,6 +364,18 @@ void CodeGeneration :: give_Return (AstNode* current, FILE* write)
     CreateAsm (current -> children ()[0], write);
 
     fprintf (write, "pop ax\n");
+}
+
+//===============================================================================
+
+void CodeGeneration :: give_Out (AstNode* current, FILE* write)
+{
+    fprintf (write, "\n");
+
+    CreateAsm (current -> children ()[0], write);
+
+    fprintf (write, "pop bx\n");
+    fprintf (write, "out bx\n");
 }
 
 #endif
