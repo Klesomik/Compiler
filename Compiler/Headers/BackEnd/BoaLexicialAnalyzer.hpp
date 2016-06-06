@@ -109,7 +109,9 @@ void BoaLexicialAnalyzer :: parser (Stream <BoaToken>& code_)
 
         else
         {
-            std::cout << buff_[buff_.place ()] << "\n\n";
+            std::cout << "|" << buff_[buff_.place ()] << "|\n\n";
+
+            buff_.dump ();
 
             throw "Unknown symbol";
         }
@@ -158,13 +160,13 @@ void BoaLexicialAnalyzer :: number (Stream <BoaToken>& code_)
         value = value * 10 + digit - '0';
     }
 
-    code_.push_back ({ Digit, value });
+    code_.push_back ({ BoaDigit, value });
 }
 
 void BoaLexicialAnalyzer :: word (Stream <BoaToken>& code_)
 {
     std::string value;
-    while (buff_.check () && is_alpha (buff_[buff_.place ()]))
+    while (buff_.check () && (is_alpha (buff_[buff_.place ()]) || buff_[buff_.place ()] == '_'))
     {
         char symbol = 0;
         buff_ >> symbol;
@@ -178,7 +180,7 @@ void BoaLexicialAnalyzer :: word (Stream <BoaToken>& code_)
 
     else
     {
-        code_.push_back ({ Name, names_.size () });
+        code_.push_back ({ BoaName, names_.size () });
 
         names_[value] = names_.size () - 1;
     }

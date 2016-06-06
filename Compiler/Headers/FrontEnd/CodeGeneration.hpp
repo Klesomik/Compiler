@@ -79,17 +79,23 @@ void CodeGeneration :: CreateAsm (AstNode* current, FILE* write)
 
 void CodeGeneration :: give_Add_Sub_Mul_Div_Mod (AstNode* current, FILE* write, const char* command)
 {
+    fprintf (write, "\n;{========== a %s b\n", command);
+
     for (size_t i = 0; i < current -> size (); i++)
         CreateAsm (current -> children ()[i], write);
 
     for (size_t i = 0; i < current -> size () - 1; i++)
         fprintf (write, "%s\n", command);
+
+    fprintf (write, ";}========== a %s b\n", command);
 }
 
 //===============================================================================
 
 void CodeGeneration :: give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNode* current, FILE* write, const char* if_comand, const char* else_comand)
 {
+    fprintf (write, "\n;{========== a <=> b\n");
+
     for (size_t i = 0; i < current -> size (); i++)
         CreateAsm (current -> children ()[i], write);
 
@@ -115,6 +121,8 @@ void CodeGeneration :: give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNod
     fprintf (write, "push 0\n");
 
     fprintf (write, "label %d\n",           copy_3);
+
+    fprintf (write, ";}========== a <=> b\n");
 }
 
 //===============================================================================
@@ -143,6 +151,8 @@ void CodeGeneration :: give_Or (AstNode* current, FILE* write)
 
 void CodeGeneration :: give_Assignment (AstNode* current, FILE* write)
 {
+    fprintf (write, "\n;{========== a = b");
+
     CreateAsm (current -> children ()[current -> children ().size () - 1], write);
 
     for (size_t i = 0; i < current -> children ().size () - 1; i++)
@@ -153,6 +163,8 @@ void CodeGeneration :: give_Assignment (AstNode* current, FILE* write)
     }
 
     fprintf (write, "pop\n");
+
+    fprintf (write, ";}========== a = b\n");
 }
 
 //===============================================================================

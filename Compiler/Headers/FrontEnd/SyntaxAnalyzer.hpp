@@ -521,8 +521,6 @@ void SyntaxAnalyzer :: Get_If_Else (AstNode& current, Stream <Token>& example, L
 
 void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example, LogHTML& log)
 {
-    std::cout << "1)\n";
-
     example++;
 
     current.key () = { While };
@@ -538,21 +536,10 @@ void SyntaxAnalyzer :: Get_While (AstNode& current, Stream <Token>& example, Log
     }
     tmp.push_back ({ EndOfToken });
 
-    std::cout << "2)\n";
-
     example++;
 
-    std::cout << "3)\n";
-
-    tmp.dump ();
-
     Get_Lexem (current, tmp, log);
-
-    std::cout << "4)\n";
-
     Get_Lexem (current, example, log);
-
-    std::cout << "5)\n";
 }
 
 //===============================================================================

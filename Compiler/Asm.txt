@@ -1,0 +1,87 @@
+jmp 0
+eof
+
+label 1
+
+push bp
+mov bp, sp
+
+push $1
+pop %2
+push $2
+pop %3
+label 1
+
+;{========== a <=> b
+push %2
+push %3
+cmp_f
+pop
+pop
+jne 4
+je 5
+label 4
+push 1
+jmp 6
+label 5
+push 0
+label 6
+;}========== a <=> b
+push 0
+cmp_f
+jne 2
+je 3
+label 2
+
+;{========== a <=> b
+push %2
+push %3
+cmp_f
+pop
+pop
+jm 7
+jle 8
+label 7
+push 1
+jmp 9
+label 8
+push 0
+label 9
+;}========== a <=> b
+push 0
+cmp_f
+jne 10
+je 11
+label 10
+
+;{========== a = b
+;{========== a sub b
+push %2
+push %3
+sub
+;}========== a sub b
+dup
+pop %2
+pop
+;}========== a = b
+jmp 12
+label 11
+
+;{========== a = b
+;{========== a sub b
+push %3
+push %2
+sub
+;}========== a sub b
+dup
+pop %3
+pop
+;}========== a = b
+label 12
+jmp 1
+label 3
+
+push %2
+pop ax
+
+ret

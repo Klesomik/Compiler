@@ -48,7 +48,7 @@ Compiler :: Compiler (FILE* c_file, LogHTML& log, FILE* asm_file):
         SyntaxAnalyzer     syntax_analyzer (root, code, log);
         //SemanticAnalyzer semantic_analyzer (root, log);
         //Optimizer                optimizer (root);
-        //CodeGeneration     code_generation (root, asm_file, semantic_analyzer.size ());
+        CodeGeneration     code_generation (root, asm_file, 1);
 
         clock_t end = clock ();
         log.setColor ("blue");

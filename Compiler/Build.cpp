@@ -49,7 +49,7 @@ int main (int argc, const char* argv[])
         fclose (file_asm);
         FILE* data = fopen (name_asm.c_str (), "r");
 
-        Assembler assembler (data, file_byte);
+        //Assembler assembler (data, file_byte);
 
         fclose (file_c);
         fclose (data);

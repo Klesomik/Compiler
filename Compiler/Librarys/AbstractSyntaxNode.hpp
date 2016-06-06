@@ -11,7 +11,7 @@
 #include <vector>
 #include "..//Headers//FrontEnd//Token.hpp"
 #include "..//Librarys//LogHTML.hpp"
-#include "C:\Users\User\Desktop\Dotter\Dotter.h"
+#include "C:\Users\Artem\Desktop\DotterOld\Dotter.h"
 
 //}==============================================================================
 
@@ -178,7 +178,7 @@ int AstNode :: position (AstNode* child)
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        if (children_[i] == child) return i;
+        if (children_[i] == child) return (int) i;
     }
 
     OK_ASTNODE
