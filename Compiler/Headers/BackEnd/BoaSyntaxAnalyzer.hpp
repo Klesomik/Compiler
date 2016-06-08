@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
 #include <map>
-#include "..//..//Librarys//Vector.hpp"
-#include "..//..//Librarys//Stream.hpp"
+#include "..//..//Libraries//Vector.hpp"
+#include "..//..//Libraries//Stream.hpp"
 #include "BoaToken.hpp"
 
 class BoaSyntaxAnalyzer

@@ -4,8 +4,8 @@
 //{==============================================================================
 
 #include <ctime>
-#include "..//Librarys//Stream.hpp"
-#include "..//Librarys//AbstractSyntaxNode.hpp"
+#include "..//Libraries//Stream.hpp"
+#include "..//Libraries//AbstractSyntaxNode.hpp"
 #include "FrontEnd//LexicialAnalyzer.hpp"
 //#include "FrontEnd//Preprocessor.hpp"
 #include "FrontEnd//SyntaxAnalyzer.hpp"

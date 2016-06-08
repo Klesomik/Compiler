@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstring>
 #include <map>
-#include "..//..//Librarys//Stream.hpp"
+#include "..//..//Libraries//Stream.hpp"
 #include "Token.hpp"
 
 //}==============================================================================

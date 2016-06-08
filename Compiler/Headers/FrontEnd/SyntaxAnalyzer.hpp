@@ -6,9 +6,9 @@
 #include <cstdio>
 #include <iostream>
 #include "Token.hpp"
-#include "..//..//Librarys//Stream.hpp"
-#include "..//..//Librarys//AbstractSyntaxNode.hpp"
-#include "..//..//Librarys//LogHTML.hpp"
+#include "..//..//Libraries//Stream.hpp"
+#include "..//..//Libraries//AbstractSyntaxNode.hpp"
+#include "..//..//Libraries//LogHTML.hpp"
 
 //}==============================================================================
 

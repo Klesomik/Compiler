@@ -1,100 +1,152 @@
 call 0
 eof
 
-label 0
+;{==========Function
+    label 0
 
-push bp
-mov bp, sp
+    ;{==========System
+        push bp
+        mov bp, sp
+    ;}==========System
 
+    ;{==========Params
+    ;}==========Params
 
-   push %0
+    ;{==========Out
+        
+        ;{==========Call
+            
+            ;{==========Params
+                push 1001
+                push 143
+            ;}==========Params
 
-push 241
-push 653
+            call 1
+            
+            pop %0
+            
+            push ax
+        ;}==========Call
 
-call 1
+        pop bx
+        out bx
+    ;}==========Out
 
-   pop %0
+    ;{==========Out
+        
+        ;{==========Call
+            
+            ;{==========Params
+                push 150
+                push 45
+            ;}==========Params
 
-push ax
-pop bx
-out bx
+            call 1
+            
+            pop %0
+            
+            push ax
+        ;}==========Call
 
-push 0
-pop ax
+        pop bx
+        out bx
+    ;}==========Out
 
-ret
+    ;{==========Out
+        
+        ;{==========Call
+            
+            ;{==========Params
+                push 241
+                push 653
+            ;}==========Params
 
-label 1
+            call 1
+            
+            pop %0
+            
+            push ax
+        ;}==========Call
 
-push bp
-mov bp, sp
+        pop bx
+        out bx
+    ;}==========Out
 
-push $1
-pop %2
-push $2
-pop %3
+    ;{==========Return
+        push 0
+        pop ax
+        pop bp
+    ;}==========Return
 
-;{========== while
-label 2
+    ret
+;}==========Function
 
-;{========== a <=> b
-push %3
-push %2
-cmp_f
-pop
-pop
-jne 3
-je 4
-label 3
-;}========== a <=> b
+;{==========Function
+    label 1
 
-;{========== {
-;{========== if
+    ;{==========System
+        push bp
+        mov bp, sp
+    ;}==========System
 
-;{========== a <=> b
-push %3
-push %2
-cmp_f
-pop
-pop
-jm 5
-jle 6
-label 5
-;}========== a <=> b
+    ;{==========Params
+        push $1
+        pop %2
+        
+        push $2
+        pop %3
+    ;}==========Params
 
-;{========== a = b
-;{========== a sub b
-push %3
-push %2
-sub
-;}========== a sub b
-dup
-pop %2
-pop
-;}========== a = b
-jmp 7
-label 6
+    ;{==========While
+        label 2
+        push %3
+        push %2
+        cmp_f
+                pop
+        jne 3
+        je 4
+        label 3
+        ;{==========If
+            push %3
+            push %2
+            cmp_f
+                        pop
+            jm 5
+            jle 6
+            label 5
+            ;{==========Actions
+                push %3
+                push %2
+                sub
+            ;}==========Actions
 
-;{========== a = b
-;{========== a sub b
-push %2
-push %3
-sub
-;}========== a sub b
-dup
-pop %3
-pop
-;}========== a = b
-label 7
-;}========== if
+            dup
+            pop %2
+            pop
+            jmp 7
+            label 6
+            ;{==========Actions
+                push %2
+                push %3
+                sub
+            ;}==========Actions
 
-;{========== }
-jmp 2
-label 4
-;}========== while
+            dup
+            pop %3
+            pop
+            label 7
+        ;}==========If
 
-push %2
-pop ax
+        jmp 2
+        label 4
+    ;}==========While
 
-ret
+    ;{==========Return
+        push %2
+        pop ax
+        pop bp
+    ;}==========Return
+
+    ret
+;}==========Function
+

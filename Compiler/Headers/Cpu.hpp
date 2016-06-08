@@ -6,8 +6,8 @@
 
 #include <cstdio>
 #include <cassert>
-#include "..//Librarys//Vector.hpp"
-#include "..//Librarys//Stack.hpp"
+#include "..//Libraries//Vector.hpp"
+#include "..//Libraries//Stack.hpp"
 #include "BackEnd//BoaToken.hpp"
 
 //}==============================================================================

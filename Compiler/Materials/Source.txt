@@ -1,6 +1,10 @@
+int gcd (int a, int b);
+
 int main ()
 {
-    out gcd (241, 653);
+    out gcd (1001, 143);
+    out gcd ( 150,  45);
+    out gcd ( 241, 653);
 
     return 0;
 }

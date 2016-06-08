@@ -1,8 +1,8 @@
 #ifndef TreeCheck_hpp
     #define TreeCheck_hpp
 
-#include "..//..//Librarys//AbstractSyntaxNode.hpp"
-#include "..//..//Librarys//LogHTML.hpp"
+#include "..//..//Libraries//AbstractSyntaxNode.hpp"
+#include "..//..//Libraries//LogHTML.hpp"
 
 //{==============================================================================
 

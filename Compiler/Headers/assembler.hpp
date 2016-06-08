@@ -2,7 +2,7 @@
     #define Assembler_hpp
 
 #include <cstdio>
-#include "..//Librarys//Stream.hpp"
+#include "..//Libraries//Stream.hpp"
 #include "BackEnd//BoaLexicialAnalyzer.hpp"
 #include "BackEnd//BoaSyntaxAnalyzer.hpp"
 
