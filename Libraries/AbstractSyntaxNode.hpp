@@ -11,7 +11,7 @@
 #include <vector>
 #include "..//Headers//FrontEnd//Token.hpp"
 #include "..//Libraries//LogHTML.hpp"
-#include "C:\Users\Artem\Desktop\DotterOld\Dotter.h"
+#include "Dotter//Dotter.hpp"
 
 //}==============================================================================
 
@@ -425,7 +425,7 @@ void SetStyle (const char* first, const char* second);
 void SetColor (const char* first, const char* second, const char* third);
 
 void RenderTree (AstNode&    root, const std::string& file_name);
-void RenderNode (AstNode* current, const size_t number);
+void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
 
 std::string BtInf (const Token& value);
 
@@ -450,7 +450,11 @@ void SetColor (const char* first, const char* second, const char* third)
 
 void RenderTree (AstNode& root, const std::string& file_name)
 {
-    dtBegin (file_name.c_str ());
+    //dtBegin (file_name.c_str ());
+
+    Dotter::Digraph tree (file_name.c_str (), "AST.jpg");
+
+    tree.open ();
 
     std::string title (BtInf (root.key ()));
 
@@ -465,19 +469,17 @@ void RenderTree (AstNode& root, const std::string& file_name)
 
     #endif /* DEBUG_ASTNODE */
 
-    dtNode (0, title.c_str ());
+    tree.node (0, title.c_str ());
 
     for (size_t i = 0; i < root.children ().size (); i++)
         RenderNode (root.children ()[i], 0);
 
-    dtEnd ();
-
-    dtRender (file_name.c_str ());
+    tree.render ("Libraries//Dotter");
 }
 
 //===============================================================================
 
-void RenderNode (AstNode* current, const size_t number)
+void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
 {
     static size_t count = 0;
                   count++;
@@ -495,13 +497,13 @@ void RenderNode (AstNode* current, const size_t number)
 
     #endif /* DEBUG_ASTNODE */
 
-    dtNode (count, title.c_str ());
-    dtLink (number, count);
+    tree.node (count, title.c_str ());
+    tree.link (number, count);
 
     size_t copy_count = count;
 
     for (size_t i = 0; i < current -> children ().size (); i++)
-        RenderNode (current -> children ()[i], copy_count);
+        RenderNode (tree, current -> children ()[i], copy_count);
 }
 
 //===============================================================================
