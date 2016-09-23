@@ -29,10 +29,10 @@ int main (int argc, const char* argv[])
 {
     try
     {
-        std::string name_c  ("Materials//Source.txt");
-        std::string name_log  ("Materials//Log.html");
-        std::string name_asm   ("Materials//Asm.txt");
-        std::string name_byte ("Materials//Byte.txt");
+        std::string name_c  ("..//Materials//Source.txt");
+        std::string name_log  ("..//Materials//Log.html");
+        std::string name_asm   ("..//Materials//Asm.txt");
+        std::string name_byte ("..//Materials//Byte.txt");
 
         //Hello_C    (name_c);
         //Hello_Log  (name_log);

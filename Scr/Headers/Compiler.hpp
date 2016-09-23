@@ -53,7 +53,7 @@ Compiler :: Compiler (FILE* c_file, LogHTML& log, FILE* asm_file):
         clock_t end = clock ();
         log.setColor ("blue");
 
-        RenderTree (root, "GCD.dot");
+        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg");
 
         log.output ("Build started on: %f\n",   (float) start / CLOCKS_PER_SEC);
         log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);

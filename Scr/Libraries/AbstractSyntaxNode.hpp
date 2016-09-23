@@ -421,42 +421,40 @@ bool operator != (const AstNode& a, const AstNode& b)
 
 //{==============================================================================
 
-void SetStyle (const char* first, const char* second);
-void SetColor (const char* first, const char* second, const char* third);
+void SetStyle (Dotter::Digraph& tree, const char* first, const char* second);
+void SetColor (Dotter::Digraph& tree, const char* first, const char* second, const char* third);
 
-void RenderTree (AstNode&    root, const std::string& file_name);
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name);
 void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
 
-std::string BtInf (const Token& value);
+std::string BtInf (Dotter::Digraph& tree, const Token& value);
 
 //}==============================================================================
 
-void SetStyle (const char* first, const char* second)
+void SetStyle (Dotter::Digraph& tree, const char* first, const char* second)
 {
-    dtNodeStyle ().shape (first)
-                  .style (second);
+    tree.set ("shape", first);
+    tree.set ("style", second);
 }
 
 //===============================================================================
 
-void SetColor (const char* first, const char* second, const char* third)
+void SetColor (Dotter::Digraph& tree, const char* first, const char* second, const char* third)
 {
-    dtNodeStyle ().fontcolor (first)
-                  .color     (second)
-                  .fillcolor (third);
+    tree.set ("fontcolor", first);
+    tree.set ("color", second);
+    tree.set ("fillcolor", third);
 }
 
 //===============================================================================
 
-void RenderTree (AstNode& root, const std::string& file_name)
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name)
 {
-    //dtBegin (file_name.c_str ());
-
-    Dotter::Digraph tree (file_name.c_str (), "AST.jpg");
+    Dotter::Digraph tree (file_name.c_str (), render_name.c_str ());
 
     tree.open ();
 
-    std::string title (BtInf (root.key ()));
+    std::string title (BtInf (tree, root.key ()));
 
     #ifdef TEST_ASTNODE
 
@@ -472,7 +470,7 @@ void RenderTree (AstNode& root, const std::string& file_name)
     tree.node (0, title.c_str ());
 
     for (size_t i = 0; i < root.children ().size (); i++)
-        RenderNode (root.children ()[i], 0);
+        RenderNode (tree, root.children ()[i], 0);
 
     tree.render ("Libraries//Dotter");
 }
@@ -484,7 +482,7 @@ void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
     static size_t count = 0;
                   count++;
 
-    std::string title (BtInf (current -> key ()));
+    std::string title (BtInf (tree, current -> key ()));
 
     #ifdef TEST_ASTNODE
 
@@ -498,7 +496,7 @@ void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
     #endif /* DEBUG_ASTNODE */
 
     tree.node (count, title.c_str ());
-    tree.link (number, count);
+    tree.link (number, count, "");
 
     size_t copy_count = count;
 
@@ -508,13 +506,13 @@ void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
 
 //===============================================================================
 
-std::string BtInf (const Token& value)
+std::string BtInf (Dotter::Digraph& tree, const Token& value)
 {
     #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
     case id:\
     {\
-        SetStyle (shape, style);\
-        SetColor (fontcolor, color, fillcolor);\
+        SetStyle (tree, shape, style);\
+        SetColor (tree, fontcolor, color, fillcolor);\
     \
         return std::string (word);\
     }
@@ -522,8 +520,8 @@ std::string BtInf (const Token& value)
     #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
     case id:\
     {\
-        SetStyle (shape, style);\
-        SetColor (fontcolor, color, fillcolor);\
+        SetStyle (tree, shape, style);\
+        SetColor (tree, fontcolor, color, fillcolor);\
     \
         return std::string (word);\
     }
@@ -531,8 +529,8 @@ std::string BtInf (const Token& value)
     #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
     case id:\
     {\
-        SetStyle (shape, style);\
-        SetColor (fontcolor, color, fillcolor);\
+        SetStyle (tree, shape, style);\
+        SetColor (tree, fontcolor, color, fillcolor);\
     \
         return std::string (word);\
     }

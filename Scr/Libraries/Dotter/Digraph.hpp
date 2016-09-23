@@ -40,8 +40,10 @@ namespace Dotter
             void begin ();
             void end   ();
 
+            void set (const char* comand, const char* param);
+
             void node (const size_t number, const char* label, ...);
-            void link (const size_t from, const size_t to, const bool oriented, const char* label, ...);
+            void link (const size_t from, const size_t to, const char* label, ...);
 
             void comment (const char* label, ...);
 
@@ -165,6 +167,11 @@ void Dotter::Digraph::end ()
     fprintf (dotFile_, "}\n");
 }
 
+void Dotter::Digraph::set (const char* comand, const char* param)
+{
+    fprintf (dotFile_, "node [%s=\"%s\"];\n", comand, param);
+}
+
 void Dotter::Digraph::node (const size_t number, const char* label, ...)
 {
     fprintf (dotFile_, "Node%u ", number);
@@ -186,11 +193,11 @@ void Dotter::Digraph::node (const size_t number, const char* label, ...)
     fprintf (dotFile_, "];\n");
 }
 
-void Dotter::Digraph::link (const size_t from, const size_t to, const bool oriented, const char* label, ...)
+void Dotter::Digraph::link (const size_t from, const size_t to, const char* label, ...)
 {
-    const char* type = oriented? "->" : "--";
+    //const char* type = oriented? "->" : "--";
 
-    fprintf (dotFile_, "Node%u %s Node%u ", from, type, to);
+    fprintf (dotFile_, "Node%u -> Node%u ", from, to);
 
     fprintf (dotFile_, "[");
 
