@@ -11,6 +11,9 @@
 
 //{==============================================================================
 
+inline void Input (const char* prefix, std::string& example)
+{ printf ("%s", prefix); getline (std::cin, example, '\n'); }
+
 inline void Hello_C    (std::string& example)
 { printf ("Input name of C    file: "); getline (std::cin, example, '\n'); }
 

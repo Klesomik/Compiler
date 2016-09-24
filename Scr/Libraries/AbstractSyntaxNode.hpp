@@ -11,7 +11,6 @@
 #include <vector>
 #include "..//Headers//FrontEnd//Token.hpp"
 #include "..//Libraries//LogHTML.hpp"
-#include "Dotter//Dotter.hpp"
 
 //}==============================================================================
 
@@ -80,6 +79,9 @@ class AstNode
 
         AstNode& copy (const AstNode& from);
         AstNode& move (AstNode& from);
+
+        void read (FILE* out);
+        void write (FILE* in);
 
         Token&                  key ();
         size_t                 size ();
@@ -303,6 +305,69 @@ AstNode& AstNode :: move (AstNode& from)
 
 //===============================================================================
 
+void AstNode :: read (FILE* out)
+{
+    char start = 0;
+
+    fscanf (out, "%c", &start);
+
+    assert (start == '<');
+
+    fscanf (out, "%d,%d", &key_.type, &key_.value);
+
+    for (char current = 0;;)
+    {
+        fscanf (out, "%c", &current);
+
+        if (current == '>') break;
+
+        else if (current == ',')
+        {
+            fscanf (out, "%c", &current);
+
+            assert (current == '(');
+
+            insert ();
+
+            children_[children_.size () - 1] -> read (out);
+
+            fscanf (out, "%c", &current);
+
+            assert (current == ')');
+        }
+
+        else assert (false);
+    }
+}
+
+//===============================================================================
+
+void AstNode :: write (FILE* in)
+{
+    fprintf (in, "<");
+
+    fprintf (in, "%d,%d", key_.type, key_.value);
+
+    if (!children_.empty ())
+        fprintf (in, ",");
+
+    for (size_t i = 0; i < children_.size (); i++)
+    {
+        fprintf (in, "(");
+
+        children_[i] -> write (in);
+
+        fprintf (in, ")");
+
+        if (i != children_.size () - 1)
+            fprintf (in, ",");
+    }
+
+    fprintf (in, ">");
+}
+
+//===============================================================================
+
 bool AstNode :: ok ()
 {
     if (parent_)
@@ -419,132 +484,6 @@ bool operator != (const AstNode& a, const AstNode& b)
     return !(&a == &b);
 }
 
-//{==============================================================================
-
-void SetStyle (Dotter::Digraph& tree, const char* first, const char* second);
-void SetColor (Dotter::Digraph& tree, const char* first, const char* second, const char* third);
-
-void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name);
-void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
-
-std::string BtInf (Dotter::Digraph& tree, const Token& value);
-
-//}==============================================================================
-
-void SetStyle (Dotter::Digraph& tree, const char* first, const char* second)
-{
-    tree.set ("shape", first);
-    tree.set ("style", second);
-}
-
-//===============================================================================
-
-void SetColor (Dotter::Digraph& tree, const char* first, const char* second, const char* third)
-{
-    tree.set ("fontcolor", first);
-    tree.set ("color", second);
-    tree.set ("fillcolor", third);
-}
-
-//===============================================================================
-
-void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name)
-{
-    Dotter::Digraph tree (file_name.c_str (), render_name.c_str ());
-
-    tree.open ();
-
-    std::string title (BtInf (tree, root.key ()));
-
-    #ifdef TEST_ASTNODE
-
-        char extra[640] = "";
-
-        for (size_t i = 0; i < root.children ().size (); i++)
-            sprintf (extra, "child[%d] = %p\n", i, root.children ()[i]);
-
-        title += extra;
-
-    #endif /* DEBUG_ASTNODE */
-
-    tree.node (0, title.c_str ());
-
-    for (size_t i = 0; i < root.children ().size (); i++)
-        RenderNode (tree, root.children ()[i], 0);
-
-    tree.render ("Libraries//Dotter");
-}
-
-//===============================================================================
-
-void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
-{
-    static size_t count = 0;
-                  count++;
-
-    std::string title (BtInf (tree, current -> key ()));
-
-    #ifdef TEST_ASTNODE
-
-        char extra[640] = "";
-
-        for (size_t i = 0; i < current -> children ().size (); i++)
-            sprintf (extra, "child[%d] = %p\n", i, current -> children ()[i]);
-
-        title += extra;
-
-    #endif /* DEBUG_ASTNODE */
-
-    tree.node (count, title.c_str ());
-    tree.link (number, count, "");
-
-    size_t copy_count = count;
-
-    for (size_t i = 0; i < current -> children ().size (); i++)
-        RenderNode (tree, current -> children ()[i], copy_count);
-}
-
-//===============================================================================
-
-std::string BtInf (Dotter::Digraph& tree, const Token& value)
-{
-    #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id:\
-    {\
-        SetStyle (tree, shape, style);\
-        SetColor (tree, fontcolor, color, fillcolor);\
-    \
-        return std::string (word);\
-    }
-
-    #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id:\
-    {\
-        SetStyle (tree, shape, style);\
-        SetColor (tree, fontcolor, color, fillcolor);\
-    \
-        return std::string (word);\
-    }
-
-    #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id:\
-    {\
-        SetStyle (tree, shape, style);\
-        SetColor (tree, fontcolor, color, fillcolor);\
-    \
-        return std::string (word);\
-    }
-
-    switch (value.type)
-    {
-        #include "..//Headers//FrontEnd//CList.hpp"
-
-        default: { throw "BtInf was broken"; }
-    }
-
-    #undef DEER_0
-    #undef DEER_1
-    #undef DEER_2
-}
+#include "ASTInfo.hpp"
 
 #endif

@@ -34,6 +34,14 @@ Compiler :: Compiler (FILE* c_file, LogHTML& log, FILE* asm_file):
     code (),
     root ({ Block })
     {
+        /*FILE* ast = fopen ("AST.txt", "r");
+
+        assert (ast);
+
+        root.read (ast);
+
+        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//ASTNew.jpg");*/
+
         log.setFontColor ("white");
         log.setSize      (100);
         log.setColor     ("blue");
@@ -61,6 +69,14 @@ Compiler :: Compiler (FILE* c_file, LogHTML& log, FILE* asm_file):
         log.output ("========== Build finished ==========\n");
 
         log.out ();
+
+        FILE* ast = fopen ("..//Materials//AST.txt", "w");
+
+        assert (ast);
+
+        root.write (ast);
+
+        fclose (ast);
     }
 
 #endif
