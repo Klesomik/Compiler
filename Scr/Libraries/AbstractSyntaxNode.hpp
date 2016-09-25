@@ -51,8 +51,6 @@ class AstNode
     private:
         Token key_;
 
-        AstNode* parent_;
-
         std::vector <AstNode*> children_;
 
         AstNode (AstNode& from);
@@ -85,7 +83,6 @@ class AstNode
 
         Token&                  key ();
         size_t                 size ();
-        AstNode*             parent ();
         std::vector <AstNode*>& children ();
 
         bool ok   ();
@@ -96,7 +93,6 @@ class AstNode
 
 AstNode :: AstNode ():
     key_      (),
-    parent_   (nullptr),
     children_ ()
     { OK_ASTNODE }
 
@@ -104,7 +100,6 @@ AstNode :: AstNode ():
 
 AstNode :: AstNode (const Token& value):
     key_      (value),
-    parent_   (nullptr),
     children_ ()
     { OK_ASTNODE }
 
@@ -112,14 +107,9 @@ AstNode :: AstNode (const Token& value):
 
 AstNode :: AstNode (AstNode& from):
     key_      (from.key_),
-    parent_   (from.parent_),
     children_ (from.children_)
     {
-        from.parent_ = nullptr;
-
         from.children_.clear ();
-
-        for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
         OK_ASTNODE
     }
@@ -142,13 +132,9 @@ AstNode& AstNode :: operator = (AstNode& from)
     OK_ASTNODE
 
     key_      = from.key_;
-    parent_   = from.parent_;
     children_ = from.children_;
 
-    from.parent_ = nullptr;
     from.children_.clear ();
-
-    for (size_t i = 0; i < children_.size (); i++)  children_[i] -> parent_ = this;
 
     OK_ASTNODE
 
@@ -223,7 +209,6 @@ AstNode& AstNode :: insert (AstNode& from)
     AstNode* example = new AstNode (from);
 
     children_.push_back (example);
-                         example -> parent_ = this;
 
     from.clear ();
 
@@ -237,15 +222,6 @@ AstNode& AstNode :: insert (AstNode& from)
 void AstNode :: erase ()
 {
     OK_ASTNODE
-
-    if (parent_)
-    {
-        int i = parent_ -> position (this);
-
-        parent_ -> children ().erase (parent_ -> children ().begin () + i);
-
-        parent_ = nullptr;
-    }
 
     clear ();
 
@@ -273,12 +249,6 @@ AstNode& AstNode :: move (AstNode& from)
 {
     OK_ASTNODE
 
-    if (parent_)
-    {
-        DO_ASTNODE ({ throw "parent_"; },
-                    { assert (false);  })
-    }
-
     for (size_t i = 0; i < children_.size (); i++)
     {
         delete children_[i];
@@ -292,7 +262,6 @@ AstNode& AstNode :: move (AstNode& from)
     for (size_t i = 0; i < children_.size (); i++)
     {
         children_[i] = from.children_[i];
-        children_[i] -> parent_ = this;
         from.children_[i] = nullptr;
     }
 
@@ -370,22 +339,11 @@ void AstNode :: write (FILE* in)
 
 bool AstNode :: ok ()
 {
-    if (parent_)
-    {
-        int number = parent_ -> position (this);
-
-        if (number == -1)
-        {
-            DO_ASTNODE ({ throw "parent_ -> left_ != this && parent_ -> right_ != this"; },
-                        { return false; })
-        }
-    }
-
     for (size_t i = 0; i < children_.size (); i++)
     {
-        if (children_[i] -> parent_ != this)
+        if (!children_[i])
         {
-            DO_ASTNODE ({ throw "children_[i] -> parent_ != this"; },
+            DO_ASTNODE ({ throw "!children_[i]"; },
                         { return false; })
         }
     }
@@ -402,8 +360,6 @@ void AstNode :: dump (FILE* out /* = stdout */)
     fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
 
     std::cout << "[" << key_ << "];\n";
-
-    fprintf (out, "    parent = [%p];\n", parent_);
 
     for (size_t i = 0; i < children_.size (); i++)
     {
@@ -434,15 +390,6 @@ size_t AstNode :: size ()
 
 //===============================================================================
 
-AstNode* AstNode :: parent ()
-{
-    OK_ASTNODE
-
-    return parent_;
-}
-
-//===============================================================================
-
 std::vector <AstNode*>& AstNode :: children ()
 {
     OK_ASTNODE
@@ -455,8 +402,6 @@ std::vector <AstNode*>& AstNode :: children ()
 void AstNode :: clear ()
 {
     OK_ASTNODE
-
-    if (parent_) parent_ = nullptr;
 
     for (size_t i = 0; i < children_.size (); i++)
     {
