@@ -7,7 +7,7 @@
 #include <cstring>
 #include <cassert>
 #include <iostream>
-#include "Vector.hpp"
+#include <vector>
 
 //}==============================================================================
 
@@ -49,12 +49,12 @@ class Stream
     private:
         size_t place_;
 
-        Vector <Data_T> data_;
+        std::vector <Data_T> data_;
 
     public:
         Stream ();
-        Stream (const Vector <Data_T>& name);
-        Stream (const Vector <Data_T>& name, const size_t start);
+        Stream (const std::vector <Data_T>& name);
+        Stream (const std::vector <Data_T>& name, const size_t start);
         Stream (const Stream <Data_T>& from);
 
         Data_T& operator [] (const size_t i);
@@ -65,7 +65,7 @@ class Stream
         Stream <Data_T>& operator -- ();
         Stream <Data_T>  operator -- (int);
         Stream <Data_T>& operator  = (const Stream <Data_T>& from);
-        Stream <Data_T>& operator  = (const Vector <Data_T>& from);
+        Stream <Data_T>& operator  = (const std::vector <Data_T>& from);
         Stream <Data_T>& operator += (const size_t jump);
 
         void push_back (const Data_T& value);
@@ -78,7 +78,7 @@ class Stream
 
         size_t           place ();
         size_t           size  ();
-        Vector <Data_T>& data  ();
+        std::vector <Data_T>& data  ();
 
         bool ok   ();
         void dump ();
@@ -101,7 +101,7 @@ Stream <Data_T> :: Stream ():
 //===============================================================================
 
 template <typename Data_T>
-Stream <Data_T> :: Stream (const Vector <Data_T>& name):
+Stream <Data_T> :: Stream (const std::vector <Data_T>& name):
     place_ (0),
     data_  (name)
     { OK_STREAM }
@@ -109,7 +109,7 @@ Stream <Data_T> :: Stream (const Vector <Data_T>& name):
 //===============================================================================
 
 template <typename Data_T>
-Stream <Data_T> :: Stream (const Vector <Data_T>& name, const size_t start):
+Stream <Data_T> :: Stream (const std::vector <Data_T>& name, const size_t start):
     place_ (start),
     data_  (name)
     { OK_STREAM }
@@ -186,7 +186,9 @@ Stream <Data_T> Stream <Data_T> :: operator ++ (int)
 {
     OK_STREAM
 
-    Stream <Data_T> oldStream (place_);
+    Stream <Data_T> oldStream;
+
+    oldStream.place_ = place_;
 
     place_++;
 
@@ -243,7 +245,7 @@ Stream <Data_T>& Stream <Data_T> :: operator = (const Stream <Data_T>& from)
 //===============================================================================
 
 template <typename Data_T>
-Stream <Data_T>& Stream <Data_T> :: operator = (const Vector <Data_T>& from)
+Stream <Data_T>& Stream <Data_T> :: operator = (const std::vector <Data_T>& from)
 {
     OK_STREAM
 
@@ -338,7 +340,7 @@ size_t Stream <Data_T> :: size ()
 //===============================================================================
 
 template <typename Data_T>
-Vector <Data_T>& Stream <Data_T> :: data ()
+std::vector <Data_T>& Stream <Data_T> :: data ()
 {
     OK_STREAM
 
@@ -436,13 +438,13 @@ template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from);
 
 template <typename Data_T>
-Stream <Data_T>& operator += (Stream <Data_T>& to, const Vector <Data_T>& from);
+Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& from);
 
 template <typename Data_T>
 bool operator == (const Stream <Data_T>& to, const Stream <Data_T>& from);
 
 template <typename Data_T>
-bool operator == (const Stream <Data_T>& to, const Vector <Data_T>& from);
+bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from);
 
 //}==============================================================================
 
@@ -459,7 +461,7 @@ Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from)
 //===============================================================================
 
 template <typename Data_T>
-Stream <Data_T>& operator += (Stream <Data_T>& to, const Vector <Data_T>& from)
+Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& from)
 {
     to.data_ += from;
 
@@ -477,7 +479,7 @@ bool operator == (const Stream <Data_T>& to, const Stream <Data_T>& from)
 //===============================================================================
 
 template <typename Data_T>
-bool operator == (const Stream <Data_T>& to, const Vector <Data_T>& from)
+bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from)
 {
     return (to.data_ == from);
 }

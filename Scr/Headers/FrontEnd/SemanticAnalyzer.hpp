@@ -1,6 +1,7 @@
 #ifndef TreeCheck_hpp
     #define TreeCheck_hpp
 
+#include <vector>
 #include "..//..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//..//Libraries//LogHTML.hpp"
 
@@ -37,8 +38,8 @@ FunctionMember :: FunctionMember (const int setType, const int setName, const in
 class SemanticAnalyzer
 {
     private:
-        Vector <int> data_;
-        Vector <FunctionMember> func_;
+        std::vector <int> data_;
+        std::vector <FunctionMember> func_;
 
         size_t label_;
 

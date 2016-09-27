@@ -1,14 +1,14 @@
 #include <iostream>
 #include <cstring>
 #include <map>
-#include "..//..//Libraries//Vector.hpp"
+#include <vector>
 #include "..//..//Libraries//Stream.hpp"
 #include "BoaToken.hpp"
 
 class BoaSyntaxAnalyzer
 {
     private:
-        Vector <int> code_;
+        std::vector <int> code_;
 
         std::map <int, int> label_;
 

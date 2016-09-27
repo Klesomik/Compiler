@@ -1,6 +1,8 @@
 #ifndef Compiler_hpp
     #define Compiler_hpp
 
+//SingleTon
+
 //{==============================================================================
 
 #include <ctime>
@@ -24,59 +26,98 @@ class Compiler
 
         AstNode root;
 
+        FILE* file_c;
+        FILE* file_asm;
+
+        LogHTML file_log;
+
     public:
-        Compiler  (FILE* c_file, LogHTML& log, FILE* asm_file);
+        Compiler (const std::string& name_c, const std::string& name_asm, const std::string& name_log);
+        ~Compiler ();
+
+        void LogBegin (LogHTML& log);
+        void LogEnd (LogHTML& log, clock_t begin, clock_t end);
+
+        void ReadTree ();
+        void WriteTree ();
 };
 
 //}==============================================================================
 
-Compiler :: Compiler (FILE* c_file, LogHTML& log, FILE* asm_file):
-    code (),
-    root ({ Block })
+Compiler :: Compiler (const std::string& name_c, const std::string& name_asm, const std::string& name_log):
+    code     (),
+    root     ({ Block }),
+    file_c   (fopen (name_c.c_str (), "r")),
+    file_asm (fopen (name_asm.c_str (), "w")),
+    file_log (name_log.c_str ())
     {
-        /*FILE* ast = fopen ("AST.txt", "r");
+        LogBegin (file_log);
 
-        assert (ast);
+        clock_t begin = clock ();
 
-        root.read (ast);
-
-        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//ASTNew.jpg");*/
-
-        log.setFontColor ("white");
-        log.setSize      (100);
-        log.setColor     ("blue");
-
-        log.output ("========== Build started: DeerC %d.%d ==========\n", 1, 0);
-
-        log.setColor ("red");
-        clock_t start = clock ();
-
-        LexicialAnalyzer lexicial_analyzer (c_file, code);
-        //Preprocessor          preprocessor (code, log);
-        SyntaxAnalyzer     syntax_analyzer (root, code, log);
-        //SemanticAnalyzer semantic_analyzer (root, log);
+        LexicialAnalyzer lexicial_analyzer (file_c, code);
+        //Preprocessor          preprocessor (code, file_log);
+        SyntaxAnalyzer     syntax_analyzer (root, code, file_log);
+        //SemanticAnalyzer semantic_analyzer (root, file_log);
         //Optimizer                optimizer (root);
-        CodeGeneration     code_generation (root, asm_file, 1);
+        CodeGeneration     code_generation (root, file_asm, 1);
 
         clock_t end = clock ();
-        log.setColor ("blue");
 
-        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg");
-
-        log.output ("Build started on: %f\n",   (float) start / CLOCKS_PER_SEC);
-        log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
-
-        log.output ("========== Build finished ==========\n");
-
-        log.out ();
-
-        FILE* ast = fopen ("..//Materials//AST.txt", "w");
-
-        assert (ast);
-
-        root.write (ast);
-
-        fclose (ast);
+        LogEnd (file_log, begin, end);
     }
+
+Compiler :: ~Compiler ()
+{
+    fclose (file_c);
+    fclose (file_asm);
+}
+
+void Compiler :: LogBegin (LogHTML& log)
+{
+    log.setFontColor ("white");
+    log.setSize      (100);
+    log.setColor     ("blue");
+
+    log.output ("========== Build started: DeerC %d.%d ==========\n", 1, 0);
+
+    log.setColor ("red");
+}
+
+void Compiler :: LogEnd (LogHTML& log, clock_t begin, clock_t end)
+{
+    log.setColor ("blue");
+
+    RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg");
+
+    log.output ("Build started on: %f\n",   (float) begin / CLOCKS_PER_SEC);
+    log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
+
+    log.output ("========== Build finished ==========\n");
+
+    log.out ();
+}
+
+void Compiler :: ReadTree ()
+{
+    FILE* ast = fopen ("AST.txt", "r");
+
+    assert (ast);
+
+    root.read (ast);
+
+    RenderTree (root, "..//Materials//Hello.dot", "..//Materials//ASTNew.jpg");
+}
+
+void Compiler :: WriteTree ()
+{
+    FILE* ast = fopen ("..//Materials//AST.txt", "w");
+
+    assert (ast);
+
+    root.write (ast);
+
+    fclose (ast);
+}
 
 #endif

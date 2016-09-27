@@ -8,11 +8,18 @@
 
 class Assembler
 {
+    private:
+        FILE* boa;
+        FILE* bit;
+
     public:
-        Assembler (FILE* boa, FILE* bit);
+        Assembler (const std::string& name_asm, const std::string& name_byte);
+        ~Assembler ();
 };
 
-Assembler :: Assembler (FILE* boa, FILE* bit)
+Assembler :: Assembler (const std::string& name_asm, const std::string& name_byte):
+    boa (fopen (name_asm.c_str (), "r")),
+    bit (fopen (name_byte.c_str (), "w"))
     {
         Stream <BoaToken> code;
 
@@ -24,5 +31,11 @@ Assembler :: Assembler (FILE* boa, FILE* bit)
         syntax.read (code);
         syntax.write (bit);
     }
+
+Assembler :: ~Assembler ()
+{
+    fclose (boa);
+    fclose (bit);
+}
 
 #endif

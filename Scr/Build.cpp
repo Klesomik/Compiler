@@ -14,49 +14,29 @@
 inline void Input (const char* prefix, std::string& example)
 { printf ("%s", prefix); getline (std::cin, example, '\n'); }
 
-inline void Hello_C    (std::string& example)
-{ printf ("Input name of C    file: "); getline (std::cin, example, '\n'); }
-
-inline void Hello_Log  (std::string& example)
-{ printf ("Input name of Log  file: "); getline (std::cin, example, '\n'); }
-
-inline void Hello_Asm  (std::string& example)
-{ printf ("Input name of Asm  file: "); getline (std::cin, example, '\n'); }
-
-inline void Hello_Byte (std::string& example)
-{ printf ("Input name of Byte file: "); getline (std::cin, example, '\n'); }
-
 //}==============================================================================
 
 int main (int argc, const char* argv[])
 {
     try
     {
-        std::string name_c  ("..//Materials//Source.txt");
-        std::string name_log  ("..//Materials//Log.html");
+        std::string name_c     ("..//Materials//Source.txt");
+        std::string name_log   ("..//Materials//Log.html");
         std::string name_asm   ("..//Materials//Asm.txt");
-        std::string name_byte ("..//Materials//Byte.txt");
+        std::string name_byte  ("..//Materials//Byte.txt");
+        std::string name_tree  ("..//Materials//AST.txt");
+        std::string name_graph ("..//Materials//AST.jpg");
 
-        //Hello_C    (name_c);
-        //Hello_Log  (name_log);
-        //Hello_Asm  (name_asm);
-        //Hello_Byte (name_byte);
+        //Input ("Input name of C     file: ", name_c);
+        //Input ("Input name of Log   file: ", name_log);
+        //Input ("Input name of Asm   file: ", name_asm);
+        //Input ("Input name of Byte  file: ", name_byte);
+        //Input ("Input name of Tree  file: ", name_tree);
+        //Input ("Input name of Graph file: ", name_graph);
 
-        FILE* file_c = fopen (name_c.c_str (), "r");
-        LogHTML file_log (name_log.c_str ());
-        FILE* file_asm = fopen (name_asm.c_str (), "w");
-        FILE* file_byte = fopen (name_byte.c_str (), "w");
+        Compiler compiler (name_c, name_asm, name_log);
 
-        Compiler compiler (file_c, file_log, file_asm);
-
-        fclose (file_asm);
-        FILE* data = fopen (name_asm.c_str (), "r");
-
-        Assembler assembler (data, file_byte);
-
-        fclose (file_c);
-        fclose (data);
-        fclose (file_byte);
+        Assembler assembler (name_asm, name_byte);
     }
     catch (std::exception& message)
     {
