@@ -2,6 +2,7 @@
     #define Assembler_hpp
 
 #include <cstdio>
+#include <iostream>
 #include "..//Libraries//Stream.hpp"
 #include "BackEnd//BoaLexicialAnalyzer.hpp"
 #include "BackEnd//BoaSyntaxAnalyzer.hpp"
@@ -11,6 +12,9 @@ class Assembler
     private:
         FILE* boa;
         FILE* bit;
+
+        Assembler (const Assembler& from);
+        Assembler& operator = (const Assembler& from);
 
     public:
         Assembler (const std::string& name_asm, const std::string& name_byte);

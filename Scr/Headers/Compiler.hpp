@@ -8,6 +8,7 @@
 #include <ctime>
 #include "..//Libraries//Stream.hpp"
 #include "..//Libraries//AbstractSyntaxNode.hpp"
+#include "..//Libraries//LogHTML.hpp"
 #include "FrontEnd//LexicialAnalyzer.hpp"
 //#include "FrontEnd//Preprocessor.hpp"
 #include "FrontEnd//SyntaxAnalyzer.hpp"
@@ -30,6 +31,9 @@ class Compiler
         FILE* file_asm;
 
         LogHTML file_log;
+
+        Compiler (const Compiler& from);
+        Compiler& operator = (const Compiler& from);
 
     public:
         Compiler (const std::string& name_c, const std::string& name_asm, const std::string& name_log);
@@ -62,6 +66,8 @@ Compiler :: Compiler (const std::string& name_c, const std::string& name_asm, co
         //Optimizer                optimizer (root);
         CodeGeneration     code_generation (root, file_asm, 1);
 
+        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg");
+
         clock_t end = clock ();
 
         LogEnd (file_log, begin, end);
@@ -76,10 +82,14 @@ Compiler :: ~Compiler ()
 void Compiler :: LogBegin (LogHTML& log)
 {
     log.setFontColor ("white");
-    log.setSize      (100);
+    log.setSize      (50);
     log.setColor     ("blue");
 
-    log.output ("========== Build started: DeerC %d.%d ==========\n", 1, 0);
+    log.setColor ("gray");
+    log.output ("DeerC %d.%d\n\n", 1, 0);
+
+    log.setColor ("blue");
+    log.output ("========== Build started ==========\n");
 
     log.setColor ("red");
 }
@@ -87,13 +97,11 @@ void Compiler :: LogBegin (LogHTML& log)
 void Compiler :: LogEnd (LogHTML& log, clock_t begin, clock_t end)
 {
     log.setColor ("blue");
+    log.output ("========== Build finished ==========\n\n");
 
-    RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg");
-
+    log.setColor ("gray");
     log.output ("Build started on: %f\n",   (float) begin / CLOCKS_PER_SEC);
     log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
-
-    log.output ("========== Build finished ==========\n");
 
     log.out ();
 }
