@@ -11,7 +11,7 @@
 void SetStyle (Dotter::Digraph& tree, const char* first, const char* second);
 void SetColor (Dotter::Digraph& tree, const char* first, const char* second, const char* third);
 
-void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool show);
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name);
 void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
 
 std::string BtInf (Dotter::Digraph& tree, const Token& value);
@@ -35,7 +35,7 @@ void SetColor (Dotter::Digraph& tree, const char* first, const char* second, con
 
 //===============================================================================
 
-void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool show)
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool sh)
 {
     Dotter::Digraph tree (file_name.c_str (), render_name.c_str ());
 
@@ -59,7 +59,7 @@ void RenderTree (AstNode& root, const std::string& file_name, const std::string&
     for (size_t i = 0; i < root.children ().size (); i++)
         RenderNode (tree, root.children ()[i], 0);
 
-    tree.render ("Libraries//Dotter", show);
+    tree.render ("Libraries//Dotter");
 }
 
 //===============================================================================

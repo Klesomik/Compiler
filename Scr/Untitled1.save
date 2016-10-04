@@ -1,0 +1,29 @@
+#include "..//..//Libraries//Stream.hpp"
+#include "Token.hpp"
+
+class Preprocessor
+{
+    public:
+        Preprocessor (Stream <Token>& code);
+        
+        void scan (Stream <Token>& code);
+    
+    private:
+        std::map <>
+};
+
+Preprocessor::Preprocessor (Stream <Token>& code)
+{
+}
+
+void Preprocessor::scan (Stream <Token>& code)
+{
+    for (int i = 0; i < code.size (); i++)
+    {
+        switch (code[i])
+        {
+            case Include: {};
+            case Define: {} 
+        }
+    }
+}

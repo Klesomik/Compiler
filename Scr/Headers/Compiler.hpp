@@ -1,7 +1,7 @@
 #ifndef Compiler_hpp
     #define Compiler_hpp
 
-//SingleTon
+//SingleTon, dragonbook, static analysis, courses mail
 
 //{==============================================================================
 
@@ -66,7 +66,7 @@ Compiler :: Compiler (const std::string& name_c, const std::string& name_asm, co
         //Optimizer                optimizer (root);
         CodeGeneration     code_generation (root, file_asm, 1);
 
-        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg");
+        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg", false);
 
         clock_t end = clock ();
 
@@ -113,8 +113,6 @@ void Compiler :: ReadTree ()
     assert (ast);
 
     root.read (ast);
-
-    RenderTree (root, "..//Materials//Hello.dot", "..//Materials//ASTNew.jpg");
 }
 
 void Compiler :: WriteTree ()
