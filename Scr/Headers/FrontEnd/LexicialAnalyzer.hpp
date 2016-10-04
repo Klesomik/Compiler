@@ -46,13 +46,14 @@ class LexicialAnalyzer
 
         bool search (std::map <std::string, int>& example, std::string& value, const int type, Stream <Token>& code);
 
-        bool IsSpace   (const char symbol);
-        bool IsComment (const char symbol);
-        bool IsPreProc (const char symbol);
-        bool IsDigit   (const char symbol);
-        bool IsAlpha   (const char symbol);
-        bool IsUnary   (const char symbol);
-        bool IsBinary  (const char symbol);
+        bool IsSpace     (const char symbol);
+        bool IsComment   (Stream <char>& example);
+        bool IsPreProc   (const char symbol);
+        bool IsQuotation (const char symbol);
+        bool IsDigit     (const char symbol);
+        bool IsAlpha     (const char symbol);
+        bool IsUnary     (const char symbol);
+        bool IsBinary    (const char symbol);
 
         void Skip           (Stream <char>& example);
         void Comment        (Stream <char>& example);
@@ -115,9 +116,9 @@ bool LexicialAnalyzer :: IsSpace (const char symbol)
 
 //===============================================================================
 
-bool LexicialAnalyzer :: IsComment (const char symbol)
+bool LexicialAnalyzer :: IsComment (Stream <char>& example)
 {
-    return symbol == '/';
+    return example.check_next ({ '/', '/' }) || example.check_next ({ '/', '*' });
 }
 
 //===============================================================================
@@ -125,6 +126,13 @@ bool LexicialAnalyzer :: IsComment (const char symbol)
 bool LexicialAnalyzer :: IsPreProc (const char symbol)
 {
     return symbol == '#';
+}
+
+//===============================================================================
+
+bool LexicialAnalyzer :: IsQuotation (const char symbol)
+{
+    return symbol == '"';
 }
 
 //===============================================================================
@@ -187,7 +195,7 @@ void LexicialAnalyzer :: Comment (Stream <char>& example)
 {
     std::string name;
 
-    while (example.check () && IsComment (example[example.place ()]))
+    while (example.check () && example[example.place ()] == '/')
     {
         char symbol = 0;
         example >> symbol;
@@ -224,11 +232,23 @@ void LexicialAnalyzer :: PreProc (Stream <char>& example, Stream <Token>& code)
 
     code.push_back ({ preProc_[value], 0, 0 });
 
-    if (it != preProc_.end ())
+    if (example.check () && IsQuotation (example[example.place ()]))
     {
+        char start = 0;
+        std::cin >> start;
     }
 
-    else throw "Unknown symbol";
+    Word (example, code);
+
+    if (example.check () && IsQuotation (example[example.place ()]))
+    {
+        char start = 0;
+        std::cin >> start;
+    }
+
+    code.dump ();
+
+    system ("pause");
 }
 
 //===============================================================================
@@ -313,8 +333,11 @@ void LexicialAnalyzer :: Parser (Stream <char>& example, Stream <Token>& code)
         if (IsSpace (example[example.place ()]))
             Skip (example);
 
-        else if (example.check_next ({ '/', '/' }) || example.check_next ({ '/', '*' }))
+        else if (IsComment (example))
             Comment (example);
+
+        else if (IsPreProc (example[example.place ()]))
+            PreProc (example, code);
 
         else if (IsDigit (example[example.place ()]))
             Number (example, code);

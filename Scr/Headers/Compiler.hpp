@@ -66,7 +66,7 @@ Compiler :: Compiler (const std::string& name_c, const std::string& name_asm, co
         //Optimizer                optimizer (root);
         CodeGeneration     code_generation (root, file_asm, 1);
 
-        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST.jpg", false);
+        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST1.jpg", false);
 
         clock_t end = clock ();
 

@@ -20,7 +20,7 @@ int main (int argc, const char* argv[])
 {
     try
     {
-        std::string name_c     ("..//Materials//Source.txt");
+        std::string name_c     ("..//Materials//main.txt");
         std::string name_log   ("..//Materials//Log.html");
         std::string name_asm   ("..//Materials//Asm.txt");
         std::string name_byte  ("..//Materials//Byte.txt");

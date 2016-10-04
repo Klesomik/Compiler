@@ -129,6 +129,13 @@ bool LexicialAnalyzer :: IsPreProc (const char symbol)
 
 //===============================================================================
 
+bool LexicialAnalyzer :: IsPreProc (const char symbol)
+{
+    return symbol == '#';
+}
+ 
+//===============================================================================
+ 
 bool LexicialAnalyzer :: IsDigit (const char symbol)
 {
     return isdigit (symbol);
@@ -221,10 +228,10 @@ void LexicialAnalyzer :: PreProc (Stream <char>& example, Stream <Token>& code)
 
         value.push_back (symbol);
     }
-    
-    preProc_.insert ();
 
-    std::map <std::string, int>::iterator it = preProc_.find (value);
+    code.push_back ({ preProc_[value], 0, 0 });
+    
+    if (example.check () && 
 
     if (it != preProc_.end ())
     {

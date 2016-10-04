@@ -1,0 +1,6 @@
+#include "stdlib.txt"
+
+int main ()
+{
+    return 0;
+}
