@@ -6,42 +6,44 @@
 
 #include <cstdio>
 #include <cassert>
-#include "..//Libraries//Vector.hpp"
-#include "..//Libraries//Stack.hpp"
+#include <vector>
+#include <stack>
 #include "BackEnd//BoaToken.hpp"
 
 //}==============================================================================
+
+//TODO: std::vector -> std::stack
 
 //Helper function for stack
 //{==============================================================================
 
 template <typename Data_T>
-inline void swap (Stack <Data_T>& example)
+inline void swap (std::vector <Data_T>& example)
 {
-    Data_T x = example.pop ();
-    Data_T y = example.pop ();
+    Data_T x = example.pop_back ();
+    Data_T y = example.pop_back ();
 
-    example.push (x);
-    example.push (y);
+    example.push_back (x);
+    example.push_back (y);
 }
 
 template <typename Data_T>
-inline void dup (Stack <Data_T>& example) { example.push (example.top ()); }
+inline void dup (std::vector <Data_T>& example) { example.push_back (example.back ()); }
 
 template <typename Data_T>
-inline void add (Stack <Data_T>& example) { example.push (example.pop () + example.pop ()); }
+inline void add (std::vector <Data_T>& example) { example.push_back (example.pop_back () + example.pop_back ()); }
 
 template <typename Data_T>
-inline void sub (Stack <Data_T>& example) { example.push (example.pop () - example.pop ()); }
+inline void sub (std::vector <Data_T>& example) { example.push_back (example.pop_back () - example.pop_back ()); }
 
 template <typename Data_T>
-inline void mul (Stack <Data_T>& example) { example.push (example.pop () * example.pop ()); }
+inline void mul (std::vector <Data_T>& example) { example.push_back (example.pop_back () * example.pop_back ()); }
 
 template <typename Data_T>
-inline void div (Stack <Data_T>& example) { example.push (example.pop () / example.pop ()); }
+inline void div (std::vector <Data_T>& example) { example.push_back (example.pop_back () / example.pop_back ()); }
 
 template <typename Data_T>
-inline void mod (Stack <Data_T>& example) { example.push (example.pop () % example.pop ()); }
+inline void mod (std::vector <Data_T>& example) { example.push_back (example.pop_back () % example.pop_back ()); }
 
 //}==============================================================================
 
@@ -93,13 +95,13 @@ void Flag :: dump ()
 class Cpu
 {
     private:
-        Vector <int> ram_;
+        std::vector <int> ram_;
         int regist_[4];
-        Stack <int> data_;
+        std::vector <int> data_;
 
-        Vector <int> code_;
+        std::vector <int> code_;
 
-        Stack <int> call_;
+        std::vector <int> call_;
 
         Flag state_;
 

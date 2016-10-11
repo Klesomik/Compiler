@@ -12,11 +12,11 @@
 
 #define BLOCK(comment, code)\
 FPRINTF (write, ";{==========%s\n", comment);\
-addIndent (4);\
+addIndent ();\
 \
     code \
 \
-subIndent (4);\
+subIndent ();\
 FPRINTF (write, ";}==========%s\n\n", comment);
 
 //{==============================================================================
@@ -30,14 +30,14 @@ class CodeGeneration
 
         size_t count_;
 
-        void addIndent   (const int space);
-        void subIndent   (const int space);
+        void addIndent   ();
+        void subIndent   ();
         void writeIndent (FILE* write);
 
     public:
         CodeGeneration (AstNode& root, FILE* write, const size_t func);
 
-        void Generate (AstNode& root, FILE* write);
+        void Generate ();
 
         void CreateAsm                                         (AstNode* current, FILE* write);
         void give_Add_Sub_Mul_Div_Mod                          (AstNode* current, FILE* write, const char* command);
@@ -63,40 +63,37 @@ class CodeGeneration
 CodeGeneration :: CodeGeneration (AstNode& root, FILE* write, const size_t func):
     jmp_      (func + 1),
     size_ram_ (0),
-    count_    (0)
+    count_    (4),
     {
-        Generate (root, write);
+        FPRINTF (write, "call %d\n", 0);
+        FPRINTF (write, "eof\n\n");
+
+        for (size_t i = 0; i < root.size (); i++)
+        {
+            size_ram_ = 0;
+
+            CreateAsm (root[i], write);
+        }
     }
 
 //===============================================================================
 
-void CodeGeneration :: Generate (AstNode& root, FILE* write)
+void CodeGeneration :: Generate ()
 {
-    const int number_of_main = 0;
-
-    FPRINTF (write, "call %d\n", number_of_main);
-    FPRINTF (write, "eof\n\n");
-
-    for (size_t i = 0; i < root.size (); i++)
-    {
-        size_ram_ = 0;
-
-        CreateAsm (root[i], write);
-    }
 }
 
 //===============================================================================
 
-void CodeGeneration :: addIndent (const int space)
+void CodeGeneration :: addIndent ()
 {
-    count_ += space;
+    count_ += 4;
 }
 
 //===============================================================================
 
-void CodeGeneration :: subIndent (const int space)
+void CodeGeneration :: subIndent ()
 {
-    count_ -= space;
+    count_ -= 4;
 }
 
 //===============================================================================

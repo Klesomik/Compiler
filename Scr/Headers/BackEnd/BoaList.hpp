@@ -3,13 +3,13 @@
 //#define BOA_3(id, params, name, word, comp, cpu)
 //#define BOA_4(id, params, name, word, comp, cpu)
 
-#define PUSH(type, what)   if (code_[i] == type) { i++; data_.push (what); }
+#define PUSH(type, what)   if (code_[i] == type) { i++; data_.push_back (what); }
 #define POP(type, action)  if (code_[i] == type) { i++; action; }
 #define MOVE(in, what)     in[code_[i]] = what
 #define PRINT(cmd)         printf ("%s = %d;\n", #cmd, data_.cmd ())
 #define INPUT(type, what)  if (code_[i] == type) { i++; scanf  ("%d",  &what[code_[i]]); }
 #define OUTPUT(type, what) if (code_[i] == type) { i++; printf ("%d\n", what[code_[i]]); }
-#define CMP                { if (data_.size () >= 2) { state_.reset (); int x = data_.pop (); int y = data_.pop (); if (x > y) { state_.mf_ = true; } if (x < y) { state_.lf_ = true; } if (x == y) { state_.ef_ = true; } data_.push (y); data_.push (x); } }
+#define CMP                { if (data_.size () >= 2) { state_.reset (); int x = data_.pop (); int y = data_.pop_back (); if (x > y) { state_.mf_ = true; } if (x < y) { state_.lf_ = true; } if (x == y) { state_.ef_ = true; } data_.push_back (y); data_.push_back (x); } }
 #define JUMP               i++; i = code_[i]; i--;
 #define EMPTY              data_.empty ()? printf ("yes\n") : printf ("no\n");
 #define SP_ADD             regist_[3]++;
@@ -21,7 +21,7 @@ BOA_1 ( 1, 0,   BoaName, { TO_STRING ("name_") }, {}, {})
 BOA_1 ( 2, 0,    BoaReg, { TO_STRING  ("reg_") }, {}, {})
 BOA_1 ( 3, 0,   BoaNone,                      "",                        {}, {})
 BOA_2 ( 4, 2,   BoaPush,                  "push", { cmd_push   (example); }, { i++; SP_ADD PUSH (BoaDigit,     code_[i]) PUSH (BoaReg,            regist_[code_[i]]) PUSH (BoaCell,            ram_[code_[i]]) PUSH (BoaParam, data_[regist_[2] - code_[i] - 1]) })
-BOA_2 ( 5, 2,    BoaPop,                   "pop", { cmd_pop    (example); }, { i++; SP_SUB POP  ( BoaNone, data_.pop ()) POP  (BoaReg, MOVE (regist_, data_.pop ())) POP  (BoaCell, MOVE (ram_, data_.pop ())) })
+BOA_2 ( 5, 2,    BoaPop,                   "pop", { cmd_pop    (example); }, { i++; SP_SUB POP  ( BoaNone, data_.pop_back ()) POP  (BoaReg, MOVE (regist_, data_.pop_back ())) POP  (BoaCell, MOVE (ram_, data_.pop_back ())) })
 BOA_2 ( 6, 2,    BoaMov,                   "mov", { cmd_mov    (example); }, { i++; regist_[code_[i]] = regist_[code_[i + 1]]; i++; })
 BOA_2 ( 7, 1,     BoaIn,                    "in", { cmd_in_out (example); }, { i++; INPUT  (BoaReg, regist_) INPUT  (BoaCell, ram_) })
 BOA_2 ( 8, 1,    BoaOut,                   "out", { cmd_in_out (example); }, { i++; OUTPUT (BoaReg, regist_) OUTPUT (BoaCell, ram_) })
