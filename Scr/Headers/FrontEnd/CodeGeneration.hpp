@@ -436,8 +436,6 @@ void CodeGeneration :: give_Out (AstNode* current, FILE* write)
 {
     BLOCK ("Out",
     {
-        FPRINTF (write, "\n");
-
         CreateAsm (current -> children ()[0], write);
 
         FPRINTF (write, "pop bx\n");

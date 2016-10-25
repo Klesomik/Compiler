@@ -1,0 +1,7 @@
+name_c     = "..//Materials//main.txt";
+name_log   = "..//Materials//Log.html";
+name_asm   = "..//Materials//Asm.txt";
+name_byte  = "..//Materials//Byte.txt";
+name_dot   = "..//Materials//AST.dot";
+name_graph = "..//Materials//AST.jpg";
+name_ast   = "..//Materials//AST.txt";

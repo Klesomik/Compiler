@@ -1,20 +1,39 @@
-typedef std::pair <bool, int> ret_t;
+#ifndef Optimizer_hpp
+
+#define Optimizer_hpp
+
+#include <iostream>
+#include <cstdio>
+#include "..//..//Libraries//AbstractSyntaxNode.hpp"
+
+typedef std::pair <int, int> ret_t;
 
 class Optimizer
 {
+    private:
+        enum
+        {
+            DIGIT,
+            NOT_DIGIT
+        };
+
+        ret_t detour (AstNode* current);
+
+        ret_t check_AddSubMulDiv (AstNode* current, const int default_value, char symbol);
+        void check_Default      (AstNode* current);
+
     public:
         Optimizer (AstNode& root);
 
-        ret_t check_Add (AstNode* current);
-        ret_t check_Sub (AstNode* current);
-        ret_t check_Mul (AstNode* current);
-        ret_t check_Div (AstNode* current);
-        ret_t check_Mod (AstNode* current);
-
-        ret_t detour (AstNode* current);
+        void Start (AstNode& root);
 };
 
 Optimizer :: Optimizer (AstNode& root)
+{
+    Start (root);
+}
+
+void Optimizer :: Start (AstNode& root)
 {
     try
     {
@@ -25,7 +44,7 @@ Optimizer :: Optimizer (AstNode& root)
     {
         std::cout << message << "\n";
     }
-    catch (const std::string message)
+    catch (const std::string& message)
     {
         std::cout << message << "\n";
     }
@@ -39,181 +58,68 @@ ret_t Optimizer :: detour (AstNode* current)
 {
     switch (current -> key ().type)
     {
-        case Digit: { current -> erase (); return ret_t  (true, current -> key ().value); }
+        case Digit: { current -> erase (); return ret_t (DIGIT, current -> key ().value); }
 
-        case Add: { return check_Add (current); }
-        case Sub: { return check_Sub (current); }
-        case Mul: { return check_Mul (current); }
-        case Div: { return check_Div (current); }
-        case Mod: { return check_Mod (current); }
+        case Add: { return check_AddSubMulDiv (current, 0, '+'); }
+        case Sub: { return check_AddSubMulDiv (current, 0, '-'); }
+        case Mul: { return check_AddSubMulDiv (current, 1, '*'); }
+        case Div: { return check_AddSubMulDiv (current, 1, '/'); }
+        case Mod: { return check_AddSubMulDiv (current, 1, '%'); }
 
-        default:
+        default: { check_Default (current); break; }
+    }
+
+    return ret_t (NOT_DIGIT, current -> key ().value);
+}
+
+ret_t Optimizer :: check_AddSubMulDiv (AstNode* current, const int default_value, char symbol)
+{
+    int answer = default_value;
+
+    bool action = false;
+    for (size_t i = 0; i < current -> size ();)
+    {
+        ret_t result = detour (current -> children ()[i]);
+
+        if (result.first == DIGIT)
         {
-            for (size_t i = 0; i < current -> size (); i++)
+            switch (symbol)
             {
-                ret_t eps = detour (current -> children ()[i]);
+                case '+': { answer += result.second; break; }
+                case '-': { answer -= result.second; break; }
+                case '*': { answer *= result.second; break; }
+                case '/': { answer /= result.second; break; }
+                case '%': { answer %= result.second; break; }
 
-                if (eps.first) current -> insert ({ Digit, eps.second });
+                default: { std::cout << "|" << symbol << "|\n"; throw "Unknown symbol"; }
             }
 
-            break;
-        }
-    }
-
-    return ret_t (false, current -> key ().value);
-}
-
-ret_t Optimizer :: check_Add (AstNode* current)
-{
-    int answer = 0;
-
-    bool now = false;
-    for (size_t i = 0; i < current -> size ();)
-    {
-        ret_t eps = detour (current -> children ()[i]);
-
-        if (eps.first)
-        {
-            answer += eps.second;
-
-            now = true;
+            action = true;
         }
 
         else i++;
     }
 
-    if (current -> size () == 0)
+    if (current -> empty ())
     {
         current -> erase ();
 
-        return ret_t (true, answer);
+        return ret_t (DIGIT, answer);
     }
 
-    else if (now) current -> insert ({ Digit, answer });
+    else if (action) current -> insert ({ Digit, answer });
 
-    return ret_t (false, answer);
+    return ret_t (NOT_DIGIT, answer);
 }
 
-ret_t Optimizer :: check_Sub (AstNode* current)
+void Optimizer :: check_Default (AstNode* current)
 {
-    int answer = 0;
-
-    bool now = false;
-    for (size_t i = 0; i < current -> size ();)
+    for (size_t i = 0; i < current -> size (); i++)
     {
-        ret_t eps = detour (current -> children ()[i]);
+        ret_t result = detour (current -> children ()[i]);
 
-        if (eps.first)
-        {
-            answer -= eps.second;
-
-            now = true;
-        }
-
-        else i++;
+        if (result.first == DIGIT) current -> insert ({ Digit, result.second });
     }
-
-    if (current -> size () == 0)
-    {
-        current -> erase ();
-
-        return ret_t (true, answer);
-    }
-
-    else if (now) current -> insert ({ Digit, answer });
-
-    return ret_t (false, answer);
 }
 
-ret_t Optimizer :: check_Mul (AstNode* current)
-{
-    int answer = 1;
-
-    bool now = false;
-    for (size_t i = 0; i < current -> size ();)
-    {
-        ret_t eps = detour (current -> children ()[i]);
-
-        if (eps.first)
-        {
-            answer *= eps.second;
-
-            now = true;
-        }
-
-        else i++;
-    }
-
-    if (current -> size () == 0)
-    {
-        current -> erase ();
-
-        return ret_t (true, answer);
-    }
-
-    else if (now) current -> insert ({ Digit, answer });
-
-    return ret_t (false, answer);
-}
-
-ret_t Optimizer :: check_Div (AstNode* current)
-{
-    int answer = 0;
-
-    bool now = false;
-    for (size_t i = 0; i < current -> size ();)
-    {
-        ret_t eps = detour (current -> children ()[i]);
-
-        if (eps.first)
-        {
-            answer /= eps.second;
-
-            now = true;
-        }
-
-        else i++;
-    }
-
-    if (current -> size () == 0)
-    {
-        current -> erase ();
-
-        return ret_t (true, answer);
-    }
-
-    else if (now) current -> insert ({ Digit, answer });
-
-    return ret_t (false, answer);
-}
-
-ret_t Optimizer :: check_Mod (AstNode* current)
-{
-    int answer = 0;
-
-    bool now = false;
-    for (size_t i = 0; i < current -> size ();)
-    {
-        ret_t eps = detour (current -> children ()[i]);
-
-        if (eps.first)
-        {
-            answer %= eps.second;
-
-            now = true;
-        }
-
-        else i++;
-    }
-
-    if (current -> size () == 0)
-    {
-        current -> erase ();
-
-        return ret_t (true, answer);
-    }
-
-    else if (now) current -> insert ({ Digit, answer });
-
-    return ret_t (false, answer);
-}
+#endif /* Optimizer_hpp */

@@ -36,42 +36,64 @@ class Compiler
         Compiler& operator = (const Compiler& from);
 
     public:
-        Compiler (const std::string& name_c, const std::string& name_asm, const std::string& name_log);
+        Compiler (const std::string& name_c,
+                  const std::string& name_asm,
+                  const std::string& name_log,
+                  const std::string& name_dot,
+                  const std::string& name_graph,
+                  const std::string& name_ast);
+
         ~Compiler ();
+
+        void Start (const std::string& name_dot, const std::string& name_graph, const std::string& name_ast);
 
         void LogBegin (LogHTML& log);
         void LogEnd (LogHTML& log, clock_t begin, clock_t end);
 
-        void ReadTree ();
-        void WriteTree ();
+        void ReadTree  (const std::string& name_ast);
+        void WriteTree (const std::string& name_ast);
 };
 
 //}==============================================================================
 
-Compiler :: Compiler (const std::string& name_c, const std::string& name_asm, const std::string& name_log):
-    code     (),
-    root     ({ Block }),
-    file_c   (fopen (name_c.c_str (), "r")),
-    file_asm (fopen (name_asm.c_str (), "w")),
-    file_log (name_log.c_str ())
-    {
-        LogBegin (file_log);
+Compiler :: Compiler (const std::string& name_c,
+                      const std::string& name_asm,
+                      const std::string& name_log,
+                      const std::string& name_dot,
+                      const std::string& name_graph,
+                      const std::string& name_ast):
+    code       (),
+    root       ({ Block }),
+    file_c     (fopen (name_c.c_str (), "r")),
+    file_asm   (fopen (name_asm.c_str (), "w")),
+    file_log   (name_log.c_str ())
+{
+    Start (name_dot, name_graph, name_ast);
+}
 
-        clock_t begin = clock ();
+void Compiler :: Start (const std::string& name_dot, const std::string& name_graph, const std::string& name_ast)
+{
+    LogBegin (file_log);
 
-        LexicialAnalyzer lexicial_analyzer (file_c, code);
-        //Preprocessor          preprocessor (code, file_log);
-        SyntaxAnalyzer     syntax_analyzer (root, code, file_log);
-        //SemanticAnalyzer semantic_analyzer (root, file_log);
-        //Optimizer                optimizer (root);
-        CodeGeneration     code_generation (root, file_asm, 1);
+    clock_t begin = clock ();
 
-        RenderTree (root, "..//Materials//Hello.dot", "..//Materials//AST1.jpg", false);
+    //ReadTree (name_ast);
 
-        clock_t end = clock ();
+    LexicialAnalyzer lexicial_analyzer (file_c, code);
+    //Preprocessor          preprocessor (code, file_log);
+    SyntaxAnalyzer     syntax_analyzer (root, code, file_log);
+    //SemanticAnalyzer semantic_analyzer (root, file_log);
+    //Optimizer                optimizer (root);
+    CodeGeneration     code_generation (root, file_asm, 1);
 
-        LogEnd (file_log, begin, end);
-    }
+    RenderTree (root, name_dot, name_graph, false);
+
+    //WriteTree (name_ast);
+
+    clock_t end = clock ();
+
+    LogEnd (file_log, begin, end);
+}
 
 Compiler :: ~Compiler ()
 {
@@ -106,18 +128,18 @@ void Compiler :: LogEnd (LogHTML& log, clock_t begin, clock_t end)
     log.out ();
 }
 
-void Compiler :: ReadTree ()
+void Compiler :: ReadTree (const std::string& name_ast)
 {
-    FILE* ast = fopen ("AST.txt", "r");
+    FILE* ast = fopen (name_ast.c_str (), "r");
 
     assert (ast);
 
     root.read (ast);
 }
 
-void Compiler :: WriteTree ()
+void Compiler :: WriteTree (const std::string& name_ast)
 {
-    FILE* ast = fopen ("..//Materials//AST.txt", "w");
+    FILE* ast = fopen (name_ast.c_str (), "w");
 
     assert (ast);
 

@@ -20,12 +20,13 @@ int main (int argc, const char* argv[])
 {
     try
     {
-        std::string name_c     ("..//Materials//Source.txt");
+        std::string name_c     ("..//Materials//main.txt");
         std::string name_log   ("..//Materials//Log.html");
         std::string name_asm   ("..//Materials//Asm.txt");
         std::string name_byte  ("..//Materials//Byte.txt");
-        std::string name_tree  ("..//Materials//AST.txt");
+        std::string name_dot   ("..//Materials//AST.dot");
         std::string name_graph ("..//Materials//AST.jpg");
+        std::string name_ast   ("..//Materials//AST.txt");
 
         //Input ("Input name of C     file: ", name_c);
         //Input ("Input name of Log   file: ", name_log);
@@ -34,7 +35,7 @@ int main (int argc, const char* argv[])
         //Input ("Input name of Tree  file: ", name_tree);
         //Input ("Input name of Graph file: ", name_graph);
 
-        Compiler compiler (name_c, name_asm, name_log);
+        Compiler compiler (name_c, name_asm, name_log, name_dot, name_graph, name_ast);
 
         Assembler assembler (name_asm, name_byte);
     }

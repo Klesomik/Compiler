@@ -75,6 +75,8 @@ class AstNode
 
         void erase ();
 
+        bool empty ();
+
         AstNode& copy (const AstNode& from);
         AstNode& move (AstNode& from);
 
@@ -226,6 +228,15 @@ void AstNode :: erase ()
     clear ();
 
     OK_ASTNODE
+}
+
+//===============================================================================
+
+bool AstNode :: empty ()
+{
+    OK_ASTNODE
+
+    return children_.empty ();
 }
 
 //===============================================================================
