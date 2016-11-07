@@ -1,7 +1,10 @@
-name_c     = "..//Materials//main.txt";
-name_log   = "..//Materials//Log.html";
-name_asm   = "..//Materials//Asm.txt";
-name_byte  = "..//Materials//Byte.txt";
-name_dot   = "..//Materials//AST.dot";
-name_graph = "..//Materials//AST.jpg";
-name_ast   = "..//Materials//AST.txt";
+@source = "..//Materials//Source.txt";
+@ast = "..//Materials//AST.txt";
+@disast = "..//Materials//DisAST.txt";
+@asm = "..//Materials//Asm.txt";
+@disasm = "..//Materials//DisAsm.txt";
+@byte = "..//Materials//Byte.txt";
+@disbyte = "..//Materials//DisByte.txt";
+@jit = "..//Materials//Jit.txt";
+@disjit = "..//Materials//DisJit.txt";
+@log = "..//Materials//Log.html";

@@ -74,12 +74,13 @@ void Compiler :: Start ()
 
     clock_t begin = clock ();
 
-    Lexicial ();
-    Preproc ();
-    Syntax ();
-    Semantic ();
-    Optimize ();
-    Generate ();
+    //ReadTree (name_ast);
+
+    //SemanticAnalyzer semantic_analyzer (root, file_log);
+    //Optimizer                optimizer (root);
+    CodeGeneration     code_generation (root, file_asm, 1);
+
+    //WriteTree (name_ast);
 
     clock_t end = clock ();
 
@@ -148,27 +149,23 @@ void Compiler :: Lexicial ()
 
 void Compiler :: Preproc ()
 {
-    //Preprocessor preprocessor (code, file_log);
+    Preprocessor preprocessor (code, file_log);
 }
 
 void Compiler :: Syntax ()
 {
-    SyntaxAnalyzer syntax_analyzer (root, code, file_log);
 }
 
 void Compiler :: Semantic ()
 {
-    //SemanticAnalyzer semantic_analyzer (root, file_log);
 }
 
 void Compiler :: Optimize ()
 {
-    //Optimizer optimizer (root);
 }
 
 void Compiler :: Generate ()
 {
-    CodeGeneration code_generation (root, file_asm, 1);
 }
 
 #endif

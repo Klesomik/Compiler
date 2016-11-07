@@ -472,7 +472,6 @@ template <typename Data_T>
 bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from);
 
 void CopyFile (Stream <char>& example, FILE* input);
-void GetLine (Stream <char>& example, const char delim);
 
 //}==============================================================================
 
@@ -520,16 +519,14 @@ void CopyFile (Stream <char>& example, FILE* input)
         example.push_back (symbol);
 }
 
-//===============================================================================
-
-void GetLine (Stream <char>& example, const char delim)
+void GetLine (std::ifstream& input, Stream <char>& example, const char delim)
 {
     std::string data;
-    getline (std::cin, data, delim);
+    getline (input, data, delim);
+    
+    
 
-    Stream <char> tmp (data.c_str (), data.size ());
-
-    example = tmp;
+    Stream <char> cmd_line (data.c_str (), data.size ());
 }
 
 #endif /* STREAM_HPP_INCLUDED */
