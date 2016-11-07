@@ -31,7 +31,20 @@ class InputInformation
                     name_dis_jit,
                     name_log;
 
+        bool lexicial,
+             syntax,
+             semantic,
+             optimiser,
+             disast,
+             generator,
+             disasm,
+             translator,
+             disbyte,
+             jit,
+             disjit;
+
         std::map <std::string, std::string*> files;
+        std::map <std::string, bool*> options;
 };
 
 InputInformation::InputInformation ():
