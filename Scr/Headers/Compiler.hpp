@@ -1,11 +1,11 @@
 #ifndef Compiler_hpp
     #define Compiler_hpp
 
-//SingleTon, dragonbook, static analysis, courses mail
-
 //{==============================================================================
 
+#include <cstdio>
 #include <ctime>
+#include <iostream>
 #include "..//Libraries//Stream.hpp"
 #include "..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//Libraries//LogHTML.hpp"
@@ -40,14 +40,16 @@ class Compiler
 
         ~Compiler ();
 
-        void Start ();
+        void Start (InputInformation& scan);
 
-        void Lexicial ();
-        void Preproc ();
-        void Syntax ();
-        void Semantic ();
-        void Optimize ();
-        void Generate ();
+        void Lexicial     (bool flag);
+        void Preproc      (bool flag);
+        void Syntax       (bool flag);
+        void Semantic     (bool flag);
+        void Optimize     (bool flag);
+        void DisSyntax    (bool flag);
+        void Generate     (bool flag);
+        void DisGenerator (bool flag);
 
         void LogBegin ();
         void LogEnd (clock_t begin, clock_t end);
@@ -68,7 +70,7 @@ Compiler :: Compiler (InputInformation& scan):
     Start ();
 }
 
-void Compiler :: Start ()
+void Compiler :: Start (InputInformation& scan)
 {
     LogBegin ();
 
@@ -141,34 +143,68 @@ void Compiler :: WriteTree (const std::string& name_ast)
     fclose (ast);
 }
 
-void Compiler :: Lexicial ()
+void Compiler :: Preproc (bool flag)
 {
-    LexicialAnalyzer lexicial_analyzer (file_source, code);
+    if (flag)
+    {
+        //Preprocessor preprocessor (code, file_log);
+    }
 }
 
-void Compiler :: Preproc ()
+void Compiler :: Lexicial (bool flag)
 {
-    //Preprocessor preprocessor (code, file_log);
+    if (flag)
+    {
+        LexicialAnalyzer lexicial_analyzer (file_source, code);
+    }
 }
 
-void Compiler :: Syntax ()
+void Compiler :: Syntax (bool flag)
 {
-    SyntaxAnalyzer syntax_analyzer (root, code, file_log);
+    if (flag)
+    {
+        SyntaxAnalyzer syntax_analyzer (root, code, file_log);
+    }
 }
 
-void Compiler :: Semantic ()
+void Compiler :: Semantic (bool flag)
 {
-    //SemanticAnalyzer semantic_analyzer (root, file_log);
+    if (flag)
+    {
+        //SemanticAnalyzer semantic_analyzer (root, file_log);
+    }
 }
 
-void Compiler :: Optimize ()
+void Compiler :: Optimize (bool flag)
 {
-    //Optimizer optimizer (root);
+    if (flag)
+    {
+        //Optimizer optimizer (root);
+    }
 }
 
-void Compiler :: Generate ()
+void Compiler :: DisSyntax (bool flag)
 {
-    CodeGeneration code_generation (root, file_asm, 1);
+    if (flag)
+    {
+        //Optimizer optimizer (root);
+    }
+}
+
+void Compiler :: Generate (bool flag)
+{
+    if (flag)
+    {
+        CodeGeneration code_generation (root, file_asm, 1);
+    }
+}
+
+void Compiler :: DisGenerator (bool flag)
+{
+    if (flag)
+    {
+        //Optimizer optimizer (root);
+    }
 }
 
 #endif

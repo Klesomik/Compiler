@@ -31,15 +31,16 @@ class InputInformation
                     name_dis_jit,
                     name_log;
 
-        bool lexicial,
+        bool preprocessor,
+             lexicial,
              syntax,
              semantic,
              optimiser,
-             disast,
+             dissyntax,
              generator,
-             disasm,
+             disgenerator,
              translator,
-             disbyte,
+             distranslator,
              jit,
              disjit;
 
@@ -58,6 +59,18 @@ InputInformation::InputInformation ():
     name_jit      (),
     name_dis_jit  (),
     name_log      (),
+    preprocessor  (false),
+    lexicial      (false),
+    syntax        (false),
+    semantic      (false),
+    optimiser     (false),
+    dissyntax     (false),
+    generator     (false),
+    disgenerator  (false),
+    translator    (false),
+    distranslator (false),
+    jit           (false),
+    disjit        (false),
     files         ({ {  "source", &name_source   },
                      {     "ast", &name_ast      },
                      {  "disast", &name_dis_ast  },
@@ -67,7 +80,19 @@ InputInformation::InputInformation ():
                      { "disbyte", &name_dis_byte },
                      {     "jit", &name_jit      },
                      {  "disjit", &name_dis_jit  },
-                     {     "log", &name_log      } })
+                     {     "log", &name_log      } }),
+    options ({ {  "preprocessor", &preprocessor  },
+               {      "lexicial", &lexicial      },
+               {        "syntax", &syntax        },
+               {      "semantic", &semantic      },
+               {     "optimiser", &optimiser     },
+               {     "dissyntax", &dissyntax     },
+               {     "generator", &generator     },
+               {  "disgenerator", &disgenerator  },
+               {    "translator", &translator    },
+               { "distranslator", &distranslator },
+               {           "jit", &jit           },
+               {        "disjit", &disjit        } })
 {
 }
 
@@ -99,6 +124,45 @@ void InputInformation::space (Stream <char>& example)
 
 void InputInformation::option (Stream <char>& example)
 {
+    example++; // -
+
+    space (example);
+
+    std::string name;
+
+    while (example.check () && isalpha (example.current ()))
+    {
+        char symbol = 0;
+        example >> symbol;
+
+        name.push_back (symbol);
+    }
+
+    space (example);
+
+    example++; // =
+
+    space (example);
+
+    std::string value;
+
+    while (example.check () && isalpha (example.current ()))
+    {
+        char symbol = 0;
+        example >> symbol;
+
+        value.push_back (symbol);
+    }
+
+    space (example);
+
+    example++; // ;
+
+    if (value == "true")
+        *(options[name]) = true;
+
+    else
+        *(options[name]) = false;
 }
 
 std::pair <bool, std::string> InputInformation::file (Stream <char>& example)

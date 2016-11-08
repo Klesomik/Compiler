@@ -4,17 +4,18 @@
 @<файл> = <путь>;
 # <комментарий>
 
--lexicial   = true;  // принимает @source, выдает @source
--syntax     = true;  // принимает @source, выдает @ast
--semantic   = false; // принимает @ast,    выдает @ast
--optimiser  = false; // принимает @ast,    выдает @ast
--disast     = false; // принимает @ast,    выдает @disast 
--generator  = true;  // принимает @ast,    выдает @asm
--disasm     = false; // принимает @asm,    выдает @disasm
--translator = true;  // принимает @asm,    выдает @byte
--disbyte    = false; // принимает @byte,   выдает @disbyte
--jit        = false; // принимает @byte,   выдает @jit
--disjit     = false; // принимает @jit,    выдает @disjit
+-preprocessor  = false; # принимает @source, выдает @source
+-lexicial      = true;  # принимает @source, выдает @source
+-syntax        = true;  # принимает @source, выдает @ast
+-semantic      = false; # принимает @ast,    выдает @ast
+-optimiser     = false; # принимает @ast,    выдает @ast
+-dissyntax     = false; # принимает @ast,    выдает @disast
+-generator     = true;  # принимает @ast,    выдает @asm
+-disgenerator  = false; # принимает @asm,    выдает @disasm
+-translator    = true;  # принимает @asm,    выдает @byte
+-distranslator = false; # принимает @byte,   выдает @disbyte
+-jit           = false; # принимает @byte,   выдает @jit
+-disjit        = false; # принимает @jit,    выдает @disjit
 
 
 @source  = "..//Materials//Source.txt";
