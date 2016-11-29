@@ -67,7 +67,7 @@ Compiler :: Compiler (InputInformation& scan):
     file_asm    (fopen (scan.name_asm.c_str (), "w")),
     file_log    (scan.name_log.c_str ())
 {
-    Start ();
+    Start (scan);
 }
 
 void Compiler :: Start (InputInformation& scan)
@@ -76,12 +76,12 @@ void Compiler :: Start (InputInformation& scan)
 
     clock_t begin = clock ();
 
-    Lexicial ();
-    Preproc ();
-    Syntax ();
-    Semantic ();
-    Optimize ();
-    Generate ();
+    Lexicial (scan.lexicial);
+    Preproc (scan.preprocessor);
+    Syntax (scan.syntax);
+    Semantic (scan.semantic);
+    Optimize (scan.optimiser); //
+    Generate (scan.generator);
 
     clock_t end = clock ();
 

@@ -6,6 +6,7 @@
 #include "..//Libraries//Stream.hpp"
 #include "BackEnd//BoaLexicialAnalyzer.hpp"
 #include "BackEnd//BoaSyntaxAnalyzer.hpp"
+#include "DisAssembler.hpp"
 
 class Assembler
 {
@@ -34,6 +35,12 @@ Assembler :: Assembler (const std::string& name_asm, const std::string& name_byt
         BoaSyntaxAnalyzer syntax;
         syntax.read (code);
         syntax.write (bit);
+
+        Stream <int> in;
+
+        GetLine (in, '\0');
+
+        DisAssembler ();
     }
 
 Assembler :: ~Assembler ()

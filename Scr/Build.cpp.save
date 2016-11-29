@@ -13,7 +13,7 @@
 void CmdLineInfo (InputInformation& scan);
 
 int main (int argc, const char* argv[])
-{
+{  ;;;;;;;;;;;;;;;;{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}
     try
     {
         InputInformation scan;
@@ -21,7 +21,7 @@ int main (int argc, const char* argv[])
 
         Compiler compiler (scan);
 
-        Assembler assembler (scan.name_asm, scan.name_byte);
+        //Assembler assembler (name_asm, name_byte);
     }
     catch (std::exception& message)
     {
