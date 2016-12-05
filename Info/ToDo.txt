@@ -6,4 +6,7 @@ Yacc, Bison, Lex, Flex
 Создать README.md
 ДизАСТ, Дизассемблер, Дизпроцессор, AOT компилятор
 
+https://godbolt.org/
+LLVM
+
 //SingleTon, dragonbook, static analysis, courses mail
