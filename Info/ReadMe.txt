@@ -2,6 +2,7 @@
 
 -<опция> = <значение>;
 @<файл> = <путь>;
+@<файл> = <код>;
 # <комментарий>
 
 -preprocessor  = false; # принимает @source, выдает @source
@@ -29,3 +30,12 @@
 @disjit  = "..//Materials//DisJit.txt";
 @log     = "..//Materials//Log.html";
 @config  = "..//Materials//Config.txt";
+
+@source = <int main ()
+           {
+               int x = 5;
+
+               out x;
+
+               return 0;
+           }>
