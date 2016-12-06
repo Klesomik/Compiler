@@ -10,19 +10,14 @@
 
 //{==============================================================================
 
-#define BOA_1(id, params, name, word, comp, cpu) name = id,
-#define BOA_2(id, params, name, word, comp, cpu) name = id,
-#define BOA_3(id, params, name, word, comp, cpu) name = id,
-#define BOA_4(id, params, name, word, comp, cpu) name = id,
+#define BOA(id, params, name, word, comp, cpu) name = id,
 
-enum BoaLexemes {
-                    #include "BoaList.hpp"
-                };
+enum BoaLexemes
+{
+    #include "BoaList.hpp"
+};
 
-#undef BOA_1
-#undef BOA_2
-#undef BOA_3
-#undef BOA_4
+#undef BOA
 
 //}==============================================================================
 
@@ -59,16 +54,7 @@ std::ostream& operator << (std::ostream& os, const BoaToken& m);
 
 std::ostream& operator << (std::ostream& os, const BoaToken& value)
 {
-    #define BOA_1(id, params, name, word, comp, cpu) \
-    case id: { return os << std::string (word); }
-
-    #define BOA_2(id, params, name, word, comp, cpu) \
-    case id: { return os << std::string (word); }
-
-    #define BOA_3(id, params, name, word, comp, cpu) \
-    case id: { return os << std::string (word); }
-
-    #define BOA_4(id, params, name, word, comp, cpu) \
+    #define BOA(id, params, name, word, comp, cpu) \
     case id: { return os << std::string (word); }
 
     switch (value.type)
@@ -78,10 +64,7 @@ std::ostream& operator << (std::ostream& os, const BoaToken& value)
         default: { throw "operator << was broken"; }
     }
 
-    #undef BOA_1
-    #undef BOA_2
-    #undef BOA_3
-    #undef BOA_4
+    #undef BOA
 }
 
 #endif

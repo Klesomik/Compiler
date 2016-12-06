@@ -10,43 +10,29 @@
 
 class Assembler
 {
+    public:
+        Assembler ();
+
+        void run (Stream <char>& asm_code, std::vector <int>& cpu_code);
+
     private:
-        FILE* boa;
-        FILE* bit;
+        Stream <BoaToken> boa_token;
 
         Assembler (const Assembler& from);
         Assembler& operator = (const Assembler& from);
-
-    public:
-        Assembler (const std::string& name_asm, const std::string& name_byte);
-        ~Assembler ();
 };
 
-Assembler :: Assembler (const std::string& name_asm, const std::string& name_byte):
-    boa (fopen (name_asm.c_str (), "r")),
-    bit (fopen (name_byte.c_str (), "w"))
-    {
-        Stream <BoaToken> code;
-
-        BoaLexicialAnalyzer lexicial;
-        lexicial.read (boa);
-        lexicial.parser (code);
-
-        BoaSyntaxAnalyzer syntax;
-        syntax.read (code);
-        syntax.write (bit);
-
-        Stream <int> in;
-
-        GetLine (in, '\0');
-
-        DisAssembler ();
-    }
-
-Assembler :: ~Assembler ()
+Assembler::Assembler ():
 {
-    fclose (boa);
-    fclose (bit);
+}
+
+void Assembler::run (Stream <char>& asm_code, std::vector <int>& cpu_code)
+{
+    BoaLexicialAnalyzer lexicial;
+                        lexicial.parsing (asm_code, boa_token);
+
+    BoaSyntaxAnalyzer syntax;
+                      syntax.parsing (boa_token, cpu_code);
 }
 
 #endif

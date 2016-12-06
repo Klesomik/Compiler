@@ -7,179 +7,141 @@
 
 class BoaSyntaxAnalyzer
 {
-    private:
-        std::vector <int> code_;
-
-        std::map <int, int> label_;
-
     public:
         BoaSyntaxAnalyzer ();
 
-        void read  (Stream <BoaToken>& example);
-        void write (FILE* bit);
+        void parsing  (Stream <BoaToken>& from, std::vector <int>& to);
 
-        void cmd_push   (Stream <BoaToken>& example);
-        void cmd_pop    (Stream <BoaToken>& example);
-        void cmd_label  (Stream <BoaToken>& example);
-        void cmd_jmp    (Stream <BoaToken>& example);
-        void cmd_in_out (Stream <BoaToken>& example);
-        void cmd_mov    (Stream <BoaToken>& example);
+        void cmd_push   (Stream <BoaToken>& from, std::vector <int>& to);
+        void cmd_pop    (Stream <BoaToken>& from, std::vector <int>& to);
+        void cmd_label  (Stream <BoaToken>& from, std::vector <int>& to);
+        void cmd_jmp    (Stream <BoaToken>& from, std::vector <int>& to);
+        void cmd_in_out (Stream <BoaToken>& from, std::vector <int>& to);
+        void cmd_mov    (Stream <BoaToken>& from, std::vector <int>& to);
+
+    private:
+        std::map <int, int> label_;
 };
 
-BoaSyntaxAnalyzer :: BoaSyntaxAnalyzer ():
-    code_  (),
-    label_ ({})
+BoaSyntaxAnalyzer::BoaSyntaxAnalyzer ():
+    label_ ()
     {}
 
-void BoaSyntaxAnalyzer :: read (Stream <BoaToken>& example)
+void BoaSyntaxAnalyzer::parsing (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    while (example.check ())
+    while (from.check ())
     {
-        if (example[example.place ()].type != BoaLabel)
-            code_.push_back (example[example.place ()].type);
+        if (from.current ().type != BoaLabel)
+            to.push_back (from.current ().type);
 
-        #define BOA_1(id, params, name, word, comp, cpu)
-        #define BOA_2(id, params, name, word, comp, cpu) case id: { example++; comp break; }
-        #define BOA_3(id, params, name, word, comp, cpu) case id: { example++; comp break; }
-        #define BOA_4(id, params, name, word, comp, cpu) case id: { example++; comp break; }
+        #define BOA(id, params, name, word, comp, cpu) case id: { from++; comp break; }
 
-        switch (example[example.place ()].type)
+        switch (from.current ().type)
         {
             #include "BoaList.hpp"
 
             default: { break; }
         }
 
-        #undef BOA_1
-        #undef BOA_2
-        #undef BOA_3
-        #undef BOA_4
+        #undef BOA
     }
 }
 
-void BoaSyntaxAnalyzer :: write (FILE* bit)
+void BoaSyntaxAnalyzer::cmd_push (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    #define BOA_1(id, params, name, word, comp, cpu)
-    #define BOA_2(id, params, name, word, comp, cpu) case id: { for (int j = 0; j < params; j++) { i++; fprintf (bit, "%d ", code_[i]); } break; }
-    #define BOA_3(id, params, name, word, comp, cpu)
-    #define BOA_4(id, params, name, word, comp, cpu) case id: { i++; fprintf (bit, "%d ", label_[code_[i]]); break; }
+    to.push_back (from.current ().type);
 
-    for (size_t i = 0; i < code_.size (); i++)
+    switch (from.current ().type)
     {
-        fprintf (bit, "%d ", code_[i]);
+        case BoaDigit: {         to.push_back (from.current ().value); break; }
+        case   BoaReg: {         to.push_back (from.current ().value); break; }
 
-        switch (code_[i])
-        {
-            #include "BoaList.hpp"
-
-            default: { break; }
-        }
-    }
-
-    #undef BOA_1
-    #undef BOA_2
-    #undef BOA_3
-    #undef BOA_4
-}
-
-void BoaSyntaxAnalyzer :: cmd_push (Stream <BoaToken>& example)
-{
-    code_.push_back (example[example.place ()].type);
-
-    switch (example[example.place ()].type)
-    {
-        case BoaDigit: { code_.push_back (example[example.place ()].value); break; }
-        case   BoaReg: { code_.push_back (example[example.place ()].value); break; }
-
-        case  BoaCell: { example++; code_.push_back (example[example.place ()].value); break; }
-        case BoaParam: { example++; code_.push_back (example[example.place ()].value); break; }
+        case  BoaCell: { from++; to.push_back (from.current ().value); break; }
+        case BoaParam: { from++; to.push_back (from.current ().value); break; }
 
         default: { break; }
     }
 
-    example++;
+    from++;
 }
 
-void BoaSyntaxAnalyzer :: cmd_pop (Stream <BoaToken>& example)
+void BoaSyntaxAnalyzer::cmd_pop (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    switch (example[example.place ()].type)
+    switch (from.current ().type)
     {
         case   BoaReg:
         {
-            code_.push_back (example[example.place ()].type);
-            code_.push_back (example[example.place ()].value);
+            to.push_back (from.current ().type);
+            to.push_back (from.current ().value);
 
-            example++;
+            from++;
 
             break;
         }
 
         case  BoaCell:
         {
-            code_.push_back (example[example.place ()].type);
+            to.push_back (from.current ().type);
+            from++;
 
-            example++;
-
-            code_.push_back (example[example.place ()].value);
-
-            example++;
+            to.push_back (from.current ().value);
+            from++;
 
             break;
         }
 
         default:
         {
-            code_.push_back (BoaNone);
-            code_.push_back (BoaNone);
+            to.push_back (BoaNone);
+            to.push_back (BoaNone);
 
             break;
         }
     }
 }
 
-void BoaSyntaxAnalyzer :: cmd_label (Stream <BoaToken>& example)
+void BoaSyntaxAnalyzer::cmd_label (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    label_[example[example.place ()].value] = code_.size ();
+    label_[from.current ().value] = to.size ();
 
-    example++;
+    from++;
 }
 
-void BoaSyntaxAnalyzer :: cmd_jmp (Stream <BoaToken>& example)
+void BoaSyntaxAnalyzer::cmd_jmp (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    std::map <int, int>::iterator it = label_.find (example[example.place ()].value);
+    std::map <int, int>::iterator it = label_.find (from.current ().value);
 
-    if (it != label_.end ());
+    if (it == label_.end ());
+        label_[from.current ().value] = -1;
 
-    else label_[example[example.place ()].value] = -1;
+    to.push_back (from.current ().value);
 
-    code_.push_back (example[example.place ()].value);
-
-    example++;
+    from++;
 }
 
-void BoaSyntaxAnalyzer :: cmd_in_out (Stream <BoaToken>& example)
+void BoaSyntaxAnalyzer::cmd_in_out (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    code_.push_back (example[example.place ()].type);
+    to.push_back (from.current ().type);
 
-    switch (example[example.place ()].type)
+    switch (from.current ().type)
     {
-        case  BoaReg: { code_.push_back (example[example.place ()].value); break; }
-        case BoaCell: { example++; code_.push_back (example[example.place ()].value); break; }
+        case  BoaReg: {         to.push_back (from.current ().value); break; }
+        case BoaCell: { from++; to.push_back (from.current ().value); break; }
 
         default: { break; }
     }
 
-    example++;
+    from++;
 }
 
-void BoaSyntaxAnalyzer :: cmd_mov (Stream <BoaToken>& example)
+void BoaSyntaxAnalyzer::cmd_mov (Stream <BoaToken>& from, std::vector <int>& to)
 {
-    code_.push_back (example[example.place ()].value);
+    to.push_back (from.current ().value);
 
-    example++;
-    example++;
+    from++;
+    from++;
 
-    code_.push_back (example[example.place ()].value);
+    to.push_back (from.current ().value);
 
-    example++;
+    from++;
 }

@@ -73,18 +73,18 @@ Compiler :: Compiler (InputInformation& scan):
 void Compiler :: Start (InputInformation& scan)
 {
     LogBegin ();
-
     clock_t begin = clock ();
 
+    ScanFile (to, const std::string& name);
+
     Lexicial (scan.lexicial);
-    Preproc (scan.preprocessor);
-    Syntax (scan.syntax);
+    Preproc  (scan.preprocessor);
+    Syntax   (scan.syntax);
     Semantic (scan.semantic);
     Optimize (scan.optimiser); //
     Generate (scan.generator);
 
     clock_t end = clock ();
-
     LogEnd (begin, end);
 
     RenderTree (root, "..//Files//AST.dot", "..//Files//AST.jpg", false);
@@ -94,33 +94,6 @@ Compiler :: ~Compiler ()
 {
     fclose (file_source);
     fclose (file_asm);
-}
-
-void Compiler :: LogBegin ()
-{
-    file_log.setFontColor ("white");
-    file_log.setSize      (50);
-    file_log.setColor     ("blue");
-
-    file_log.setColor ("gray");
-    file_log.output ("DeerC %d.%d\n\n", 1, 0);
-
-    file_log.setColor ("blue");
-    file_log.output ("========== Build started ==========\n");
-
-    file_log.setColor ("red");
-}
-
-void Compiler :: LogEnd (clock_t begin, clock_t end)
-{
-    file_log.setColor ("blue");
-    file_log.output ("========== Build finished ==========\n\n");
-
-    file_log.setColor ("gray");
-    file_log.output ("Build started on: %f\n",   (float) begin / CLOCKS_PER_SEC);
-    file_log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
-
-    file_log.out ();
 }
 
 void Compiler :: ReadTree (const std::string& name_ast)

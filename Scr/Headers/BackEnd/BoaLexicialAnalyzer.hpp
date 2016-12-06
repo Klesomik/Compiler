@@ -4,53 +4,34 @@
 #include <cstring>
 #include <map>
 #include "..//..//Libraries//Stream.hpp"
+#include "..//..//Libraries//Tools.hpp"
 #include "BoaToken.hpp"
 
 //}==============================================================================
 
 //{==============================================================================
 
-bool search (std::map <std::string, int>& example, std::string& value, const int type, Stream <BoaToken>& code);
-
-//}==============================================================================
-
-bool search (std::map <std::string, int>& example, std::string& value, const int type, Stream <BoaToken>& code)
-{
-    std::map <std::string, int>::iterator it = example.find (value);
-
-    if (it != example.end ())
-    {
-        int token = 0;
-
-        if (type == -1) token = it -> second;
-        else            token = type;
-
-        code.push_back ({ token, it -> second });
-
-        return true;
-    }
-
-    return false;
-}
-
-//{==============================================================================
-
 class BoaLexicialAnalyzer
 {
+    public:
+        BoaLexicialAnalyzer ();
+
+        void parsing (Stream <char>& from, Stream <BoaToken>& to);
+
+        void skip   (Stream <char>& from);
+        void next   (Stream <char>& from);
+        void number (Stream <char>& from, Stream <BoaToken>& to);
+        void word   (Stream <char>& from, Stream <BoaToken>& to);
+        void sign   (Stream <char>& from, Stream <BoaToken>& to);
+
     private:
-        #define BOA_1(id, params, name, word, comp, cpu)
-        #define BOA_2(id, params, name, word, comp, cpu) { word, id },
-        #define BOA_3(id, params, name, word, comp, cpu) { word, id },
-        #define BOA_4(id, params, name, word, comp, cpu) { word, id },
+        #define BOA(id, params, name, word, comp, cpu) { word, id },
 
         std::map <std::string, int> commands_ = {
-                                                     #include "BoaList.hpp"
+                                                    #include "BoaList.hpp"
                                                 };
 
-        #undef BOA_1
-        #undef BOA_2
-        #undef BOA_3
-        #undef BOA_4
+        #undef BOA
 
         std::map <std::string, int> regists_ = { { "ax",  0 },
                                                  { "bx",  1 },
@@ -58,162 +39,108 @@ class BoaLexicialAnalyzer
                                                  { "sp",  3 } };
 
         std::map <std::string, int> names_;
-
-        Stream <char> buff_;
-
-    public:
-        BoaLexicialAnalyzer ();
-
-        void read   (FILE* data);
-        void parser (Stream <BoaToken>& code_);
-
-        bool is_space   (const char symbol);
-        bool is_comment (const char symbol);
-        bool is_digit   (const char symbol);
-        bool is_alpha   (const char symbol);
-        bool is_symbol  (const char symbol);
-
-        void skip   ();
-        void next   ();
-        void number (Stream <BoaToken>& code_);
-        void word   (Stream <BoaToken>& code_);
-        void sign   (Stream <BoaToken>& code_);
 };
 
 //}==============================================================================
 
-BoaLexicialAnalyzer :: BoaLexicialAnalyzer ():
-    names_ ({}),
-    buff_  ()
+BoaLexicialAnalyzer::BoaLexicialAnalyzer ():
+    names_ ()
     {}
 
-void BoaLexicialAnalyzer :: read (FILE* data)
+void BoaLexicialAnalyzer::parsing (Stream <char>& from, Stream <BoaToken>& to)
 {
-    for (char symbol = 0; fscanf (data, "%c", &symbol) != EOF;)
-        buff_.push_back (symbol);
-}
-
-void BoaLexicialAnalyzer :: parser (Stream <BoaToken>& code_)
-{
-    while (buff_.check ())
+    while (from.check ())
     {
-        if (is_space (buff_[buff_.place ()]))
-            skip ();
+        if (IsSpace (from.current ()))
+            skip (from);
 
-        else if (is_comment (buff_[buff_.place ()]))
-            next ();
+        else if (IsComment (from.current ()))
+            next (from);
 
-        else if (is_digit (buff_[buff_.place ()]))
-            number (code_);
+        else if (IsDigit (from.current ()))
+            number (from, to);
 
-        else if (is_alpha (buff_[buff_.place ()]))
-            word (code_);
+        else if (IsAlpha (from.current ()))
+            word (from, to);
 
-        else if (is_symbol (buff_[buff_.place ()]))
-            sign (code_);
+        else if (IsSymbol (from.current ()))
+            sign (from, to);
 
         else
         {
-            std::cout << "|" << buff_[buff_.place ()] << "|\n\n";
+            std::cout << "|" << from.current () << "|\n\n";
 
-            buff_.dump ();
+            to.dump ();
 
             throw "Unknown symbol";
         }
     }
 }
 
-bool BoaLexicialAnalyzer :: is_space (const char symbol)
+void BoaLexicialAnalyzer::skip (Stream <char>& from)
 {
-    return (iscntrl (symbol) || (symbol == ' '));
-}
-
-bool BoaLexicialAnalyzer :: is_comment (const char symbol)
-{
-    return symbol == ';';
-}
-
-bool BoaLexicialAnalyzer :: is_digit (const char symbol)
-{
-    return isdigit (symbol);
-}
-
-bool BoaLexicialAnalyzer :: is_alpha (const char symbol)
-{
-    return isalpha (symbol);
-}
-
-bool BoaLexicialAnalyzer :: is_symbol (const char symbol)
-{
-    return symbol == '%' ||
-           symbol == '$' ||
-           symbol == ',';
-}
-
-void BoaLexicialAnalyzer :: skip ()
-{
-    while (buff_.check () && is_space (buff_[buff_.place ()]))
+    while (from.check () && IsSpace (from.current ()))
     {
         char digit = 0;
-        buff_ >> digit;
+        from >> digit;
     }
 }
 
-void BoaLexicialAnalyzer :: next ()
+void BoaLexicialAnalyzer::next (Stream <char>& from)
 {
-    while (buff_.check () && buff_[buff_.place ()] != '\n')
+    while (from.check () && from.current () != '\n')
     {
         char digit = 0;
-        buff_ >> digit;
+        from >> digit;
     }
 }
 
-void BoaLexicialAnalyzer :: number (Stream <BoaToken>& code_)
+void BoaLexicialAnalyzer::number (Stream <char>& from, Stream <BoaToken>& to)
 {
     int value = 0;
-    while (buff_.check () && is_digit (buff_[buff_.place ()]))
+    while (from.check () && IsDigit (from.current ()))
     {
         char digit = 0;
-        buff_ >> digit;
+        from >> digit;
 
         value = value * 10 + digit - '0';
     }
 
-    code_.push_back ({ BoaDigit, value });
+    to.push_back ({ BoaDigit, value });
 }
 
-void BoaLexicialAnalyzer :: word (Stream <BoaToken>& code_)
+void BoaLexicialAnalyzer::word (Stream <char>& from, Stream <BoaToken>& to)
 {
     std::string value;
-    while (buff_.check () && (is_alpha (buff_[buff_.place ()]) || buff_[buff_.place ()] == '_'))
+    while (from.check () && (IsAlpha (from.current ()) || from.current () == '_'))
     {
         char symbol = 0;
-        buff_ >> symbol;
+        from >> symbol;
 
         value.push_back (symbol);
     }
 
-    if      (search (commands_, value,   -1, code_));
-    else if (search ( regists_, value,  BoaReg, code_));
-    else if (search (   names_, value, BoaName, code_));
+    if      (Search (commands_, value,      -1, to));
+    else if (Search ( regists_, value,  BoaReg, to));
+    else if (Search (   names_, value, BoaName, to));
 
     else
     {
-        code_.push_back ({ BoaName, names_.size () });
+        to.push_back ({ BoaName, names_.size () });
 
         names_[value] = names_.size () - 1;
     }
 }
 
-void BoaLexicialAnalyzer :: sign (Stream <BoaToken>& code_)
+void BoaLexicialAnalyzer::sign (Stream <char>& from, Stream <BoaToken>& to)
 {
     char digit = 0;
-    buff_ >> digit;
+    from >> digit;
 
     std::string value;
     value.push_back (digit);
 
     int hash_value = commands_[value];
 
-    if (hash_value) code_.push_back ({ hash_value, 0 });
+    if (hash_value) to.push_back ({ hash_value, 0 });
 }
