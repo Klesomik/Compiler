@@ -99,8 +99,6 @@ class Cpu
         int regist_[4];
         std::vector <int> data_;
 
-        std::vector <int> code_;
-
         std::vector <int> call_;
 
         Flag state_;
@@ -110,54 +108,37 @@ class Cpu
         Cpu& operator = (const Cpu& from);
 
     public:
-        Cpu  ();
+        Cpu  (const size_t ram_size);
 
-        void read (FILE* asmCode);
         void play ();
 };
 
 //}==============================================================================
 
-Cpu :: Cpu ():
-    ram_    (100),
+Cpu::Cpu (const size_t ram_size):
+    ram_    (ram_size),
     regist_ ({}),
     data_   (),
-    code_   (),
     call_   (),
     state_  ()
     {}
 
 //===============================================================================
 
-void Cpu :: read (FILE* asmCode)
-{
-    for (size_t cmd = 0; fscanf (asmCode, "%d", &cmd) != EOF;) code_.push_back (cmd);
-}
-
-//===============================================================================
-
-void Cpu :: play ()
+void Cpu::parsing (const std::vector <int>& code_)
 {
     for (size_t i = 0; i < code_.size (); i++)
     {
-        #define BOA_1(id, params, name, word, comp, cpu)
-        #define BOA_2(id, params, name, word, comp, cpu) case id: { cpu break; }
-        #define BOA_3(id, params, name, word, comp, cpu) case id: { cpu break; }
-        #define BOA_4(id, params, name, word, comp, cpu) case id: { cpu break; }
+        #define BOA(id, params, name, word, comp, cpu) case id: { cpu break; }
 
         switch (code_[i])
         {
-            #include "BackEnd//BoaList.hpp"
+            #include "BackEnd//BoaList.inl"
 
             default: { return; }
         }
 
-        #undef BOA_1
-        #undef BOA_2
-        #undef BOA_3
-        #undef BOA_4
-
-        //system ("pause");
+        #undef BOA
     }
 }
 

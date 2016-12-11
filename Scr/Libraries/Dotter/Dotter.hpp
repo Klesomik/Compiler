@@ -10,7 +10,7 @@
 
 namespace Dotter
 {
-    const char* Path = "\\Dot\\DotExe\\dot.exe";
+    const char* Path = "\\Dot\\dot.exe";
 
     size_t Indent = 4;
 

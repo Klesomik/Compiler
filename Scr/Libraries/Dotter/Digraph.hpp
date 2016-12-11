@@ -149,7 +149,7 @@ void Dotter::Digraph::close ()
 
         end ();
 
-        fprintf (dotFile_, "\n/* Build with Dotter */\n");
+        comment (" Build with Dotter ");
 
         fclose (dotFile_);
                 dotFile_ = nullptr;

@@ -9,4 +9,6 @@ Yacc, Bison, Lex, Flex
 https://godbolt.org/
 LLVM
 
+Config file: .txt -> .hml
+
 //SingleTon, dragonbook, static analysis, courses mail

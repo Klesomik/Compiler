@@ -1,4 +1,6 @@
-#include "Headers//Cpu.hpp"
+//#include "Headers//Cpu.hpp"
+
+#include <bits/stdc++.h>
 
 //{==============================================================================
 
@@ -13,17 +15,20 @@ int main (int argc, const char* argv[])
     {
         std::string name_byte ("..//Materials//Byte.txt");
 
-        //Hello_Byte (name_byte);
+        Hello_Byte (name_byte);
 
         FILE* file_byte = fopen (name_byte.c_str (), "r");
 
         assert (file_byte);
 
-        Cpu cpu;
-            cpu.read (file_byte);
-            cpu.play ();
+        std::vector <int> code;
+
+        for (int cmd = 0; fscanf (file_byte, "%d", &cmd) != EOF;) code.push_back (cmd);
 
         fclose (file_byte);
+
+        //Cpu cpu;
+            //cpu.parsing (code);
 
         system ("pause");
     }
