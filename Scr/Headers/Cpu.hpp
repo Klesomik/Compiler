@@ -47,48 +47,6 @@ inline void mod (std::vector <Data_T>& example) { example.push_back (example.pop
 
 //}==============================================================================
 
-//Struct: Flag
-//{==============================================================================
-
-struct Flag
-{
-    bool mf_, //more
-         ef_, //equal
-         lf_; //less
-
-    Flag ();
-
-    void reset ();
-
-    void dump ();
-};
-
-Flag :: Flag ():
-    mf_ (false),
-    ef_ (false),
-    lf_ (false)
-    {}
-
-void Flag :: reset ()
-{
-    mf_ = false;
-    ef_ = false;
-    lf_ = false;
-}
-
-void Flag :: dump ()
-{
-    printf ("\n==============================\n");
-
-    printf ("mf_ = %d\n", mf_);
-    printf ("ef_ = %d\n", ef_);
-    printf ("lf_ = %d\n", lf_);
-
-    printf ("\n==============================\n");
-}
-
-//}==============================================================================
-
 //Class: Cpu
 //{==============================================================================
 
@@ -101,7 +59,7 @@ class Cpu
 
         std::vector <int> call_;
 
-        Flag state_;
+        int flag_;
 
         Cpu  (const Cpu& from);
 
@@ -110,7 +68,7 @@ class Cpu
     public:
         Cpu  (const size_t ram_size);
 
-        void play ();
+        void parsing (const std::vector <int>& from);
 };
 
 //}==============================================================================
@@ -120,18 +78,19 @@ Cpu::Cpu (const size_t ram_size):
     regist_ ({}),
     data_   (),
     call_   (),
-    state_  ()
+    state_  (),
+    flag_   (0)
     {}
 
 //===============================================================================
 
-void Cpu::parsing (const std::vector <int>& code_)
+void Cpu::parsing (const std::vector <int>& from)
 {
-    for (size_t i = 0; i < code_.size (); i++)
+    for (size_t i = 0; i < from.size (); i++)
     {
         #define BOA(id, params, name, word, comp, cpu) case id: { cpu break; }
 
-        switch (code_[i])
+        switch (from[i])
         {
             #include "BackEnd//BoaList.inl"
 

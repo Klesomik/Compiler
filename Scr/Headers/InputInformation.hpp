@@ -10,11 +10,6 @@ class InputInformation
 
         void parse (Stream <char>& info);
 
-        bool is_space   (const char symbol);
-        bool is_option  (const char symbol);
-        bool is_file    (const char symbol);
-        bool is_comment (const char symbol);
-
         void space   (Stream <char>& example);
         void option  (Stream <char>& example);
         std::pair <bool, std::string> file (Stream <char>& example);
@@ -94,26 +89,6 @@ InputInformation::InputInformation ():
                {           "jit", &jit           },
                {        "disjit", &disjit        } })
 {
-}
-
-bool InputInformation::is_space (const char symbol)
-{
-    return symbol == ' ' || symbol == '\n';
-}
-
-bool InputInformation::is_option (const char symbol)
-{
-    return symbol == '-';
-}
-
-bool InputInformation::is_file (const char symbol)
-{
-    return symbol == '@';
-}
-
-bool InputInformation::is_comment (const char symbol)
-{
-    return symbol == '#';
 }
 
 void InputInformation::space (Stream <char>& example)

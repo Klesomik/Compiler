@@ -5,6 +5,9 @@ bool IsComment (const char symbol);
 bool IsDigit (const char symbol);
 bool IsAlpha (const char symbol);
 bool IsExtraSymbol (const char symbol);
+bool IsOption (const char symbol);
+bool IsFile (const char symbol);
+bool IsComment (const char symbol);
 
 bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <BoaToken>& code);
 
@@ -34,6 +37,21 @@ bool IsAlpha (const char symbol)
 bool IsExtraSymbol (const char symbol)
 {
     return symbol == '%' || symbol == '$' || symbol == ',';
+}
+
+bool IsOption (const char symbol)
+{
+    return symbol == '-';
+}
+
+bool IsFile (const char symbol)
+{
+    return symbol == '@';
+}
+
+bool IsComment (const char symbol)
+{
+    return symbol == '#';
 }
 
 bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <BoaToken>& code)

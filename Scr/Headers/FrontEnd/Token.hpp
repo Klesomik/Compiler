@@ -10,18 +10,14 @@
 
 //{==============================================================================
 
-#define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code) name = id,
-#define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) name = id,
-#define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) name = id,
+#define DEER(id, name, word, code) name = id,
 
 enum Lexemes
 {
-    #include "CList.hpp"
+    #include "CList.inl"
 };
 
-#undef DEER_0
-#undef DEER_1
-#undef DEER_2
+#undef DEER
 
 //}==============================================================================
 
@@ -31,54 +27,45 @@ struct Token
 {
     int  type;
     int value;
-    int  line;
 
     Token ();
     Token (const int setType);
     Token (const int setType, const int setValue);
-    Token (const int setType, const int setValue, const int setLine);
     Token (const Token& setToken);
 };
 
 //}==============================================================================
 
-Token :: Token ():
+Token::Token ():
     type  (),
-    value (),
-    line  ()
-    {}
+    value ()
+{
+}
 
 //===============================================================================
 
-Token :: Token (const int setType):
+Token::Token (const int setType):
     type  (setType),
-    value (),
-    line  ()
-    {}
+    value ()
+{
+}
 
 //===============================================================================
 
-Token :: Token (const int setType, const int setValue):
-    type  (setType),
-    value (setValue),
-    line  ()
-    {}
-
-//===============================================================================
-
-Token :: Token (const int setType, const int setValue, const int setLine):
+Token::Token (const int setType, const int setValue):
     type  (setType),
     value (setValue),
-    line  (setLine)
-    {}
+    line  ()
+{
+}
 
 //===============================================================================
 
-Token :: Token (const Token& setToken):
+Token::Token (const Token& setToken):
     type  (setToken.type),
-    value (setToken.value),
-    line  (setToken.line)
-    {}
+    value (setToken.value)
+{
+}
 
 bool operator == (const Token& a, const Token& b);
 bool operator != (const Token& a, const Token& b);
@@ -100,25 +87,17 @@ bool operator != (const Token& a, const Token& b)
 
 std::ostream& operator << (std::ostream& os, const Token& value)
 {
-    #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id: { return os << std::string (word); }
-
-    #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id: { return os << std::string (word); }
-
-    #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
+    #define DEER(id, name, word, code) \
     case id: { return os << std::string (word); }
 
     switch (value.type)
     {
-        #include "CList.hpp"
+        #include "CList.inl"
 
         default: { throw "operator << was broken"; }
     }
 
-    #undef DEER_0
-    #undef DEER_1
-    #undef DEER_2
+    #undef DEER
 }
 
 #endif

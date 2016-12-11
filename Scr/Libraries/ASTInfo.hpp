@@ -6,6 +6,53 @@
 #include "Dotter//Dotter.hpp"
 #include "..//Headers//FrontEnd//Token.hpp"
 
+std::map <int, std::vector <int>> colors = { {        Digit, { "darkgreen", "darkgreen",   "#98FF66",     "box", "rounded, filled" } },
+                                             {         Name, { "darkgreen", "darkgreen",   "#98FF66",     "box", "rounded, filled" } },
+                                             {        Block, {     "black",     "black", "lightgrey", "ellipse", "rounded, filled" } },
+                                             {      DeclVar, {     "black",     "black", "lightgrey", "ellipse", "rounded, filled" } },
+                                             {     DeclFunc, {     "black",     "black", "lightgrey", "ellipse", "rounded, filled" } },
+                                             {         Call, {     "black",     "black", "lightgrey", "ellipse", "rounded, filled" } },
+                                             {       Params, {     "black",     "black", "lightgrey", "ellipse", "rounded, filled" } },
+                                             {        Equal, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     NotEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          And, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {           Or, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          Not, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {    LessEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {    MoreEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          Mul, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          Div, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          Mod, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          Add, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {          Sub, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {   Assingment, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {         Less, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {         More, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {       BitAnd, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {        BitOr, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {       BitXor, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {       BitNot, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {    ShiftLeft, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {   ShiftRight, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     AddEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     SubEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     MulEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     DivEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     ModEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     AndEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {      OrEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {     XorEqual, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {    Increment, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {    Decrement, {       "red",       "red",   "#FFCCC9",     "box", "rounded, filled" } },
+                                             {           If, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {        While, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {          Int, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {         Void, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {       Return, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {        Break, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {          Out, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } },
+                                             {     Continue, {      "blue",      "blue", "lightblue",     "box", "rounded, filled" } } };
+
 //{==============================================================================
 
 void SetStyle (Dotter::Digraph& tree, const char* first, const char* second);
@@ -95,25 +142,7 @@ void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
 
 std::string BtInf (Dotter::Digraph& tree, const Token& value)
 {
-    #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id:\
-    {\
-        SetStyle (tree, shape, style);\
-        SetColor (tree, fontcolor, color, fillcolor);\
-    \
-        return std::string (word);\
-    }
-
-    #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
-    case id:\
-    {\
-        SetStyle (tree, shape, style);\
-        SetColor (tree, fontcolor, color, fillcolor);\
-    \
-        return std::string (word);\
-    }
-
-    #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code) \
     case id:\
     {\
         SetStyle (tree, shape, style);\
@@ -124,14 +153,12 @@ std::string BtInf (Dotter::Digraph& tree, const Token& value)
 
     switch (value.type)
     {
-        #include "..//Headers//FrontEnd//CList.hpp"
+        #include "..//Headers//FrontEnd//CList.inl"
 
         default: { throw "BtInf was broken"; }
     }
 
-    #undef DEER_0
-    #undef DEER_1
-    #undef DEER_2
+    #undef DEER
 }
 
 #endif
