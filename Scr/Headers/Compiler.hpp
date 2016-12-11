@@ -1,14 +1,13 @@
 #ifndef Compiler_hpp
     #define Compiler_hpp
 
-//{==============================================================================
-
 #include <cstdio>
 #include <ctime>
 #include <iostream>
 #include "..//Libraries//Stream.hpp"
 #include "..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//Libraries//LogHTML.hpp"
+#include "InputInformation.hpp"
 #include "FrontEnd//LexicialAnalyzer.hpp"
 //#include "FrontEnd//Preprocessor.hpp"
 #include "FrontEnd//SyntaxAnalyzer.hpp"
@@ -16,168 +15,104 @@
 #include "FrontEnd//Optimizer.hpp"
 #include "FrontEnd//CodeGeneration.hpp"
 
-//}==============================================================================
-
-//{==============================================================================
-
 class Compiler
 {
+    public:
+        Compiler (const InputInformation& scan);
+
+        ~Compiler ();
+
+        void run (const InputInformation& scan, Stream <char>& to);
+
+        void Lexicial     ();
+        void Preproc      ();
+        void Syntax       ();
+        void Semantic     ();
+        void Optimize     ();
+        void DisSyntax    ();
+        void Generate     ();
+        void DisGenerator ();
+
     private:
-        Stream <Token> code;
+        Stream <char> first;   // code_c
+        Stream <Token> second; // token_c
 
         AstNode root;
-
-        FILE* file_source;
-        FILE* file_asm;
 
         LogHTML file_log;
 
         Compiler (const Compiler& from);
         Compiler& operator = (const Compiler& from);
-
-    public:
-        Compiler (InputInformation& scan);
-
-        ~Compiler ();
-
-        void Start (InputInformation& scan);
-
-        void Lexicial     (bool flag);
-        void Preproc      (bool flag);
-        void Syntax       (bool flag);
-        void Semantic     (bool flag);
-        void Optimize     (bool flag);
-        void DisSyntax    (bool flag);
-        void Generate     (bool flag);
-        void DisGenerator (bool flag);
-
-        void LogBegin ();
-        void LogEnd (clock_t begin, clock_t end);
-
-        void ReadTree  (const std::string& name_ast);
-        void WriteTree (const std::string& name_ast);
 };
 
-//}==============================================================================
-
-Compiler :: Compiler (InputInformation& scan):
-    code        (),
-    root        ({ Block }),
-    file_source (fopen (scan.name_source.c_str (), "r")),
-    file_asm    (fopen (scan.name_asm.c_str (), "w")),
-    file_log    (scan.name_log.c_str ())
+Compiler::Compiler (const InputInformation& scan):
+    first    (),
+    second   (),
+    root     ({ Block }),
+    file_log (scan.name_log.c_str ())
 {
-    Start (scan);
 }
 
-void Compiler :: Start (InputInformation& scan)
+void Compiler::run (const InputInformation& scan, Stream <char>& to)
 {
-    LogBegin ();
-    clock_t begin = clock ();
-
-    ScanFile (to, const std::string& name);
-
-    Lexicial (scan.lexicial);
-    Preproc  (scan.preprocessor);
-    Syntax   (scan.syntax);
-    Semantic (scan.semantic);
-    Optimize (scan.optimiser); //
-    Generate (scan.generator);
-
-    clock_t end = clock ();
-    LogEnd (begin, end);
-
-    RenderTree (root, "..//Files//AST.dot", "..//Files//AST.jpg", false);
-}
-
-Compiler :: ~Compiler ()
-{
-    fclose (file_source);
-    fclose (file_asm);
-}
-
-void Compiler :: ReadTree (const std::string& name_ast)
-{
-    FILE* ast = fopen (name_ast.c_str (), "r");
-
-    assert (ast);
-
-    root.read (ast);
-}
-
-void Compiler :: WriteTree (const std::string& name_ast)
-{
-    FILE* ast = fopen (name_ast.c_str (), "w");
-
-    assert (ast);
-
-    root.write (ast);
-
-    fclose (ast);
-}
-
-void Compiler :: Preproc (bool flag)
-{
-    if (flag)
+    if (scan.log)
     {
-        //Preprocessor preprocessor (code, file_log);
+        LogBegin ();
+        clock_t begin = clock ();
+    }
+
+    ScanFile (first, scan.name_source);
+
+    if (scan.lexicial) Lexicial (first, second);
+    if (scan.preprocessor) Preproc (second);
+    if (scan.syntax) Syntax   (second, root);
+    if (scan.semantic) Semantic (root);
+    if (scan.optimiser) Optimize (root); //
+    if (scan.generator) Generate (root, to);
+
+    if (scan.log)
+    {
+        clock_t end = clock ();
+        LogEnd (begin, end);
     }
 }
 
-void Compiler :: Lexicial (bool flag)
+void Compiler::Preproc ()
 {
-    if (flag)
-    {
-        LexicialAnalyzer lexicial_analyzer (file_source, code);
-    }
+    //Preprocessor preprocessor (code, file_log);
 }
 
-void Compiler :: Syntax (bool flag)
+void Compiler::Lexicial ()
 {
-    if (flag)
-    {
-        SyntaxAnalyzer syntax_analyzer (root, code, file_log);
-    }
+    LexicialAnalyzer lexicial_analyzer (file_source, code);
 }
 
-void Compiler :: Semantic (bool flag)
+void Compiler::Syntax ()
 {
-    if (flag)
-    {
-        //SemanticAnalyzer semantic_analyzer (root, file_log);
-    }
+    SyntaxAnalyzer syntax_analyzer (root, code, file_log);
 }
 
-void Compiler :: Optimize (bool flag)
+void Compiler::Semantic ()
 {
-    if (flag)
-    {
-        //Optimizer optimizer (root);
-    }
+    //SemanticAnalyzer semantic_analyzer (root, file_log);
 }
 
-void Compiler :: DisSyntax (bool flag)
+void Compiler::Optimize ()
 {
-    if (flag)
-    {
-        //Optimizer optimizer (root);
-    }
+    //Optimizer optimizer (root);
 }
 
-void Compiler :: Generate (bool flag)
+void Compiler::DisSyntax ()
 {
-    if (flag)
-    {
-        CodeGeneration code_generation (root, file_asm, 1);
-    }
 }
 
-void Compiler :: DisGenerator (bool flag)
+void Compiler::Generate ()
 {
-    if (flag)
-    {
-        //Optimizer optimizer (root);
-    }
+    CodeGeneration code_generation (root, file_asm, 1);
+}
+
+void Compiler::DisGenerator ()
+{
 }
 
 #endif

@@ -1,57 +1,15 @@
-//{==============================================================================
-
 #include <iostream>
 #include <cstring>
 #include <map>
 #include "..//..//Libraries//Stream.hpp"
+#include "..//..//Libraries//Tools.hpp"
 #include "Token.hpp"
-
-//}==============================================================================
-
-//{==============================================================================
 
 class LexicialAnalyzer
 {
-    private:
-        #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code)
-        #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code) { word, id },
-        #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code)
-
-        std::map <std::string, int> commands_ = {
-                                                    #include "CList.hpp"
-                                                };
-
-        #undef DEER_0
-        #undef DEER_1
-        #undef DEER_2
-
-        #define DEER_0(id, name, word, fontcolor, color, fillcolor, shape, style, code)
-        #define DEER_1(id, name, word, fontcolor, color, fillcolor, shape, style, code)
-        #define DEER_2(id, name, word, fontcolor, color, fillcolor, shape, style, code) { word, id },
-
-        std::map <std::string, int> preProc_ = {
-                                                   #include "CList.hpp"
-                                               };
-
-        #undef DEER_0
-        #undef DEER_1
-        #undef DEER_2
-
-        std::map <std::string, int> names_;
-
-        size_t line_;
-
     public:
-        LexicialAnalyzer (FILE* c_file, Stream <Token>& code);
+        LexicialAnalyzer ();
 
-        bool search (std::map <std::string, int>& example, std::string& value, const int type, Stream <Token>& code);
-
-        bool IsSpace     (const char symbol);
-        bool IsComment   (Stream <char>& example);
-        bool IsPreProc   (const char symbol);
-        bool IsQuotation (const char symbol);
-        bool IsDigit     (const char symbol);
-        bool IsAlpha     (const char symbol);
         bool IsUnary     (const char symbol);
         bool IsBinary    (const char symbol);
 
@@ -63,93 +21,73 @@ class LexicialAnalyzer
         void OperatorUnary  (Stream <char>& example, Stream <Token>& code);
         void OperatorBinary (Stream <char>& example, Stream <Token>& code);
         void Parser         (Stream <char>& example, Stream <Token>& code);
+
+    private:
+        #define DEER(id, name, word, code) { word, id },
+
+        std::map <std::string, int> commands_ = {
+                                                    #include "CList.hpp"
+                                                };
+
+        #undef DEER
+
+        std::set <std::string> comments_  = { "//", "/*" };
+
+        std::set <std::string> operators_ = { ",",
+                                              "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "&=", "^=", "|=",
+                                              "||",
+                                              "&&",
+                                              "|",
+                                              "^",
+                                              "&",
+                                              "==", "!=",
+                                              "<", ">", "<=", ">=",
+                                              "<<", ">>",
+                                              "+", "-",
+                                              "*", "/", "%",
+                                              "++", "--", "!", "~"  };
+
+        std::map <std::string, int> names_;
 };
 
-//}==============================================================================
+LexicialAnalyzer :: LexicialAnalyzer ():
+    names_ ({ { "main", 0 } })
+{
+}
 
-LexicialAnalyzer :: LexicialAnalyzer (FILE* c_file, Stream <Token>& code):
-    names_ ({ { "main", 0 } }),
-    line_  (0)
+void LexicialAnalyzer::parsing (Stream <char>& from, Stream <Token>& to)
+{
+    while (from.check ())
     {
-        Stream <char> example;
+        if (IsSpace (from.current ()))
+            Skip (from);
 
-        for (char symbol = 0; fscanf (c_file, "%c", &symbol) != EOF;)
-            example.push_back (symbol);
+        else if (comments_.find (from))
+            Comment (from);
 
-        Parser (example, code);
+        else if (IsPreProc (from.current ()))
+            PreProc (from, code);
+
+        else if (IsDigit (from.current ()))
+            Number (from, code);
+
+        else if (IsAlpha (from.current ()))
+            Word (from, code);
+
+        else if (IsUnary (from.current ()))
+            OperatorUnary (from, code);
+
+        else if (IsBinary (from.current ()))
+            OperatorBinary (from, code);
+
+        else
+        {
+            std::cout << from.current () << "\n\n";
+
+            throw "Unknown symbol";
+        }
     }
-
-//===============================================================================
-
-bool LexicialAnalyzer :: search (std::map <std::string, int>& example, std::string& value, const int type, Stream <Token>& code)
-{
-    std::map <std::string, int>::iterator it = example.find (value);
-
-    if (it != example.end ())
-    {
-        int token = 0;
-
-        if (type == -1) token = it -> second;
-        else            token = type;
-
-        code.push_back ({ token, it -> second, line_ });
-
-        return true;
-    }
-
-    return false;
 }
-
-//===============================================================================
-
-bool LexicialAnalyzer :: IsSpace (const char symbol)
-{
-    if (iscntrl (symbol) || (symbol == ' '))
-    {
-        if (symbol == '\n') line_++;
-
-        return true;
-    }
-
-    return false;
-}
-
-//===============================================================================
-
-bool LexicialAnalyzer :: IsComment (Stream <char>& example)
-{
-    return example.check_next ({ '/', '/' }) || example.check_next ({ '/', '*' });
-}
-
-//===============================================================================
-
-bool LexicialAnalyzer :: IsPreProc (const char symbol)
-{
-    return symbol == '#';
-}
-
-//===============================================================================
-
-bool LexicialAnalyzer :: IsQuotation (const char symbol)
-{
-    return symbol == '"';
-}
-
-//===============================================================================
-
-bool LexicialAnalyzer :: IsDigit (const char symbol)
-{
-    return isdigit (symbol);
-}
-
-//===============================================================================
-
-bool LexicialAnalyzer :: IsAlpha (const char symbol)
-{
-    return isalpha (symbol);
-}
-
-//===============================================================================
 
 bool LexicialAnalyzer :: IsUnary (const char symbol)
 {
@@ -160,8 +98,6 @@ bool LexicialAnalyzer :: IsUnary (const char symbol)
            symbol == '}' ||
            symbol == ';';
 }
-
-//===============================================================================
 
 bool LexicialAnalyzer :: IsBinary (const char symbol)
 {
@@ -178,8 +114,6 @@ bool LexicialAnalyzer :: IsBinary (const char symbol)
            symbol == '%';
 }
 
-//===============================================================================
-
 void LexicialAnalyzer :: Skip (Stream <char>& example)
 {
     while (example.check () && IsSpace (example[example.place ()]))
@@ -188,8 +122,6 @@ void LexicialAnalyzer :: Skip (Stream <char>& example)
         example >> digit;
     }
 }
-
-//===============================================================================
 
 void LexicialAnalyzer :: Comment (Stream <char>& example)
 {
@@ -217,8 +149,6 @@ void LexicialAnalyzer :: Comment (Stream <char>& example)
     }
 }
 
-//===============================================================================
-
 void LexicialAnalyzer :: PreProc (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
@@ -245,13 +175,7 @@ void LexicialAnalyzer :: PreProc (Stream <char>& example, Stream <Token>& code)
         char start = 0;
         std::cin >> start;
     }
-
-    code.dump ();
-
-    system ("pause");
 }
-
-//===============================================================================
 
 void LexicialAnalyzer :: Number (Stream <char>& example, Stream <Token>& code)
 {
@@ -264,10 +188,8 @@ void LexicialAnalyzer :: Number (Stream <char>& example, Stream <Token>& code)
         value = value * 10 + digit - '0';
     }
 
-    code.push_back ({ Digit, value, line_ });
+    code.push_back ({ Digit, value });
 }
-
-//===============================================================================
 
 void LexicialAnalyzer :: Word (Stream <char>& example, Stream <Token>& code)
 {
@@ -285,13 +207,11 @@ void LexicialAnalyzer :: Word (Stream <char>& example, Stream <Token>& code)
 
     else
     {
-        code.push_back ({ Name, names_.size (), line_ });
+        code.push_back ({ Name, names_.size () });
 
         names_[value] = names_.size () - 1;
     }
 }
-
-//===============================================================================
 
 void LexicialAnalyzer :: OperatorUnary (Stream <char>& example, Stream <Token>& code)
 {
@@ -303,10 +223,8 @@ void LexicialAnalyzer :: OperatorUnary (Stream <char>& example, Stream <Token>& 
 
     int hash_value = commands_[value];
 
-    if (hash_value) code.push_back ({ hash_value, 0, line_ });
+    if (hash_value) code.push_back ({ hash_value, 0 });
 }
-
-//===============================================================================
 
 void LexicialAnalyzer :: OperatorBinary (Stream <char>& example, Stream <Token>& code)
 {
@@ -321,41 +239,5 @@ void LexicialAnalyzer :: OperatorBinary (Stream <char>& example, Stream <Token>&
 
     int hash_value = commands_[value];
 
-    if (hash_value) code.push_back ({ hash_value, 0, line_ });
-}
-
-//===============================================================================
-
-void LexicialAnalyzer :: Parser (Stream <char>& example, Stream <Token>& code)
-{
-    while (example.check ())
-    {
-        if (IsSpace (example[example.place ()]))
-            Skip (example);
-
-        else if (IsComment (example))
-            Comment (example);
-
-        else if (IsPreProc (example[example.place ()]))
-            PreProc (example, code);
-
-        else if (IsDigit (example[example.place ()]))
-            Number (example, code);
-
-        else if (IsAlpha (example[example.place ()]))
-            Word (example, code);
-
-        else if (IsUnary (example[example.place ()]))
-            OperatorUnary (example, code);
-
-        else if (IsBinary (example[example.place ()]))
-            OperatorBinary (example, code);
-
-        else
-        {
-            std::cout << example[example.place ()] << "\n\n";
-
-            throw "Unknown symbol";
-        }
-    }
+    if (hash_value) code.push_back ({ hash_value, 0 });
 }

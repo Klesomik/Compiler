@@ -8,6 +8,8 @@ bool IsExtraSymbol (const char symbol);
 bool IsOption (const char symbol);
 bool IsFile (const char symbol);
 bool IsComment (const char symbol);
+bool IsPreProc (const char symbol);
+bool IsQuotation (const char symbol);
 
 bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <BoaToken>& code);
 
@@ -52,6 +54,16 @@ bool IsFile (const char symbol)
 bool IsComment (const char symbol)
 {
     return symbol == '#';
+}
+
+bool IsPreProc (const char symbol)
+{
+    return symbol == '#';
+}
+
+bool IsQuotation (const char symbol)
+{
+    return symbol == '"';
 }
 
 bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <BoaToken>& code)
