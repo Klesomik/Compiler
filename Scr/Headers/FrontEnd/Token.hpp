@@ -71,6 +71,9 @@ bool operator == (const Token& a, const Token& b);
 bool operator != (const Token& a, const Token& b);
 std::ostream& operator << (std::ostream& os, const Token& m);
 
+bool IsLexem (const Token& example, const int token);
+void FillStream (Stream <Token>& from, Stream <Token>& to, const int delim);
+
 bool operator == (const Token& a, const Token& b)
 {
     return a.type == b.type;
@@ -98,6 +101,21 @@ std::ostream& operator << (std::ostream& os, const Token& value)
     }
 
     #undef DEER
+}
+
+bool IsLexem (const Token& example, const int token)
+{
+    return (example.current ().type == token);
+}
+
+void FillStream (Stream <Token>& from, Stream <Token>& to, const int delim)
+{
+    while (from.check () && !IsLexem (from.current (), delim))
+    {
+        to.push_back (from.current ());
+
+        from++;
+    }
 }
 
 #endif

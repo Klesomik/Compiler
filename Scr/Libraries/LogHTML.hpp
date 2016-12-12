@@ -143,34 +143,42 @@ const char* LogHTML :: name ()
     return name_;
 }
 
-void LogBegin ();
-void LogEnd (clock_t begin, clock_t end);
+void LogBegin (LogHTML& log);
+void LogEnd (LogHTML& log, clock_t begin, clock_t end);
+void LogError (LogHTML& log, const char* message);
 
-void LogBegin ()
+void LogBegin (LogHTML& log)
 {
-    file_log.setFontColor ("white");
-    file_log.setSize      (50);
-    file_log.setColor     ("blue");
+    log.setFontColor ("white");
+    log.setSize      (50);
+    log.setColor     ("blue");
 
-    file_log.setColor ("gray");
-    file_log.output ("DeerC %d.%d\n\n", 1, 0);
+    log.setColor ("gray");
+    log.output ("DeerC %d.%d\n\n", 1, 0);
 
-    file_log.setColor ("blue");
-    file_log.output ("========== Build started ==========\n");
+    log.setColor ("blue");
+    log.output ("========== Build started ==========\n");
 
-    file_log.setColor ("red");
+    log.setColor ("red");
 }
 
-void LogEnd (clock_t begin, clock_t end)
+void LogEnd (LogHTML& log, clock_t begin, clock_t end)
 {
-    file_log.setColor ("blue");
-    file_log.output ("========== Build finished ==========\n\n");
+    log.setColor ("blue");
+    log.output ("========== Build finished ==========\n\n");
 
-    file_log.setColor ("gray");
-    file_log.output ("Build started on: %f\n",   (float) begin / CLOCKS_PER_SEC);
-    file_log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
+    log.setColor ("gray");
+    log.output ("Build started on: %f\n",   (float) begin / CLOCKS_PER_SEC);
+    log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
 
-    file_log.out ();
+    log.out ();
+}
+
+void LogError (LogHTML& log, const char* message)
+{
+    log.output (message);
+
+    throw message;
 }
 
 /*template <typename <Data_T>>

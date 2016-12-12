@@ -57,7 +57,7 @@ void Compiler::run (const InputInformation& scan, Stream <char>& to)
 {
     if (scan.log)
     {
-        LogBegin ();
+        LogBegin (file_log);
         clock_t begin = clock ();
     }
 
@@ -73,7 +73,7 @@ void Compiler::run (const InputInformation& scan, Stream <char>& to)
     if (scan.log)
     {
         clock_t end = clock ();
-        LogEnd (begin, end);
+        LogEnd (file_log, begin, end);
     }
 }
 
