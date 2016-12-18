@@ -9,6 +9,12 @@ Yacc, Bison, Lex, Flex
 https://godbolt.org/
 LLVM
 
-Config file: .txt -> .hml
+Config file: .txt -> .xml
+
+//Defines in .inl files -> script on Python
+
+//TinyXML
+
+//Translator AllCode = { C, C++, Python, Java, Assembler, DeerC, ... }
 
 //SingleTon, dragonbook, static analysis, courses mail
