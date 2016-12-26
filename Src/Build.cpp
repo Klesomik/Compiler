@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Headers//InputInformation.hpp"
 #include "Headers//Compiler.hpp"
-//#include "Headers//Assembler.hpp"
+#include "Headers//Assembler.hpp"
 
 void CmdLineInfo (InputInformation& scan);
 

@@ -12,20 +12,21 @@ class BoaSyntaxAnalyzer
 
         void parsing  (Stream <BoaToken>& from, std::vector <int>& to);
 
+    private:
+        std::map <int, int> label_;
+
         void cmd_push   (Stream <BoaToken>& from, std::vector <int>& to);
         void cmd_pop    (Stream <BoaToken>& from, std::vector <int>& to);
         void cmd_label  (Stream <BoaToken>& from, std::vector <int>& to);
         void cmd_jmp    (Stream <BoaToken>& from, std::vector <int>& to);
         void cmd_in_out (Stream <BoaToken>& from, std::vector <int>& to);
         void cmd_mov    (Stream <BoaToken>& from, std::vector <int>& to);
-
-    private:
-        std::map <int, int> label_;
 };
 
 BoaSyntaxAnalyzer::BoaSyntaxAnalyzer ():
     label_ ()
-    {}
+{
+}
 
 void BoaSyntaxAnalyzer::parsing (Stream <BoaToken>& from, std::vector <int>& to)
 {
@@ -38,7 +39,7 @@ void BoaSyntaxAnalyzer::parsing (Stream <BoaToken>& from, std::vector <int>& to)
 
         switch (from.current ().type)
         {
-            #include "BoaList.hpp"
+            #include "BoaList.inl"
 
             default: { break; }
         }

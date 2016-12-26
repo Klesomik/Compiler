@@ -33,6 +33,11 @@ class Compiler
         void Generate     (AstNode& from, Stream <char>& to);
         void DisGenerator (Stream <char>& from, AstNode& to);
 
+        Stream <char>& first ();
+        Stream <Token>& second ();
+        AstNode& root ();
+        LogHTML& log ();
+
     private:
         Stream <char> first;   // code_c
         Stream <Token> second; // token_c
@@ -60,6 +65,8 @@ Compiler::Compiler (const InputInformation& scan):
 
 Compiler::~Compiler ()
 {
+    //log_.picture ();
+
     LogEnd (log_, begin, end);
 }
 
@@ -115,6 +122,26 @@ void Compiler::Generate (AstNode& from, Stream <char>& to)
 
 void Compiler::DisGenerator (Stream <char>& from, AstNode& to)
 {
+}
+
+Stream <char>& Compiler::first ()
+{
+    return first;
+}
+
+Stream <Token>& Compiler::second ()
+{
+    return second;
+}
+
+AstNode& Compiler::root ()
+{
+    return root;
+}
+
+LogHTML& Compiler::log ()
+{
+    return log_;
 }
 
 #endif

@@ -1,463 +1,238 @@
-#ifndef STREAM_HPP_INCLUDED
-    #define STREAM_HPP_INCLUDED
+#ifndef STREAM_NEW_HPP_INCLUDED
+    #define STREAM_NEW_HPP_INCLUDED
 
-//Include
-//{==============================================================================
+#include <bits/stdc++.h>
 
-#include <cstring>
-#include <cassert>
-#include <iostream>
-#include <vector>
-
-//}==============================================================================
-
-//Define
-//{==============================================================================
-
-#define DEBUG_STREAM
-
-#if defined (DEBUG_STREAM)
-
-    #define DO_STREAM(codeDebug, codeTest)  codeDebug
-    #define OK_STREAM ok ();
-
-#elif defined (TEST_STREAM)
-
-    #include "Debug.hpp"
-    #define DO_STREAM(codeDebug, codeTest)  codeTest
-    #define OK_STREAM assert (ok ());
-
-#elif defined (RELEASE_STREAM)
-
-    #define DO_STREAM(codeDebug, codeTest)
-    #define OK_STREAM
-
-#else
-
-    #error "Either DEBUG_STREAM or TEST_STREAM or RELEASE_STREAM MUST be defined"
-
-#endif /* DEBUG_STREAM */
-
-//}==============================================================================
-
-//Class: Stream
-//{==============================================================================
+#define Vector_t std::vector <Data_T>
+#define Stream_t Stream <Data_T>
 
 template <typename Data_T>
-class Stream
+class Stream : public std::vector <Data_T>
 {
-    private:
-        size_t place_;
-
-        std::vector <Data_T> data_;
-
     public:
         Stream ();
         Stream (const Data_T* name, const size_t size);
-        Stream (const std::vector <Data_T>& name);
-        Stream (const std::vector <Data_T>& name, const size_t start);
-        Stream (const Stream <Data_T>& from);
+        Stream (const Vector_t& name);
+        Stream (const Vector_t& name, const size_t start);
+        Stream (const Stream_t& from);
 
-        Data_T& operator [] (const size_t i);
-        void    operator >> (Data_T& write);
-        void    operator << (const Data_T& record);
-        Stream <Data_T>& operator ++ ();
-        Stream <Data_T>  operator ++ (int);
-        Stream <Data_T>& operator -- ();
-        Stream <Data_T>  operator -- (int);
-        Stream <Data_T>& operator  = (const Stream <Data_T>& from);
-        Stream <Data_T>& operator  = (const std::vector <Data_T>& from);
-        Stream <Data_T>& operator += (const size_t jump);
+        bool ok ();
+        void dump ();
 
-        void push_back (const Data_T& value);
+        void seek (const size_t value);
 
-        void seek  (const size_t value);
+        Stream_t& operator = (const Stream_t& from);
+        Stream_t& operator = (const Vector_t& from);
 
-        bool empty ();
+        void operator >> (Data_T& write);
+        void operator << (const Data_T& record);
 
-        Data_T& back ();
+        Stream_t& operator += (const size_t jump);
+
+        Stream_t& operator ++ ();
+        Stream_t  operator ++ (int);
+        Stream_t& operator -- ();
+        Stream_t  operator -- (int);
+
         Data_T& current ();
 
-        size_t           place ();
-        size_t           size  ();
-        std::vector <Data_T>& data  ();
-
-        bool ok   ();
-        void dump ();
+        size_t& place ();
 
         bool check       ();
         size_t avaliable ();
         bool check_next  (const std::initializer_list <Data_T>& next);
         bool check_next  (const Data_T next[], const size_t len);
         bool compare     (const Data_T& element, const size_t shift);
+
+    private:
+        size_t place_;
 };
 
-//}==============================================================================
-
 template <typename Data_T>
-Stream <Data_T> :: Stream ():
-    place_ (0),
-    data_  ()
-    { OK_STREAM }
-
-//===============================================================================
-
-template <typename Data_T>
-Stream <Data_T> :: Stream (const Data_T* name, const size_t size):
-    place_ (0),
-    data_ (name, name + size)
-    { OK_STREAM }
-
-//===============================================================================
-
-template <typename Data_T>
-Stream <Data_T> :: Stream (const std::vector <Data_T>& name):
-    place_ (0),
-    data_  (name)
-    { OK_STREAM }
-
-//===============================================================================
-
-template <typename Data_T>
-Stream <Data_T> :: Stream (const std::vector <Data_T>& name, const size_t start):
-    place_ (start),
-    data_  (name)
-    { OK_STREAM }
-
-//===============================================================================
-
-template <typename Data_T>
-Stream <Data_T> :: Stream (const Stream <Data_T>& from):
-    place_ (0),
-    data_  ()
-    {
-        OK_STREAM
-
-        (*this) = from;
-
-        OK_STREAM
-    }
-
-//===============================================================================
-
-template <typename Data_T>
-Data_T& Stream <Data_T> :: operator [] (const size_t i)
+Stream_t::Stream ():
+    Vector_t (),
+    place_   (0)
 {
-    OK_STREAM
-    assert (i < data_.size ());
-
-    return data_[i];
 }
 
-//===============================================================================
-
 template <typename Data_T>
-void Stream <Data_T> :: operator >> (Data_T& write)
+Stream <Data_T>::Stream (const Data_T* name, const size_t size):
+    Vector_t (name, name + size),
+    place_ (0)
 {
-    OK_STREAM
-
-    write = data_[place_];
-
-    place_++;
-
-    OK_STREAM
 }
 
-//===============================================================================
-
 template <typename Data_T>
-void Stream <Data_T> :: operator << (const Data_T& record)
+Stream_t::Stream (const Vector_t& name):
+    Vector_t (name),
+    place_   (0)
 {
-    OK_STREAM
-
-    data_.push_back (record);
-
-    OK_STREAM
 }
 
-//===============================================================================
-
 template <typename Data_T>
-Stream <Data_T>& Stream <Data_T> :: operator ++ ()
+Stream_t::Stream (const Vector_t& name, const size_t start):
+    Vector_t (name),
+    place_   (start)
 {
-    OK_STREAM
-
-    place_++;
-
-    OK_STREAM
-
-    return (*this);
 }
 
-//===============================================================================
-
 template <typename Data_T>
-Stream <Data_T> Stream <Data_T> :: operator ++ (int)
+Stream_t::Stream (const Stream_t& from):
+    Vector_t (),
+    place_   (0)
 {
-    OK_STREAM
-
-    Stream <Data_T> oldStream;
-
-    oldStream.place_ = place_;
-
-    place_++;
-
-    OK_STREAM
-
-    return oldStream;
+    (*this) = from;
 }
 
-//===============================================================================
-
 template <typename Data_T>
-Stream <Data_T>& Stream <Data_T> :: operator -- ()
+bool Stream_t::ok ()
 {
-    OK_STREAM
-
-    place_--;
-
-    OK_STREAM
-
-    return (*this);
+    return true;
 }
 
-//===============================================================================
-
 template <typename Data_T>
-Stream <Data_T> Stream <Data_T> :: operator -- (int)
+void Stream_t::dump ()
 {
-    OK_STREAM
-
-    Stream <Data_T> oldStream (place_);
-
-    place_--;
-
-    OK_STREAM
-
-    return oldStream;
 }
 
-//===============================================================================
+template <typename Data_T>
+void Stream_t::seek (const size_t value)
+{
+    place_ = value;
+}
 
 template <typename Data_T>
-Stream <Data_T>& Stream <Data_T> :: operator = (const Stream <Data_T>& from)
+Stream_t& Stream_t::operator = (const Stream_t& from)
 {
-    OK_STREAM
+    Vector_t::operator = (from);
 
-    data_  = from.data_;
     place_ = from.place_;
 
-    OK_STREAM
-
     return (*this);
 }
 
-//===============================================================================
-
 template <typename Data_T>
-Stream <Data_T>& Stream <Data_T> :: operator = (const std::vector <Data_T>& from)
+Stream_t& Stream_t::operator = (const Vector_t& from)
 {
-    OK_STREAM
+    Vector_t::operator = (from);
 
-    data_  = from.data ();
     place_ = 0;
 
-    OK_STREAM
-
     return (*this);
 }
 
-//===============================================================================
+template <typename Data_T>
+void Stream_t::operator >> (Data_T& write)
+{
+    write = Vector_t::operator [] (place_);
+
+    place_++;
+}
 
 template <typename Data_T>
-Stream <Data_T>& Stream <Data_T> :: operator += (const size_t jump)
+void Stream_t::operator << (const Data_T& record)
 {
-    OK_STREAM
-    assert (jump <= avaliable);
+    Vector_t::push_back (record);
+}
 
+template <typename Data_T>
+Stream_t& Stream_t::operator += (const size_t jump)
+{
     place_ += jump;
+}
 
-    OK_STREAM
+template <typename Data_T>
+Stream_t& Stream_t::operator ++ ()
+{
+    place_++;
 
     return (*this);
 }
 
-//===============================================================================
-
 template <typename Data_T>
-void Stream <Data_T> :: push_back (const Data_T& value)
+Stream_t Stream_t::operator ++ (int)
 {
-    OK_STREAM
+    Stream_t old;
 
-    data_.push_back (value);
+    old.place_ = place_;
 
-    OK_STREAM
+    place_++;
+
+    return old;
 }
 
-//===============================================================================
-
 template <typename Data_T>
-void Stream <Data_T> :: seek (const size_t value)
+Stream_t& Stream_t::operator -- ()
 {
-    OK_STREAM
-    assert (value < data_.size ());
+    place_--;
 
-    place_ = value;
-
-    OK_STREAM
+    return (*this);
 }
 
-//===============================================================================
-
 template <typename Data_T>
-bool Stream <Data_T> :: empty ()
+Stream_t Stream_t::operator -- (int)
 {
-    OK_STREAM
+    Stream_t old;
 
-    return data_.empty ();
+    old.place_ = place_;
+
+    place_--;
+
+    return old;
 }
-
-//===============================================================================
-
-template <typename Data_T>
-Data_T& Stream <Data_T> :: back ()
-{
-    OK_STREAM
-
-    return data_.back ();
-}
-
-//===============================================================================
 
 template <typename Data_T>
 Data_T& Stream <Data_T> :: current ()
 {
-    OK_STREAM
-
-    return data_[place_];
+    return Vector_t::operator [] (place_);
 }
 
-//===============================================================================
-
 template <typename Data_T>
-size_t Stream <Data_T> :: place ()
+size_t& Stream_t::place ()
 {
-    OK_STREAM
-
     return place_;
 }
 
-//===============================================================================
-
 template <typename Data_T>
-size_t Stream <Data_T> :: size ()
+bool Stream_t::check ()
 {
-    OK_STREAM
-
-    return data_.size ();
+    return (place_ < Vector_t::size ());
 }
 
-//===============================================================================
-
 template <typename Data_T>
-std::vector <Data_T>& Stream <Data_T> :: data ()
+size_t Stream_t::avaliable ()
 {
-    OK_STREAM
-
-    return data_;
+    return (Vector_t::size () - place_);
 }
 
-//===============================================================================
-
 template <typename Data_T>
-bool Stream <Data_T> :: ok ()
-{
-    if (place_ > data_.size ())
-    {
-        DO_STREAM({ throw "place_ > data_.size ()"; },
-                  { return false; })
-    }
-
-    return true;
-}
-
-//===============================================================================
-
-template <typename Data_T>
-void Stream <Data_T> :: dump ()
-{
-    printf ("\n=============DUMP=============\n");
-
-    printf ("Stream (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
-
-    printf ("   size  = %zu;\n", data_.size ());
-    printf ("   place = %zu;\n\n", place_);
-
-    for (size_t i = 0; i < data_.size (); i++)
-    {
-        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << data_[i] << "|";
-
-        if (i == place_)
-            std::cout << " <";
-
-        std::cout << "\n";
-    }
-
-    printf ("==============================\n\n");
-}
-
-//===============================================================================
-
-template <typename Data_T>
-bool Stream <Data_T> :: check ()
-{
-    return (place_ < data_.size ());
-}
-
-//===============================================================================
-
-template <typename Data_T>
-size_t Stream <Data_T> :: avaliable ()
-{
-    return (data_.size () - place_);
-}
-
-//===============================================================================
-
-template <typename Data_T>
-bool Stream <Data_T> :: check_next (const std::initializer_list <Data_T>& next)
+bool Stream_t::check_next (const std::initializer_list <Data_T>& next)
 {
     return check_next (next.begin (), next.size ());
 }
 
-//===============================================================================
-
 template <typename Data_T>
-bool Stream <Data_T> :: check_next (const Data_T next[], const size_t len)
+bool Stream_t::check_next (const Data_T next[], const size_t len)
 {
     if (avaliable () < len) return false;
 
     for (size_t i = 0; i < len; i++)
     {
-        if (data_[place_ + i] != next[i]) return false;
+        if (Vector_t::operator [] (place_ + i) != next[i]) return false;
     }
 
     return true;
 }
 
-//===============================================================================
-
 template <typename Data_T>
-bool Stream <Data_T> :: compare (const Data_T& element, const size_t shift)
+bool Stream_t::compare (const Data_T& element, const size_t shift)
 {
     if (shift < avaliable ()) return false;
 
-    if (data_[place_ + shift] != element) return false;
+    if (Vector_t::operator [] (place_ + shift) != element) return false;
 
     return true;
 }
-
-//{==============================================================================
 
 template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from);
@@ -474,10 +249,6 @@ bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from);
 void CopyFile (Stream <char>& example, FILE* input);
 void GetLine (Stream <char>& example, const char delim);
 
-//}==============================================================================
-
-//===============================================================================
-
 template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from)
 {
@@ -485,8 +256,6 @@ Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from)
 
     return to;
 }
-
-//===============================================================================
 
 template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& from)
@@ -496,15 +265,11 @@ Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& f
     return to;
 }
 
-//===============================================================================
-
 template <typename Data_T>
 bool operator == (const Stream <Data_T>& to, const Stream <Data_T>& from)
 {
     return (to.data_ == from.data_);
 }
-
-//===============================================================================
 
 template <typename Data_T>
 bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from)
@@ -512,15 +277,11 @@ bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from)
     return (to.data_ == from);
 }
 
-//===============================================================================
-
 void CopyFile (Stream <char>& example, FILE* input)
 {
     for (char symbol = 0; fscanf (input, "%c", &symbol) != EOF;)
         example.push_back (symbol);
 }
-
-//===============================================================================
 
 void GetLine (Stream <char>& example, const char delim)
 {
@@ -532,4 +293,7 @@ void GetLine (Stream <char>& example, const char delim)
     example = tmp;
 }
 
-#endif /* STREAM_HPP_INCLUDED */
+#undef Vector_t
+#undef Stream_t
+
+#endif /* STREAM_NEW_HPP_INCLUDED */
