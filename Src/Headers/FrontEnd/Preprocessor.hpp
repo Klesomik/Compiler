@@ -1,171 +1,147 @@
-//Include
-//{==============================================================================
+#include <bits/stdc++.h>
+#include "..//..//Libraries//Stream.hpp"
+#include "ReadAndWrite.hpp"
 
-#include <map>
-#include "..//Librarys//StrStream.hpp"
-
-//}==============================================================================
-
-//Constants
-//{==============================================================================
-
-//const char CmdProProc[][] = {    "link",
-                              //"replace" };
-
-//}==============================================================================
-
-//Map
-//{==============================================================================
-
-map <string, string> Defines = {};
-
-//}==============================================================================
-
-class PreProcessor;
-
-void CmdCheck (string& cmd_arg, size_t  cmd_place, string& cmd);
-void CmdLink  (string&     cmd, size_t& cmd_place, StrStream& command, string& cmd_arg, PreProcessor& example);
-void CmdReplace (StrStream& command, size_t& cmd_place);
-
-//Class: PreProcessor
-//{==============================================================================
-
-class PreProcessor
+class Preprocessor
 {
-    private:
-        FILE* boaCode_;
-        FILE* fixCode_;
-
-        string buff_;
-
     public:
-        PreProcessor  ();
-        PreProcessor  (const PreProcessor& from);
-        ~PreProcessor ();
+        Preprocessor ();
 
-        PreProcessor& operator = (const PreProcessor& from);
+        void parsing (Stream <char>& from, Stream <char>& to);
 
-        void read   (FILE* file);
-        void write  ();
+    private:
+        std::map <std::string, std::string> data;
 
-        FILE* BoaCode () const;
-        FILE* FixCode () const;
+        bool check (Stream <char>& text, const std::string& pattern, int i); // I want to learn more about iterators and replace it into check (iteartor it, string pattern)
+        void name (Stream <char>& from, std::string& to, const char delim, int& i);
+
+        void include (Stream <char>& from, Stream <char>& to, int& i);
+        void define (Stream <char>& from, int& i);
+        void undef (Stream <char>& from, int& i);
+        void commentary (Stream <char>& from, int& i, const std::string& delim);
+
+        void other (Stream <char>& from, Stream <char>& to, int& i);
 };
 
-//}==============================================================================
-
-PreProcessor :: PreProcessor ():
-    boaCode_ (fopen (InIt.Boa.c_str (), "r")),
-    fixCode_ (fopen (InIt.Fix.c_str (), "w")),
-    buff_    ()
-    { assert (boaCode_ && fixCode_); }
-
-//===============================================================================
-
-PreProcessor :: ~PreProcessor ()
+Preprocessor::Preprocessor ():
+    data ()
 {
-    fclose (boaCode_);
-    fclose (fixCode_);
 }
 
-//===============================================================================
-
-void PreProcessor :: read  (FILE* file)
+void Preprocessor::parsing (Stream <char>& from, Stream <char>& to)
 {
-    string code;
-    copy (file, code);
-
-    StrStream str_file (code);
-
-    while (true)
+    for (int i = 0; i < from.size ();)
     {
-        string cmd_arg; // From here
+        if (check (from, "#include", i))    { i += 8; include (from, to, i); }
+        else if (check (from, "#define", i)) { i += 7; define (from, i); }
+        else if (check (from, "#undef", i)) { i += 6; undef (from, i); }
+        else if (check (from, "//", i)) { i += 2; commentary (from, i, "\n"); }
+        else if (check (from, "/*", i)) { i += 2; commentary (from, i, "*/"); }
 
-        GetLine (str_file, cmd_arg, ';');
-
-        if (cmd_arg == "") break;
-
-        size_t cmd_place = 0;
-        StrStream command (cmd_arg); // Out of cmd_arg
-
-        #define CMD(id, name, pre, comp, cpu)\
-        if (cmd == #name)\
-        {\
-            pre\
-        }
-
-        while (true)
-        {
-            string cmd (StrTok (command, &cmd_place, " ;\n"));
-
-            CmdCheck (cmd_arg, cmd_place, cmd);
-
-            #include "CommandsList.hpp"
-        }
-
-        #undef CMD
-
-        if (cmd_arg != "") buff_ += cmd_arg + ';';
+        else
+            other (from, to, i);
     }
 }
 
-//===============================================================================
-
-void PreProcessor :: write ()
+bool Preprocessor::check (Stream <char>& text, const std::string& pattern, int i)
 {
-    for (size_t i = 0; i < buff_.size (); i++)
+    if (text.size () - i < pattern.size ())
+        return false;
+
+    for (int j = 0; j < pattern.size (); j++, i++)
+        if (text[i] != pattern[j])
+            return false;
+
+    return true;
+}
+
+void Preprocessor::name (Stream <char>& from, std::string& to, const char delim, int& i)
+{
+    for (; i < from.size (); i++)
     {
-        fprintf (fixCode_, "%c", buff_[i]);
+        if (from[i] == delim)
+            break;
+
+        to.push_back (from[i]);
     }
 }
 
-//===============================================================================
-
-FILE* PreProcessor :: BoaCode () const
+void Preprocessor::include (Stream <char>& from, Stream <char>& to, int& i)
 {
-    return boaCode_;
-}
+    i++; // ' '
+    i++; // '"'
 
-//===============================================================================
+    std::string file;
 
-FILE* PreProcessor :: FixCode () const
-{
-    return fixCode_;
-}
-
-//===============================================================================
-
-void CmdCheck (string& cmd_arg, size_t cmd_place, string& cmd)
-{
-    for (auto it = Defines.begin (); it != Defines.end (); it++)
+    for (; i < from.size (); i++)
     {
-        if (cmd == it -> first) Replace (cmd_arg, cmd_place, cmd.size (), it -> second);
+        if (from[i] == '"')
+            break;
+
+        file.push_back (from[i]);
     }
+
+    i++; // '"'
+
+    Stream <char> content;
+    Read (content, file);
+
+    parsing (content, to);
 }
 
-//===============================================================================
-
-void CmdLink (string& cmd, size_t& cmd_place, StrStream& command, string& cmd_arg, PreProcessor& example)
+void Preprocessor::define (Stream <char>& from, int& i)
 {
-    cmd = StrTok (command, &cmd_place, " \";");
+    i++; // ' '
 
-    cmd_arg = "";
+    std::string first, second;
 
-    FILE* tmp = fopen (cmd.c_str (), "r");
+    name (from,  first,  ' ', i);
+    name (from, second, '\n', i);
 
-    OkFile (tmp);
-
-    example.read (tmp);
-
-    fclose (tmp);
+    data.insert ({ first, second });
 }
 
-//===============================================================================
-
-void CmdReplace (StrStream& command, size_t& cmd_place)
+void Preprocessor::undef (Stream <char>& from, int& i)
 {
-    string var  (StrTok (command, &cmd_place, " ;\n"));
-    string nick (StrTok (command, &cmd_place, " ;\n"));
+    i++; // ' '
 
-    Defines.insert (pair <string, string> (var, nick));
+    std::string first, second;
+
+    name (from,  first,  ' ', i);
+    name (from, second, '\n', i);
+
+    data.erase (first);
+}
+
+void Preprocessor::commentary (Stream <char>& from, int& i, const std::string& delim)
+{
+    for (; i < from.size (); i++)
+        if (check (from, delim, i))
+            break;
+
+    i += delim.size () + 1;
+}
+
+void Preprocessor::other (Stream <char>& from, Stream <char>& to, int& i)
+{
+    std::string word;
+
+    for (; i < from.size (); i++)
+    {
+        if ((from[i] == ' ') || (from[i] == '\n'))
+            break;
+
+        word.push_back (from[i]);
+    }
+
+    to.push_back (from[i]);
+    i++; // ' ' | '\n'
+
+    auto it = data.find (word);
+
+    if (it != data.end ())
+        to += it->second;
+
+    else
+        to += word;
 }

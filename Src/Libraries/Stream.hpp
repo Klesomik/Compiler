@@ -93,6 +93,19 @@ bool Stream_t::ok ()
 template <typename Data_T>
 void Stream_t::dump ()
 {
+    printf ("\n=============DUMP=============\n");
+
+    printf ("Stream (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
+
+    printf ("   size  = %zu;\n", Vector_t::size ());
+    printf ("   place = %zu;\n\n", place_);
+
+    for (size_t i = 0; i < Vector_t::size (); i++)
+    {
+        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << Vector_t::at (i) << "|\n";
+    }
+
+    printf ("==============================\n\n");
 }
 
 template <typename Data_T>
@@ -241,6 +254,9 @@ template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& from);
 
 template <typename Data_T>
+Stream <Data_T>& operator += (Stream <Data_T>& to, const std::string& from);
+
+template <typename Data_T>
 bool operator == (const Stream <Data_T>& to, const Stream <Data_T>& from);
 
 template <typename Data_T>
@@ -261,6 +277,15 @@ template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& from)
 {
     to.data_ += from;
+
+    return to;
+}
+
+template <typename Data_T>
+Stream <Data_T>& operator += (Stream <Data_T>& to, const std::string& from)
+{
+    for (int i = 0; i < from.size (); i++)
+        to.push_back (from[i]);
 
     return to;
 }

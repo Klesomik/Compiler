@@ -52,6 +52,11 @@ inline void mod (std::vector <Data_T>& example) { example.push_back (example.pop
 
 class Cpu
 {
+    public:
+        Cpu  (const size_t ram_size);
+
+        void parsing (const std::vector <int>& from);
+
     private:
         std::vector <int> ram_;
         int regist_[4];
@@ -64,11 +69,6 @@ class Cpu
         Cpu  (const Cpu& from);
 
         Cpu& operator = (const Cpu& from);
-
-    public:
-        Cpu  (const size_t ram_size);
-
-        void parsing (const std::vector <int>& from);
 };
 
 //}==============================================================================

@@ -7,6 +7,7 @@
 #include <map>
 #include "..//Libraries//Stream.hpp"
 #include "..//Libraries//Tools.hpp"
+#include "File.hpp"
 
 class InputInformation
 {
@@ -19,6 +20,8 @@ class InputInformation
         void option  (Stream <char>& example);
         std::pair <bool, std::string> file (Stream <char>& example);
         void comment (Stream <char>& example);
+
+        //File ...
 
         std::string name_source,
                     name_ast,

@@ -18,3 +18,9 @@ Config file: .txt -> .xml
 //Translator AllCode = { C, C++, Python, Java, Assembler, DeerC, ... }
 
 //SingleTon, dragonbook, static analysis, courses mail
+
+in computer -> phone
+
+Запись дерева в файл с помощью fwrite
+
+// in std::vector Data_T* operator (Data_T*) ()
