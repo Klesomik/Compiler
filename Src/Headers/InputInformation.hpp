@@ -9,6 +9,28 @@
 #include "..//Libraries//Tools.hpp"
 #include "File.hpp"
 
+struct File
+{
+    bool used;
+
+    std::string name;
+
+    File ();
+    File (const bool set_used, const std::string& set_name);
+};
+
+File::File ():
+    used (false),
+    name ()
+{
+}
+
+File::File (const bool set_used, const std::string& set_name):
+    used (set_used),
+    name (set_name)
+{
+}
+
 class InputInformation
 {
     public:
@@ -21,34 +43,17 @@ class InputInformation
         std::pair <bool, std::string> file (Stream <char>& example);
         void comment (Stream <char>& example);
 
-        //File ...
-
-        std::string name_source,
-                    name_ast,
-                    name_dis_ast,
-                    name_asm,
-                    name_dis_asm,
-                    name_byte,
-                    name_dis_byte,
-                    name_jit,
-                    name_dis_jit,
-                    name_log;
-
-        bool preprocessor,
-             lexicial,
-             syntax,
-             semantic,
-             optimiser,
-             dissyntax,
-             generator,
-             disgenerator,
-             translator,
-             distranslator,
-             jit,
-             disjit;
+        File source,
+             preproc,
+             lexicial, dis_lexicial,
+             syntax, dis_syntax,
+             semantic, dis_semantic,
+             optimizer,
+             generator, dis_generator,
+             translator, dis_translator;
 
         std::map <std::string, std::string*> files;
-        std::map <std::string, bool*> options;
+        //std::map <std::string, bool*> options;
 };
 
 InputInformation::InputInformation ():
@@ -83,19 +88,7 @@ InputInformation::InputInformation ():
                      { "disbyte", &name_dis_byte },
                      {     "jit", &name_jit      },
                      {  "disjit", &name_dis_jit  },
-                     {     "log", &name_log      } }),
-    options ({ {  "preprocessor", &preprocessor  },
-               {      "lexicial", &lexicial      },
-               {        "syntax", &syntax        },
-               {      "semantic", &semantic      },
-               {     "optimiser", &optimiser     },
-               {     "dissyntax", &dissyntax     },
-               {     "generator", &generator     },
-               {  "disgenerator", &disgenerator  },
-               {    "translator", &translator    },
-               { "distranslator", &distranslator },
-               {           "jit", &jit           },
-               {        "disjit", &disjit        } })
+                     {     "log", &name_log      } })
 {
 }
 
