@@ -14,98 +14,47 @@ namespace Dotter
     class Digraph
     {
         private:
-            FILE* dotFile_;
+            FILE* file_;
 
-            const char* dotName_;
-            const char* renderName_;
+            std::string dotter_, // Path to your directory with dotter
+                        text_,   // File with information about graph
+                        photo_;  // Photo which was built from 'text'
 
             size_t cluster_;
-            size_t indent_;
-
-            Digraph& operator = (const Digraph& from);
 
         public:
             Digraph ();
-            Digraph (const char* setDotName);
-            Digraph (const char* setDotName, const char* setRenderName);
-            Digraph (Digraph&  from);
-            Digraph (Digraph&& from);
 
             ~Digraph ();
 
             void open  ();
-            void open  (const char* setDotName);
             void close ();
 
             void begin ();
             void end   ();
 
-            void set (const char* comand, const char* param);
+            void set (const std::string& comand, const std::string& param);
 
             void node (const size_t number, const char* label, ...);
             void link (const size_t from, const size_t to, const char* label, ...);
 
             void comment (const char* label, ...);
 
-            void render (const char* path, const bool show = true);
+            void render (const bool show = true);
 
-            bool ok   () const;
-            void dump () const;
-
-            void setNodeShape (const char* param);
-            void setNodeColor (const char* param);
-
-            FILE*       DotFile    () const;
-            const char* DotName    () const;
-            const char* RenderName () const;
-
-            const char* DotName    ();
-            const char* RenderName ();
+            FILE* file ();
+            std::string& dotter ();
+            std::string& text ();
+            std::string& photo ();
     };
 }
 
 Dotter::Digraph::Digraph ():
-    dotFile_    (nullptr),
-    dotName_    (nullptr),
-    renderName_ (nullptr),
-    cluster_    (0),
-    indent_     (0)
-{
-}
-
-Dotter::Digraph::Digraph (const char* setDotName):
-    dotFile_    (nullptr),
-    dotName_    (setDotName),
-    renderName_ (nullptr),
-    cluster_    (0),
-    indent_     (0)
-{
-}
-
-Dotter::Digraph::Digraph::Digraph (const char* setDotName, const char* setRenderName):
-    dotFile_    (nullptr),
-    dotName_    (setDotName),
-    renderName_ (setRenderName),
-    cluster_    (0),
-    indent_     (0)
-{
-}
-
-Dotter::Digraph::Digraph (Digraph& from):
-    dotFile_    (from.dotFile_),
-    dotName_    (from.dotName_),
-    renderName_ (from.renderName_),
-    cluster_    (from.cluster_),
-    indent_     (from.indent_)
-{
-}
-
-Dotter::Digraph::Digraph (Digraph&& from):
-    dotFile_    (nullptr),
-    dotName_    (nullptr),
-    renderName_ (nullptr),
-    cluster_    (0),
-    indent_     (0)
+    file_    (nullptr),
+    dotter_  (),
+    text_    (),
+    photo_   (),
+    cluster_ (0)
 {
 }
 
@@ -116,26 +65,12 @@ Dotter::Digraph::~Digraph ()
 
 void Dotter::Digraph::open ()
 {
-    if (!dotFile_)
+    if (!file_)
     {
-        dotFile_ = fopen (dotName_, "w");
+        file_ = fopen (text_.c_str (), "w");
 
-        fprintf (dotFile_, "digraph Hello\n");
-        fprintf (dotFile_, "{\n");
-
-        begin ();
-    }
-}
-
-void Dotter::Digraph::open (const char* setDotName)
-{
-    if (!dotFile_)
-    {
-        dotFile_ = fopen (setDotName, "w");
-        dotName_ = setDotName;
-
-        fprintf (dotFile_, "digraph Hello\n");
-        fprintf (dotFile_, "{\n");
+        fprintf (file_, "digraph Hello\n");
+        fprintf (file_, "{\n");
 
         begin ();
     }
@@ -143,213 +78,130 @@ void Dotter::Digraph::open (const char* setDotName)
 
 void Dotter::Digraph::close ()
 {
-    if (dotFile_)
+    if (file_)
     {
-        fprintf (dotFile_, "}\n");
+        fprintf (file_, "}\n");
 
         end ();
 
         comment (" Build with Dotter ");
 
-        fclose (dotFile_);
-                dotFile_ = nullptr;
+        fclose (file_);
+                file_ = nullptr;
     }
 }
 
 void Dotter::Digraph::begin ()
 {
-    fprintf (dotFile_, "subgraph Cluster%u\n", cluster_++);
-    fprintf (dotFile_, "{\n");
+    fprintf (file_, "subgraph Cluster%u\n", cluster_++);
+    fprintf (file_, "{\n");
 }
 
 void Dotter::Digraph::end ()
 {
-    fprintf (dotFile_, "}\n");
+    fprintf (file_, "}\n");
 }
 
-void Dotter::Digraph::set (const char* comand, const char* param)
+void Dotter::Digraph::set (const std::string& comand, const std::string& param)
 {
-    fprintf (dotFile_, "node [%s=\"%s\"];\n", comand, param);
+    fprintf (file_, "node [%s=\"%s\"];\n", comand.c_str (), param.c_str ());
 }
 
 void Dotter::Digraph::node (const size_t number, const char* label, ...)
 {
-    fprintf (dotFile_, "Node%u ", number);
-
-    fprintf (dotFile_, "[");
-
-    fprintf (dotFile_, "label=\"");
+    fprintf (file_, "Node%u [label=\"", number);
 
     va_list args;
 
     va_start (args, label);
 
-    vfprintf (dotFile_, label, args);
+    vfprintf (file_, label, args);
 
     va_end (args);
 
-    fprintf (dotFile_, "\"");
-
-    fprintf (dotFile_, "];\n");
+    fprintf (file_, "\"];\n");
 }
 
 void Dotter::Digraph::link (const size_t from, const size_t to, const char* label, ...)
 {
     //const char* type = oriented? "->" : "--";
 
-    fprintf (dotFile_, "Node%u -> Node%u ", from, to);
-
-    fprintf (dotFile_, "[");
-
-    fprintf (dotFile_, "label=\"");
+    fprintf (file_, "Node%u -> Node%u [label=\"", from, to);
 
     va_list args;
 
     va_start (args, label);
 
-    vfprintf (dotFile_, label, args);
+    vfprintf (file_, label, args);
 
     va_end (args);
 
-    fprintf (dotFile_, "\"");
-
-    fprintf (dotFile_, "];\n");
+    fprintf (file_, "\"];\n");
 }
 
 void Dotter::Digraph::comment (const char* label, ...)
 {
-    fprintf (dotFile_, "/*");
+    fprintf (file_, "/*");
 
     va_list args;
 
     va_start (args, label);
 
-    vfprintf (dotFile_, label, args);
+    vfprintf (file_, label, args);
 
     va_end (args);
 
-    fprintf (dotFile_, "*/");
+    fprintf (file_, "*/");
 }
 
-void Dotter::Digraph::render (const char* path, const bool show /* = true */)
+void Dotter::Digraph::render (const bool show /* = true */)
 {
     close ();
 
-    int dirSize = 100;
-    char* dir = new char[dirSize];
-    Dotter::Details::Directory (dir, dirSize);
-
     std::string type;
-    Dotter::Details::Expansion (renderName_, type);
+    Dotter::Details::Expansion (photo_, type);
 
-    const size_t cmdSize = dirSize               +
-                           sizeof ("\\") - 1     +
-                           strlen (path)         +
-                           strlen (Dotter::Path) +
-                           sizeof (" -T") - 1    +
-                           type.size()           +
-                           sizeof (" ") - 1      +
-                           strlen (dotName_)     +
-                           sizeof (" -o ") - 1   +
-                           strlen (renderName_)  +
-                           1;
+    std::string comand;
 
-    char* comand = new char[cmdSize] ();
+    comand += dotter_;
+    comand += " -T";
+    comand += type;
+    comand += " ";
+    comand += text_;
+    comand += " -o ";
+    comand += photo_;
 
-    size_t counter = 0;
-
-    Dotter::Details::StrInsert (comand,           dir, counter);
-    Dotter::Details::StrInsert (comand,          "\\", counter);
-    Dotter::Details::StrInsert (comand,          path, counter);
-    Dotter::Details::StrInsert (comand,  Dotter::Path, counter);
-    Dotter::Details::StrInsert (comand,         " -T", counter);
-    Dotter::Details::StrInsert (comand, type.c_str (), counter);
-    Dotter::Details::StrInsert (comand,           " ", counter);
-    Dotter::Details::StrInsert (comand,      dotName_, counter);
-    Dotter::Details::StrInsert (comand,        " -o ", counter);
-    Dotter::Details::StrInsert (comand,   renderName_, counter);
-
-    comand[cmdSize - 1] = '\0';
-
-    delete[] dir;
-             dir = nullptr;
-
-    try
-    {
-        system (comand);
-    }
-    catch (...)
-    {
-        std::cout << "ERROR: " << comand << "\n";
-    }
-
-    delete[] comand;
-             comand = nullptr;
+    system (comand.c_str ());
 
     if (show)
     {
-        const size_t buildSize = sizeof ("start ") - 1 +
-                                 strlen (renderName_)  +
-                                 1;
+        std::string build;
 
-        char* build = new char[buildSize] ();
+        build += "start ";
+        build += photo_;
 
-        size_t position = 0;
-
-        Dotter::Details::StrInsert (build,    "start ", position);
-        Dotter::Details::StrInsert (build, renderName_, position);
-
-        build[buildSize - 1] = '\0';
-
-        system (build);
-
-        delete[] build;
-                 build = nullptr;
+        system (build.c_str ());
     }
 }
 
-bool Dotter::Digraph::ok () const
+FILE* Dotter::Digraph::file ()
 {
-    return true;
+    return file_;
 }
 
-void Dotter::Digraph::dump () const
+std::string& Dotter::Digraph::dotter ()
 {
+    return dotter_;
 }
 
-void Dotter::Digraph::setNodeShape (const char* param)
+std::string& Dotter::Digraph::text ()
 {
-    fprintf (dotFile_, "node [shape=\"%s\"]\n", param);
+    return text_;
 }
 
-void Dotter::Digraph::setNodeColor (const char* param)
+std::string& Dotter::Digraph::photo ()
 {
-    fprintf (dotFile_, "node [color=\"%s\"]\n", param);
-}
-
-FILE* Dotter::Digraph::DotFile () const
-{
-    return dotFile_;
-}
-
-const char* Dotter::Digraph::DotName () const
-{
-    return dotName_;
-}
-
-const char* Dotter::Digraph::RenderName () const
-{
-    return renderName_;
-}
-
-const char* Dotter::Digraph::DotName ()
-{
-    return dotName_;
-}
-
-const char* Dotter::Digraph::RenderName ()
-{
-    return renderName_;
+    return photo_;
 }
 
 #endif /* Digraph_hpp */

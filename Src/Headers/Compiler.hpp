@@ -50,6 +50,10 @@ class Compiler
 
         Compiler (const Compiler& from);
         Compiler& operator = (const Compiler& from);
+
+        void log_begin (LogHTML& log, const char* version);
+        void log_end (LogHTML& log, clock_t begin, clock_t end);
+        void log_error (LogHTML& log, const char* message);
 };
 
 Compiler::Compiler (const InputInformation& scan):
@@ -60,14 +64,14 @@ Compiler::Compiler (const InputInformation& scan):
     begin  (clock ()),
     end    ()
 {
-    LogBegin (log_, "1.0");
+    log_begin (log_, "1.0");
 }
 
 Compiler::~Compiler ()
 {
     //log_.picture ();
 
-    LogEnd (log_, begin, end);
+    log_end (log_, begin, end);
 }
 
 void Compiler::run (const InputInformation& scan, Stream <char>& to)
@@ -142,6 +146,38 @@ AstNode& Compiler::root ()
 LogHTML& Compiler::log ()
 {
     return log_;
+}
+
+void Compiler::log_begin (LogHTML& log, const char* version)
+{
+    log.setFontColor ("white");
+    log.setSize      (50);
+    log.setColor     ("blue");
+
+    log.setColor ("gray");
+    log.output ("DeerC %s\n\n", version);
+
+    log.setColor ("blue");
+    log.output ("========== Build started ==========\n");
+
+    log.setColor ("red");
+}
+
+void Compiler::log_end (LogHTML& log, clock_t begin, clock_t end)
+{
+    log.setColor ("blue");
+    log.output ("========== Build finished ==========\n\n");
+
+    log.setColor ("gray");
+    log.output ("Build started on: %f\n",   (float) begin / CLOCKS_PER_SEC);
+    log.output ("Build   ended on: %f\n\n", (float)   end / CLOCKS_PER_SEC);
+}
+
+void Compiler::log_error (LogHTML& log, const char* message)
+{
+    log.output (message);
+
+    throw message;
 }
 
 #endif

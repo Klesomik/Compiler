@@ -2,79 +2,90 @@
 
 #define Tools_hpp
 
-#include <bits/stdc++.h>
+#include <cstdio>
+#include <iostream>
+#include <map>
+#include "Stream.hpp"
 
-bool IsSpace (const char symbol);
-bool IsComment (const char symbol);
-bool IsDigit (const char symbol);
-bool IsAlpha (const char symbol);
-bool IsExtraSymbol (const char symbol);
-bool IsOption (const char symbol);
-bool IsFile (const char symbol);
-bool IsConfigComment (const char symbol);
-bool IsPreProc (const char symbol);
-bool IsQuotation (const char symbol);
-
-template <typename T>
-bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <T>& code);
-
-void ScanFile  (Stream <char>&   to, const std::string& name);
-void PrintFile (Stream <char>& from, const std::string& name);
-
-bool IsSpace (const char symbol)
+namespace Tools
 {
-    return (iscntrl (symbol) || (symbol == ' '));
+    bool IsAlpha (const char symbol);
+    bool IsDigit (const char symbol);
+    bool IsSpace (const char symbol);
+    bool IsConfigComment (const char symbol);
+    bool IsAssemblerComment (const char symbol);
+    bool IsExtraSymbol (const char symbol);
+    bool IsOption (const char symbol);
+    bool IsFile (const char symbol);
+    bool IsPreProc (const char symbol);
+    bool IsQuotation (const char symbol);
+
+    template <typename Data_T>
+    bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <Data_T>& code);
+
+    void Read (Stream <char>& to, const std::string& name);
+
+    template <typename Data_T>
+    void Read (Stream <Data_T>& to, const std::string& name);
+
+    template <typename Data_T>
+    void Write (const Stream <Data_T>& from, const std::string& name);
 }
 
-bool IsComment (const char symbol)
-{
-    return symbol == ';';
-}
-
-bool IsDigit (const char symbol)
-{
-    return isdigit (symbol);
-}
-
-bool IsAlpha (const char symbol)
+bool Tools::IsAlpha (const char symbol)
 {
     return isalpha (symbol);
 }
 
-bool IsExtraSymbol (const char symbol)
+bool Tools::IsDigit (const char symbol)
+{
+    return isdigit (symbol);
+}
+
+bool Tools::IsSpace (const char symbol)
+{
+    return (iscntrl (symbol) || (symbol == ' '));
+}
+
+bool Tools::IsConfigComment (const char symbol)
+{
+    return symbol == '#';
+}
+
+bool Tools::IsAssemblerComment (const char symbol)
+{
+    return symbol == ';';
+}
+
+bool Tools::IsExtraSymbol (const char symbol)
 {
     return symbol == '%' || symbol == '$' || symbol == ',';
 }
 
-bool IsOption (const char symbol)
+bool Tools::IsOption (const char symbol)
 {
     return symbol == '-';
 }
 
-bool IsFile (const char symbol)
+bool Tools::IsFile (const char symbol)
 {
     return symbol == '@';
 }
 
-bool IsConfigComment (const char symbol)
+bool Tools::IsPreProc (const char symbol)
 {
     return symbol == '#';
 }
 
-bool IsPreProc (const char symbol)
-{
-    return symbol == '#';
-}
-
-bool IsQuotation (const char symbol)
+bool Tools::IsQuotation (const char symbol)
 {
     return symbol == '"';
 }
 
-template <typename T>
-bool Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <T>& code)
+template <typename Data_T>
+bool Tools::Search (std::map <std::string, int>& example, std::string& value, const int type, Stream <Data_T>& code)
 {
-    std::map <std::string, int>::iterator it = example.find (value);
+    auto it = example.find (value);
 
     if (it != example.end ())
     {
@@ -91,40 +102,7 @@ bool Search (std::map <std::string, int>& example, std::string& value, const int
     return false;
 }
 
-void ScanFile (Stream <char>& to, const std::string& name)
-{
-    std::ifstream from (name);
-
-    std::string copy;
-    std::getline (from, copy, '\0');
-
-    Stream <char> tmp (copy.data (), copy.size ());
-
-    to = tmp;
-}
-
-void PrintFile (Stream <char>& from, const std::string& name)
-{
-    std::ofstream to (name);
-
-    for (size_t i = 0; i < from.size (); i++)
-    {
-        char symbol = 0;
-        from >> symbol;
-
-        to << symbol;
-    }
-}
-
-void Read (Stream <char>& to, const std::string& name);
-
-template <typename Data_T>
-void Read (Stream <Data_T>& to, const std::string& name);
-
-template <typename Data_T>
-void Write (const Stream <Data_T>& from, const std::string& name);
-
-void Read (Stream <char>& to, const std::string& name)
+void Tools::Read (Stream <char>& to, const std::string& name)
 {
     std::ifstream in (name);
 
@@ -135,7 +113,7 @@ void Read (Stream <char>& to, const std::string& name)
 }
 
 template <typename Data_T>
-void Read (Stream <Data_T>& to, const std::string& name)
+void Tools::Read (Stream <Data_T>& to, const std::string& name)
 {
     std::ifstream in (name);
 
@@ -149,7 +127,7 @@ void Read (Stream <Data_T>& to, const std::string& name)
 }
 
 template <typename Data_T>
-void Write (const Stream <Data_T>& from, const std::string& name)
+void Tools::Write (const Stream <Data_T>& from, const std::string& name)
 {
     std::ofstream out (name);
 
