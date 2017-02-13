@@ -17,11 +17,6 @@ namespace Dotter
     }
 }
 
-void Dotter::SetIndent (const size_t space)
-{
-    Dotter::Indent = space;
-}
-
 const char* Dotter::GetVersion ()
 {
     return "0.1";

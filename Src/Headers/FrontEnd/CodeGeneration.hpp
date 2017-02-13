@@ -34,11 +34,6 @@ class CodeGeneration
         void subIndent   (const int space);
         void writeIndent (FILE* write);
 
-    public:
-        CodeGeneration (AstNode& root, FILE* write, const size_t func);
-
-        void Generate (AstNode& root, FILE* write);
-
         void CreateAsm                                         (AstNode* current, FILE* write);
         void give_Add_Sub_Mul_Div_Mod                          (AstNode* current, FILE* write, const char* command);
         void give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNode* current, FILE* write, const char* if_comand, const char* else_comand);
@@ -56,6 +51,11 @@ class CodeGeneration
         void give_Call                                         (AstNode* current, FILE* write);
         void give_Return                                       (AstNode* current, FILE* write);
         void give_Out                                          (AstNode* current, FILE* write);
+
+    public:
+        CodeGeneration (AstNode& root, FILE* write, const size_t func);
+
+        void Generate (AstNode& root, FILE* write);
 };
 
 //}==============================================================================
@@ -103,8 +103,9 @@ void CodeGeneration :: subIndent (const int space)
 
 void CodeGeneration :: writeIndent (FILE* write)
 {
-    for (size_t i = 0; i < count_; i++)
-        fprintf (write, " ");
+    std::string tmp (count_, ' ');
+
+    fprintf (write, "%s", tmp.c_str ());
 }
 
 //===============================================================================

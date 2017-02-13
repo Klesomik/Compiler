@@ -22,6 +22,11 @@ namespace Dotter
 
             size_t cluster_;
 
+            int indent_;
+            int space_;
+
+            void print (const char* cmd, ...);
+
         public:
             Digraph ();
 
@@ -46,6 +51,8 @@ namespace Dotter
             std::string& dotter ();
             std::string& text ();
             std::string& photo ();
+            size_t& cluster ();
+            int& indent ();
     };
 }
 
@@ -54,7 +61,9 @@ Dotter::Digraph::Digraph ():
     dotter_  (),
     text_    (),
     photo_   (),
-    cluster_ (0)
+    cluster_ (0),
+    indent_  (0),
+    space_   (4)
 {
 }
 
@@ -69,8 +78,9 @@ void Dotter::Digraph::open ()
     {
         file_ = fopen (text_.c_str (), "w");
 
-        fprintf (file_, "digraph Hello\n");
-        fprintf (file_, "{\n");
+        print ("digraph Hello\n");
+        print ("{\n");
+        indent_ += space_;
 
         begin ();
     }
@@ -80,8 +90,7 @@ void Dotter::Digraph::close ()
 {
     if (file_)
     {
-        fprintf (file_, "}\n");
-
+        end ();
         end ();
 
         comment (" Build with Dotter ");
@@ -93,23 +102,27 @@ void Dotter::Digraph::close ()
 
 void Dotter::Digraph::begin ()
 {
-    fprintf (file_, "subgraph Cluster%u\n", cluster_++);
-    fprintf (file_, "{\n");
+    print ("subgraph Cluster%u\n", cluster_++);
+    print ("{\n");
+
+    indent_ += space_;
 }
 
 void Dotter::Digraph::end ()
 {
-    fprintf (file_, "}\n");
+    print ("}\n");
+
+    indent_ -= space_;
 }
 
 void Dotter::Digraph::set (const std::string& comand, const std::string& param)
 {
-    fprintf (file_, "node [%s=\"%s\"];\n", comand.c_str (), param.c_str ());
+    print ("node [%s=\"%s\"];\n", comand.c_str (), param.c_str ());
 }
 
 void Dotter::Digraph::node (const size_t number, const char* label, ...)
 {
-    fprintf (file_, "Node%u [label=\"", number);
+    print ("Node%u [label=\"", number);
 
     va_list args;
 
@@ -119,14 +132,14 @@ void Dotter::Digraph::node (const size_t number, const char* label, ...)
 
     va_end (args);
 
-    fprintf (file_, "\"];\n");
+    print ("\"];\n");
 }
 
 void Dotter::Digraph::link (const size_t from, const size_t to, const char* label, ...)
 {
     //const char* type = oriented? "->" : "--";
 
-    fprintf (file_, "Node%u -> Node%u [label=\"", from, to);
+    print ("Node%u -> Node%u [label=\"", from, to);
 
     va_list args;
 
@@ -141,7 +154,7 @@ void Dotter::Digraph::link (const size_t from, const size_t to, const char* labe
 
 void Dotter::Digraph::comment (const char* label, ...)
 {
-    fprintf (file_, "/*");
+    print ("/*");
 
     va_list args;
 
@@ -151,7 +164,7 @@ void Dotter::Digraph::comment (const char* label, ...)
 
     va_end (args);
 
-    fprintf (file_, "*/");
+    print ("*/");
 }
 
 void Dotter::Digraph::render (const bool show /* = true */)
@@ -202,6 +215,31 @@ std::string& Dotter::Digraph::text ()
 std::string& Dotter::Digraph::photo ()
 {
     return photo_;
+}
+
+size_t& Dotter::Digraph::cluster ()
+{
+    return cluster_;
+}
+
+int& Dotter::Digraph::indent ()
+{
+    return indent_;
+}
+
+void Dotter::Digraph::print (const char* cmd, ...)
+{
+    std::string tmp (indent_, ' ');
+
+    print ("%s", tmp);
+
+    va_list args;
+
+    va_start (args, cmd);
+
+    vfprintf (file_, cmd, args);
+
+    va_end (args);
 }
 
 #endif /* Digraph_hpp */
