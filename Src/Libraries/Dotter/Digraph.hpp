@@ -6,6 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include <cstdarg>
+#include "..//FormatFile.hpp"
 
 //TODO: Many setters and no getters, add ios::app with Boost streams
 
@@ -13,20 +14,6 @@ namespace Dotter
 {
     class Digraph
     {
-        private:
-            FILE* file_;
-
-            std::string dotter_, // Path to your directory with dotter
-                        text_,   // File with information about graph
-                        photo_;  // Photo which was built from 'text'
-
-            size_t cluster_;
-
-            int indent_;
-            int space_;
-
-            void print (const char* cmd, ...);
-
         public:
             Digraph ();
 
@@ -47,23 +34,29 @@ namespace Dotter
 
             void render (const bool show = true);
 
-            FILE* file ();
+            FormatFile& file ();
             std::string& dotter ();
             std::string& text ();
             std::string& photo ();
             size_t& cluster ();
-            int& indent ();
+
+        private:
+            FormatFile file_;
+
+            std::string dotter_, // Path to your directory with dotter
+                        text_,   // File with information about graph
+                        photo_;  // Photo which was built from 'text'
+
+            size_t cluster_;
     };
 }
 
 Dotter::Digraph::Digraph ():
-    file_    (nullptr),
+    file_    (),
     dotter_  (),
     text_    (),
     photo_   (),
     cluster_ (0),
-    indent_  (0),
-    space_   (4)
 {
 }
 
@@ -76,11 +69,11 @@ void Dotter::Digraph::open ()
 {
     if (!file_)
     {
-        file_ = fopen (text_.c_str (), "w");
+        file_.open (text_.c_str ());
 
-        print ("digraph Hello\n");
-        print ("{\n");
-        indent_ += space_;
+        file_.print ("digraph Hello\n");
+        file_.print ("{\n");
+        file_.increase ();
 
         begin ();
     }
@@ -95,34 +88,33 @@ void Dotter::Digraph::close ()
 
         comment (" Build with Dotter ");
 
-        fclose (file_);
-                file_ = nullptr;
+        file_.close ();
     }
 }
 
 void Dotter::Digraph::begin ()
 {
-    print ("subgraph Cluster%u\n", cluster_++);
-    print ("{\n");
+    file_.print ("subgraph Cluster%u\n", cluster_++);
+    file_.print ("{\n");
 
-    indent_ += space_;
+    file_.increase ();
 }
 
 void Dotter::Digraph::end ()
 {
-    print ("}\n");
+    file_.print ("}\n");
 
-    indent_ -= space_;
+    file_.decrease ();
 }
 
 void Dotter::Digraph::set (const std::string& comand, const std::string& param)
 {
-    print ("node [%s=\"%s\"];\n", comand.c_str (), param.c_str ());
+    file_.print ("node [%s=\"%s\"];\n", comand.c_str (), param.c_str ());
 }
 
 void Dotter::Digraph::node (const size_t number, const char* label, ...)
 {
-    print ("Node%u [label=\"", number);
+    file_.print ("Node%u [label=\"", number);
 
     va_list args;
 
@@ -132,14 +124,14 @@ void Dotter::Digraph::node (const size_t number, const char* label, ...)
 
     va_end (args);
 
-    print ("\"];\n");
+    file_.print ("\"];\n");
 }
 
 void Dotter::Digraph::link (const size_t from, const size_t to, const char* label, ...)
 {
     //const char* type = oriented? "->" : "--";
 
-    print ("Node%u -> Node%u [label=\"", from, to);
+    file_.print ("Node%u -> Node%u [label=\"", from, to);
 
     va_list args;
 
@@ -149,12 +141,12 @@ void Dotter::Digraph::link (const size_t from, const size_t to, const char* labe
 
     va_end (args);
 
-    fprintf (file_, "\"];\n");
+    file_.print ("\"];\n");
 }
 
 void Dotter::Digraph::comment (const char* label, ...)
 {
-    print ("/*");
+    file_.print ("/*");
 
     va_list args;
 
@@ -164,7 +156,7 @@ void Dotter::Digraph::comment (const char* label, ...)
 
     va_end (args);
 
-    print ("*/");
+    file_.print ("*/");
 }
 
 void Dotter::Digraph::render (const bool show /* = true */)
@@ -197,7 +189,7 @@ void Dotter::Digraph::render (const bool show /* = true */)
     }
 }
 
-FILE* Dotter::Digraph::file ()
+FormatFile& Dotter::Digraph::file ()
 {
     return file_;
 }
@@ -220,26 +212,6 @@ std::string& Dotter::Digraph::photo ()
 size_t& Dotter::Digraph::cluster ()
 {
     return cluster_;
-}
-
-int& Dotter::Digraph::indent ()
-{
-    return indent_;
-}
-
-void Dotter::Digraph::print (const char* cmd, ...)
-{
-    std::string tmp (indent_, ' ');
-
-    print ("%s", tmp);
-
-    va_list args;
-
-    va_start (args, cmd);
-
-    vfprintf (file_, cmd, args);
-
-    va_end (args);
 }
 
 #endif /* Digraph_hpp */
