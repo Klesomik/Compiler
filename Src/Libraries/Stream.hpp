@@ -11,7 +11,8 @@ class Stream : public std::vector <Data_T>
 {
     public:
         Stream ();
-        Stream (const Data_T* name, const size_t size);
+        Stream (int size_data);
+        Stream (const Data_T* name, const size_t size_data);
         Stream (const Vector_t& name);
         Stream (const Vector_t& name, const size_t start);
         Stream (const Stream_t& from);
@@ -22,7 +23,6 @@ class Stream : public std::vector <Data_T>
         void seek (const size_t value);
 
         Stream_t& operator = (const Stream_t& from);
-        Stream_t& operator = (const Vector_t& from);
 
         void operator >> (Data_T& write);
         void operator << (const Data_T& record);
@@ -56,8 +56,15 @@ Stream_t::Stream ():
 }
 
 template <typename Data_T>
-Stream <Data_T>::Stream (const Data_T* name, const size_t size):
-    Vector_t (name, name + size),
+Stream <Data_T>::Stream (int size_data):
+    Vector_t (size_data),
+    place_   (0)
+{
+}
+
+template <typename Data_T>
+Stream <Data_T>::Stream (const Data_T* name, const size_t size_data):
+    Vector_t (name, name + size_data),
     place_ (0)
 {
 }
@@ -101,9 +108,7 @@ void Stream_t::dump ()
     printf ("   place = %zu;\n\n", place_);
 
     for (size_t i = 0; i < Vector_t::size (); i++)
-    {
         std::cout << "[" << i << "]" << " " << "=" << " " << "|" << Vector_t::at (i) << "|\n";
-    }
 
     printf ("==============================\n\n");
 }
@@ -120,16 +125,6 @@ Stream_t& Stream_t::operator = (const Stream_t& from)
     Vector_t::operator = (from);
 
     place_ = from.place_;
-
-    return (*this);
-}
-
-template <typename Data_T>
-Stream_t& Stream_t::operator = (const Vector_t& from)
-{
-    Vector_t::operator = (from);
-
-    place_ = 0;
 
     return (*this);
 }
@@ -195,7 +190,7 @@ Stream_t Stream_t::operator -- (int)
 }
 
 template <typename Data_T>
-Data_T& Stream <Data_T> :: current ()
+Data_T& Stream <Data_T>::current ()
 {
     return Vector_t::operator [] (place_);
 }
@@ -263,7 +258,7 @@ template <typename Data_T>
 bool operator == (const Stream <Data_T>& to, const std::vector <Data_T>& from);
 
 void CopyFile (Stream <char>& example, FILE* input);
-void GetLine (Stream <char>& example, const char delim);
+void GetLine (std::istream& in, Stream <char>& example, const char delim);
 
 template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from)
@@ -276,7 +271,7 @@ Stream <Data_T>& operator += (Stream <Data_T>& to, const Stream <Data_T>& from)
 template <typename Data_T>
 Stream <Data_T>& operator += (Stream <Data_T>& to, const std::vector <Data_T>& from)
 {
-    to.data_ += from;
+    to += from;
 
     return to;
 }
@@ -308,10 +303,10 @@ void CopyFile (Stream <char>& example, FILE* input)
         example.push_back (symbol);
 }
 
-void GetLine (Stream <char>& example, const char delim)
+void GetLine (std::istream& in, Stream <char>& example, const char delim)
 {
     std::string data;
-    getline (std::cin, data, delim);
+    getline (in, data, delim);
 
     Stream <char> tmp (data.c_str (), data.size ());
 

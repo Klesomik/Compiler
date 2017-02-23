@@ -22,7 +22,3 @@ Config file: .txt -> .xml
 in computer -> phone
 
 Запись дерева в файл с помощью fwrite
-
-// in std::vector Data_T* operator (Data_T*) ()
-Задача №112508. Колода карт
-+ регион "форматирование текста"

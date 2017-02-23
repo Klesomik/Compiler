@@ -141,4 +141,13 @@ const char* LogHTML::name ()
     return name_;
 }
 
+void Error (LogHTML& log, const std::string& message);
+
+void Error (LogHTML& log, const std::string& message)
+{
+    log.output ("%s\n", message);
+
+    throw message.c_str ();
+}
+
 #endif

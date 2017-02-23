@@ -5,8 +5,6 @@
 #include "..//..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//..//Libraries//LogHTML.hpp"
 
-//{==============================================================================
-
 struct FunctionMember
 {
     int type, name, args;
@@ -16,8 +14,6 @@ struct FunctionMember
     FunctionMember ();
     FunctionMember (const int setType, const int setName, const int setArgs, const bool setCode);
 };
-
-//}==============================================================================
 
 FunctionMember :: FunctionMember ():
     type (),
@@ -33,18 +29,18 @@ FunctionMember :: FunctionMember (const int setType, const int setName, const in
     code (setCode)
     {}
 
-//{==============================================================================
-
 class SemanticAnalyzer
 {
+    public:
+        SemanticAnalyzer (AstNode& root, LogHTML& log);
+
+        void parsing ();
+
     private:
         std::vector <int> data_;
         std::vector <FunctionMember> func_;
 
         size_t label_;
-
-    public:
-        SemanticAnalyzer (AstNode& root, LogHTML& log);
 
         void error (LogHTML& log, const char* message);
 
@@ -59,37 +55,28 @@ class SemanticAnalyzer
         size_t size ();
 };
 
-//}==============================================================================
-
-SemanticAnalyzer :: SemanticAnalyzer (AstNode& root, LogHTML& log):
+SemanticAnalyzer::SemanticAnalyzer (AstNode& root, LogHTML& log):
     data_  (),
     func_  (),
     label_ (0)
-    {
-        try
-        {
-            data_.push_back (-1);
-            label_++;
-
-            for (size_t i = 0; i < root.size (); i++)
-                Detour (root.children ()[i], log);
-        }
-        catch (const char* message)
-        {
-            std::cout << message << "\n";
-        }
-    }
-
-//===============================================================================
-
-void SemanticAnalyzer :: error (LogHTML& log, const char* message)
 {
-    log.output ("%s\n", message);
-
-    throw message;
 }
 
-//===============================================================================
+void SemanticAnalyzer::parsing ()
+{
+    try
+    {
+        data_.push_back (-1);
+        label_++;
+
+        for (size_t i = 0; i < root.size (); i++)
+            Detour (root.children ()[i], log);
+    }
+    catch (const char* message)
+    {
+        std::cout << message << "\n";
+    }
+}
 
 void SemanticAnalyzer :: Detour (AstNode* current, LogHTML& log)
 {
@@ -111,8 +98,6 @@ void SemanticAnalyzer :: Detour (AstNode* current, LogHTML& log)
     }
 }
 
-//===============================================================================
-
 void SemanticAnalyzer :: Check_Block (AstNode* current, LogHTML& log)
 {
     data_.push_back (-1);
@@ -126,8 +111,6 @@ void SemanticAnalyzer :: Check_Block (AstNode* current, LogHTML& log)
     data_.pop_back ();
     label_--;
 }
-
-//===============================================================================
 
 void SemanticAnalyzer :: Check_DeclVar (AstNode* current, LogHTML& log)
 {
@@ -144,8 +127,6 @@ void SemanticAnalyzer :: Check_DeclVar (AstNode* current, LogHTML& log)
 
     if (current -> children ()[2]) Detour (current -> children ()[2], log);
 }
-
-//===============================================================================
 
 void SemanticAnalyzer :: Check_Name (AstNode* current, LogHTML& log)
 {
@@ -171,14 +152,12 @@ void SemanticAnalyzer :: Check_Name (AstNode* current, LogHTML& log)
         error (log, "Variable wasn't declared before\n");
 }
 
-//===============================================================================
-
 void SemanticAnalyzer :: Check_DeclFunc (AstNode* current, LogHTML& log)
 {
-    int  typeVal = current -> children ()[0] -> key ().type;
-    int  nameVal = current -> children ()[1] -> key ().value;
-    int  argsVal = current -> children ()[2] -> size ();
-    bool codeVal = current -> size () == 4? true : false;
+    int  typeVal = current[0]->key ().type;
+    int  nameVal = current[1]->key ().value;
+    int  argsVal = current[2]->size ();
+    bool codeVal = (current->size () == 4);
 
     for (int i = func_.size () - 1; i >= 0; i--)
     {
@@ -217,8 +196,6 @@ void SemanticAnalyzer :: Check_DeclFunc (AstNode* current, LogHTML& log)
     label_--;
 }
 
-//===============================================================================
-
 void SemanticAnalyzer :: Check_Call (AstNode* current, LogHTML& log)
 {
     int nameVal = current -> children ()[0] -> key ().value;
@@ -241,8 +218,6 @@ void SemanticAnalyzer :: Check_Call (AstNode* current, LogHTML& log)
     if (!first)
         error (log, "Function wasn't declared before\n");
 }
-
-//===============================================================================
 
 size_t SemanticAnalyzer :: size ()
 {
