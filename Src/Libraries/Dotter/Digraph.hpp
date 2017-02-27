@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cstring>
 #include <cstdarg>
-#include "..//FormatFile.hpp"
+#include "..//FormatBuffer.hpp"
 
 //TODO: Many setters and no getters, add ios::app with Boost streams
 
@@ -34,20 +34,23 @@ namespace Dotter
 
             void render (const bool show = true);
 
-            FormatFile& file ();
+            FormatBuffer& file ();
             std::string& dotter ();
             std::string& text ();
             std::string& photo ();
             size_t& cluster ();
+            bool& oriented ();
 
         private:
-            FormatFile file_;
+            FormatBuffer file_;
 
             std::string dotter_, // Path to your directory with dotter
                         text_,   // File with information about graph
                         photo_;  // Photo which was built from 'text'
 
             size_t cluster_;
+
+            bool oriented_;
     };
 }
 
@@ -57,6 +60,7 @@ Dotter::Digraph::Digraph ():
     text_    (),
     photo_   (),
     cluster_ (0),
+    oriented_(true)
 {
 }
 
@@ -69,8 +73,6 @@ void Dotter::Digraph::open ()
 {
     if (!file_)
     {
-        file_.open (text_.c_str ());
-
         file_.print ("digraph Hello\n");
         file_.print ("{\n");
         file_.increase ();
@@ -88,7 +90,7 @@ void Dotter::Digraph::close ()
 
         comment (" Build with Dotter ");
 
-        file_.close ();
+        file_.to_file (text_);
     }
 }
 
@@ -129,9 +131,7 @@ void Dotter::Digraph::node (const size_t number, const char* label, ...)
 
 void Dotter::Digraph::link (const size_t from, const size_t to, const char* label, ...)
 {
-    //const char* type = oriented? "->" : "--";
-
-    file_.print ("Node%u -> Node%u [label=\"", from, to);
+    file_.print ("Node%u %s Node%u [label=\"", from, (oriented? "->" : "--"), to);
 
     va_list args;
 
@@ -189,7 +189,7 @@ void Dotter::Digraph::render (const bool show /* = true */)
     }
 }
 
-FormatFile& Dotter::Digraph::file ()
+FormatBuffer& Dotter::Digraph::file ()
 {
     return file_;
 }
@@ -212,6 +212,11 @@ std::string& Dotter::Digraph::photo ()
 size_t& Dotter::Digraph::cluster ()
 {
     return cluster_;
+}
+
+bool& Dotter::Digraph::oriented ()
+{
+    oriented_;
 }
 
 #endif /* Digraph_hpp */

@@ -85,7 +85,7 @@ inline void mod (std::vector <Data_T>& example)
 class Cpu
 {
     public:
-        Cpu  (const size_t ram_size);
+        Cpu (const size_t ram_size);
 
         void parsing (const std::vector <int>& from);
 
@@ -98,7 +98,7 @@ class Cpu
 
         int flag_;
 
-        Cpu  (const Cpu& from);
+        Cpu (const Cpu& from);
 
         Cpu& operator = (const Cpu& from);
 };
@@ -110,7 +110,8 @@ Cpu::Cpu (const size_t ram_size):
     call_   (),
     state_  (),
     flag_   (0)
-    {}
+{
+}
 
 void Cpu::parsing (const std::vector <int>& from)
 {

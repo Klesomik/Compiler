@@ -15,14 +15,14 @@ struct FunctionMember
     FunctionMember (const int setType, const int setName, const int setArgs, const bool setCode);
 };
 
-FunctionMember :: FunctionMember ():
+FunctionMember::FunctionMember ():
     type (),
     name (),
     args (),
     code ()
     {}
 
-FunctionMember :: FunctionMember (const int setType, const int setName, const int setArgs, const bool setCode):
+FunctionMember::FunctionMember (const int setType, const int setName, const int setArgs, const bool setCode):
     type (setType),
     name (setName),
     args (setArgs),
@@ -78,7 +78,7 @@ void SemanticAnalyzer::parsing ()
     }
 }
 
-void SemanticAnalyzer :: Detour (AstNode* current, LogHTML& log)
+void SemanticAnalyzer::Detour (AstNode* current, LogHTML& log)
 {
     switch (current -> key ().type)
     {
@@ -98,7 +98,7 @@ void SemanticAnalyzer :: Detour (AstNode* current, LogHTML& log)
     }
 }
 
-void SemanticAnalyzer :: Check_Block (AstNode* current, LogHTML& log)
+void SemanticAnalyzer::Check_Block (AstNode* current, LogHTML& log)
 {
     data_.push_back (-1);
     label_++;
@@ -112,7 +112,7 @@ void SemanticAnalyzer :: Check_Block (AstNode* current, LogHTML& log)
     label_--;
 }
 
-void SemanticAnalyzer :: Check_DeclVar (AstNode* current, LogHTML& log)
+void SemanticAnalyzer::Check_DeclVar (AstNode* current, LogHTML& log)
 {
     int deskriptor = current -> children ()[1] -> key ().value;
 
@@ -128,7 +128,7 @@ void SemanticAnalyzer :: Check_DeclVar (AstNode* current, LogHTML& log)
     if (current -> children ()[2]) Detour (current -> children ()[2], log);
 }
 
-void SemanticAnalyzer :: Check_Name (AstNode* current, LogHTML& log)
+void SemanticAnalyzer::Check_Name (AstNode* current, LogHTML& log)
 {
     int deskriptor = current -> key ().value;
 
@@ -152,7 +152,7 @@ void SemanticAnalyzer :: Check_Name (AstNode* current, LogHTML& log)
         error (log, "Variable wasn't declared before\n");
 }
 
-void SemanticAnalyzer :: Check_DeclFunc (AstNode* current, LogHTML& log)
+void SemanticAnalyzer::Check_DeclFunc (AstNode* current, LogHTML& log)
 {
     int  typeVal = current[0]->key ().type;
     int  nameVal = current[1]->key ().value;
@@ -196,7 +196,7 @@ void SemanticAnalyzer :: Check_DeclFunc (AstNode* current, LogHTML& log)
     label_--;
 }
 
-void SemanticAnalyzer :: Check_Call (AstNode* current, LogHTML& log)
+void SemanticAnalyzer::Check_Call (AstNode* current, LogHTML& log)
 {
     int nameVal = current -> children ()[0] -> key ().value;
     int argsVal = current -> children ()[1] -> children ().size ();
@@ -219,7 +219,7 @@ void SemanticAnalyzer :: Check_Call (AstNode* current, LogHTML& log)
         error (log, "Function wasn't declared before\n");
 }
 
-size_t SemanticAnalyzer :: size ()
+size_t SemanticAnalyzer::size ()
 {
     return func_.size ();
 }

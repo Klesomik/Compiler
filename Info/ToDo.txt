@@ -22,3 +22,9 @@ Config file: .txt -> .xml
 in computer -> phone
 
 Запись дерева в файл с помощью fwrite
+
+// Smirnov's project Balls. Rebuilding AngryBalls
+// Mandelbrot's set
+// Long Arifmetics
+
+Tadadada-Tadadada-WOW

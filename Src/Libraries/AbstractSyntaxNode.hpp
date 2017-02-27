@@ -1,9 +1,6 @@
 #ifndef ASTNode_INCLUDED
     #define ASTNode_INCLUDED
 
-//Include
-//{==============================================================================
-
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -11,11 +8,6 @@
 #include <vector>
 #include "..//Headers//FrontEnd//Token.hpp"
 #include "..//Libraries//LogHTML.hpp"
-
-//}==============================================================================
-
-//Define
-//{==============================================================================
 
 #define DEBUG_ASTNODE
 
@@ -26,7 +18,6 @@
 
 #elif defined (TEST_ASTNODE)
 
-    #include "Debug.hpp"
     #define DO_ASTNODE(codeDebug, codeTest)  codeTest
     #define OK_ASTNODE assert (ok ());
 
@@ -41,26 +32,8 @@
 
 #endif
 
-//}==============================================================================
-
-//Class: AstNode
-//{==============================================================================
-
 class AstNode
 {
-    private:
-        Token key_;
-
-        std::vector <AstNode*> children_;
-
-        AstNode (AstNode& from);
-
-        AstNode& operator =  (AstNode& from);
-
-        int position (AstNode* child);
-
-        void clear ();
-
     public:
         AstNode ();
         AstNode (const Token& value);
@@ -83,42 +56,53 @@ class AstNode
         void read (FILE* out);
         void write (FILE* in);
 
+        bool ok   ();
+        void dump (FILE* out = stdout);
+
+		void render (Dotter::Digraph& tree, const size_t number);
+
         Token&                  key ();
         size_t                 size ();
         std::vector <AstNode*>& children ();
 
-        bool ok   ();
-        void dump (FILE* out = stdout);
+    private:
+        Token key_;
+
+        std::vector <AstNode*> children_;
+
+        AstNode (AstNode& from);
+
+        AstNode& operator =  (AstNode& from);
+
+        int position (AstNode* child);
+
+        void clear ();
 };
 
-//}==============================================================================
-
-AstNode :: AstNode ():
+AstNode::AstNode ():
     key_      (),
     children_ ()
-    { OK_ASTNODE }
+{ 
+	OK_ASTNODE 
+}
 
-//===============================================================================
-
-AstNode :: AstNode (const Token& value):
+AstNode::AstNode (const Token& value):
     key_      (value),
     children_ ()
-    { OK_ASTNODE }
+{ 
+	OK_ASTNODE 
+}
 
-//===============================================================================
-
-AstNode :: AstNode (AstNode& from):
+AstNode::AstNode (AstNode& from):
     key_      (from.key_),
     children_ (from.children_)
-    {
-        from.children_.clear ();
+{
+	from.children_.clear ();
 
-        OK_ASTNODE
-    }
+    OK_ASTNODE
+}
 
-//===============================================================================
-
-AstNode :: ~AstNode ()
+AstNode::~AstNode ()
 {
     OK_ASTNODE
 
@@ -127,9 +111,7 @@ AstNode :: ~AstNode ()
     OK_ASTNODE
 }
 
-//===============================================================================
-
-AstNode& AstNode :: operator = (AstNode& from)
+AstNode& AstNode::operator = (AstNode& from)
 {
     OK_ASTNODE
 
@@ -143,9 +125,7 @@ AstNode& AstNode :: operator = (AstNode& from)
     return (*this);
 }
 
-//===============================================================================
-
-AstNode* AstNode :: operator [] (const size_t child)
+AstNode* AstNode::operator [] (const size_t child)
 {
     OK_ASTNODE
 
@@ -160,9 +140,7 @@ AstNode* AstNode :: operator [] (const size_t child)
     return children_[child];
 }
 
-//===============================================================================
-
-int AstNode :: position (AstNode* child)
+int AstNode::position (AstNode* child)
 {
     OK_ASTNODE
 
@@ -176,9 +154,7 @@ int AstNode :: position (AstNode* child)
     return -1;
 }
 
-//===============================================================================
-
-AstNode& AstNode :: insert  ()
+AstNode& AstNode::insert  ()
 {
     OK_ASTNODE
 
@@ -189,9 +165,7 @@ AstNode& AstNode :: insert  ()
     return insert (from);
 }
 
-//===============================================================================
-
-AstNode& AstNode :: insert (const Token& value)
+AstNode& AstNode::insert (const Token& value)
 {
     OK_ASTNODE
 
@@ -202,9 +176,7 @@ AstNode& AstNode :: insert (const Token& value)
     return insert (from);
 }
 
-//===============================================================================
-
-AstNode& AstNode :: insert (AstNode& from)
+AstNode& AstNode::insert (AstNode& from)
 {
     OK_ASTNODE
 
@@ -219,9 +191,7 @@ AstNode& AstNode :: insert (AstNode& from)
     return (*this);
 }
 
-//===============================================================================
-
-void AstNode :: erase ()
+void AstNode::erase ()
 {
     OK_ASTNODE
 
@@ -230,18 +200,14 @@ void AstNode :: erase ()
     OK_ASTNODE
 }
 
-//===============================================================================
-
-bool AstNode :: empty ()
+bool AstNode::empty ()
 {
     OK_ASTNODE
 
     return children_.empty ();
 }
 
-//===============================================================================
-
-/*AstNode& AstNode :: copy (const AstNode& from)
+/*AstNode& AstNode::copy (const AstNode& from)
 {
     OK_ASTNODE
 
@@ -254,9 +220,7 @@ bool AstNode :: empty ()
     return current;
 }*/
 
-//===============================================================================
-
-AstNode& AstNode :: move (AstNode& from)
+AstNode& AstNode::move (AstNode& from)
 {
     OK_ASTNODE
 
@@ -283,9 +247,7 @@ AstNode& AstNode :: move (AstNode& from)
     return (*this);
 }
 
-//===============================================================================
-
-void AstNode :: read (FILE* out)
+void AstNode::read (FILE* out)
 {
     char start = 0;
 
@@ -320,9 +282,7 @@ void AstNode :: read (FILE* out)
     }
 }
 
-//===============================================================================
-
-void AstNode :: write (FILE* in)
+void AstNode::write (FILE* in)
 {
     fprintf (in, "<");
 
@@ -346,9 +306,7 @@ void AstNode :: write (FILE* in)
     fprintf (in, ">");
 }
 
-//===============================================================================
-
-bool AstNode :: ok ()
+bool AstNode::ok ()
 {
     for (size_t i = 0; i < children_.size (); i++)
     {
@@ -362,9 +320,7 @@ bool AstNode :: ok ()
     return true;
 }
 
-//===============================================================================
-
-void AstNode :: dump (FILE* out /* = stdout */)
+void AstNode::dump (FILE* out /* = stdout */)
 {
     fprintf (out, "\n====================DUMP====================\n");
 
@@ -381,36 +337,46 @@ void AstNode :: dump (FILE* out /* = stdout */)
     fprintf (out, "============================================\n\n");
 }
 
-//===============================================================================
+void AstNode::render (Dotter::Digraph& tree, const size_t number)
+{
+	std::string title (BtInf (tree, key_));
 
-Token& AstNode :: key ()
+    #ifdef TEST_ASTNODE
+
+        char extra[640] = "";
+
+        for (size_t i = 0; i < children_.size (); i++)
+            sprintf (extra, "child[%d] = %p\n", i, children_[i]);
+
+        title += extra;
+
+    #endif /* DEBUG_ASTNODE */
+
+    tree.node (number, title.c_str ());
+}
+
+Token& AstNode::key ()
 {
     OK_ASTNODE
 
     return key_;
 }
 
-//===============================================================================
-
-size_t AstNode :: size ()
+size_t AstNode::size ()
 {
     OK_ASTNODE
 
     return children_.size ();
 }
 
-//===============================================================================
-
-std::vector <AstNode*>& AstNode :: children ()
+std::vector <AstNode*>& AstNode::children ()
 {
     OK_ASTNODE
 
     return children_;
 }
 
-//===============================================================================
-
-void AstNode :: clear ()
+void AstNode::clear ()
 {
     OK_ASTNODE
 
@@ -430,6 +396,9 @@ void AstNode :: clear ()
 bool operator == (const AstNode& a, const AstNode& b);
 bool operator != (const AstNode& a, const AstNode& b);
 
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool show);
+void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
+
 bool operator == (const AstNode& a, const AstNode& b)
 {
     return (&a == &b);
@@ -440,6 +409,33 @@ bool operator != (const AstNode& a, const AstNode& b)
     return !(&a == &b);
 }
 
-#include "ASTInfo.hpp"
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool show)
+{
+    Dotter::Digraph tree (file_name.c_str (), render_name.c_str ());
+
+    tree.open ();
+
+    root.render (tree, 0);
+
+    for (size_t i = 0; i < root.children ().size (); i++)
+        RenderNode (tree, root.children ()[i], 0);
+
+    tree.render ("Libraries//Dotter", show);
+}
+
+void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
+{
+    static size_t count = 0;
+                  count++;
+
+    current->render (tree, count);
+
+    tree.link (number, count, "");
+
+    size_t copy_count = count;
+
+    for (size_t i = 0; i < current -> children ().size (); i++)
+        RenderNode (tree, current -> children ()[i], copy_count);
+}
 
 #endif

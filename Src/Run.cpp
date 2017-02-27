@@ -7,7 +7,7 @@
 inline void Hello_Byte (std::string& example)
 { printf ("Input name of Byte file: "); getline (std::cin, example, '\n'); }
 
-//Ú==============================================================================
+//===============================================================================
 
 int main (int argc, const char* argv[])
 {

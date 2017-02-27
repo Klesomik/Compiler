@@ -38,11 +38,7 @@ class InputInformation
 
         void parse (Stream <char>& info);
 
-        void space   (Stream <char>& example);
-        void option  (Stream <char>& example);
-        std::pair <bool, std::string> file (Stream <char>& example);
-        void comment (Stream <char>& example);
-
+	private:
         File source,
              preproc,
              lexicial, dis_lexicial,
@@ -54,6 +50,11 @@ class InputInformation
 
         std::map <std::string, std::string*> files;
         //std::map <std::string, bool*> options;
+
+		void space   (Stream <char>& example);
+        void option  (Stream <char>& example);
+        std::pair <bool, std::string> file (Stream <char>& example);
+        void comment (Stream <char>& example);
 };
 
 InputInformation::InputInformation ():

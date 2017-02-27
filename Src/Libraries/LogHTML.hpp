@@ -9,15 +9,6 @@
 
 class LogHTML
 {
-    private:
-        FILE* file_;
-
-        const char* name_;
-
-        LogHTML (const LogHTML& from);
-
-        LogHTML& operator = (LogHTML& from);
-
     public:
         LogHTML ();
         LogHTML (const char* title);
@@ -41,6 +32,15 @@ class LogHTML
         void output (const char* message, ...);
 
         const char* name ();
+
+    private:
+        FILE* file_;
+
+        const char* name_;
+
+        LogHTML (const LogHTML& from);
+
+        LogHTML& operator = (LogHTML& from);
 };
 
 LogHTML::LogHTML ():
