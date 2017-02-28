@@ -1,7 +1,6 @@
-#ifndef SYNTAX_INCLUDED
-    #define SYNTAX_INCLUDED
+#ifndef SyntaxAnalyzer_hpp
 
-//{==============================================================================
+#define SyntaxAnalyzer_hpp
 
 #include <cstdio>
 #include <iostream>
@@ -9,8 +8,6 @@
 #include "..//..//Libraries//Stream.hpp"
 #include "..//..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//..//Libraries//LogHTML.hpp"
-
-//}==============================================================================
 
 //{
 
@@ -39,6 +36,7 @@ class SyntaxAnalyzer
 
         void parsing (Stream <Token>& from, AstNode& to, LogHTML& log);
 
+    private:
         void Get_Number                        (Stream <Token>& from, AstNode& to, LogHTML& log);
         void Get_Name                          (Stream <Token>& from, AstNode& to, LogHTML& log);
         void Get_Function                      (Stream <Token>& from, AstNode& to, LogHTML& log);
@@ -727,4 +725,4 @@ void SyntaxAnalyzer::Get_Code (Stream <Token>& from, AstNode& to, LogHTML& log)
     }
 }
 
-#endif
+#endif /* SyntaxAnalyzer_hpp */

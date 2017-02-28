@@ -1,9 +1,10 @@
-#ifndef TOKEN_HPP
-    #define TOKEN_HPP
+#ifndef Token_hpp
+
+#define Token_hpp
 
 #include <cstdio>
 #include <iostream>
-#include "..//..//Libraries//Dotter.hpp" 
+#include "..//..//Libraries//Dotter.hpp"
 
 #define DEER(id, name, word, code, fontcolor, color, fillcolor, shape, style) name = id,
 
@@ -121,4 +122,4 @@ void FillStream (Stream <Token>& from, Stream <Token>& to, const int delim)
     }
 }
 
-#endif
+#endif /* Token_hpp */

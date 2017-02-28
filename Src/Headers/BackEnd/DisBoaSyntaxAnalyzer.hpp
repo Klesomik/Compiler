@@ -1,3 +1,9 @@
+#ifndef DisBoaSyntaxAnalyzer_hpp
+
+#define DisBoaSyntaxAnalyzer_hpp
+
+#include "..//..//Libraries//Stream.hpp"
+
 class DisBoaSyntaxAnalyzer
 {
     public:
@@ -34,3 +40,5 @@ void DisBoaSyntaxAnalyzer::cmd_push (Stream <int>& from, Stream <BoaToken>& to)
 
     from++;
 }
+
+#endif /* DisBoaSyntaxAnalyzer_hpp */

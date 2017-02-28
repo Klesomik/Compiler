@@ -1,4 +1,6 @@
-//{==============================================================================
+#ifndef BoaLexicialAnalyzer_hpp
+
+#define BoaLexicialAnalyzer_hpp
 
 #include <iostream>
 #include <cstring>
@@ -6,10 +8,6 @@
 #include "..//..//Libraries//Stream.hpp"
 #include "..//..//Libraries//Tools.hpp"
 #include "BoaToken.hpp"
-
-//}==============================================================================
-
-//{==============================================================================
 
 class BoaLexicialAnalyzer
 {
@@ -41,11 +39,10 @@ class BoaLexicialAnalyzer
         std::map <std::string, int> names_;
 };
 
-//}==============================================================================
-
 BoaLexicialAnalyzer::BoaLexicialAnalyzer ():
     names_ ()
-    {}
+{
+}
 
 void BoaLexicialAnalyzer::parsing (Stream <char>& from, Stream <BoaToken>& to)
 {
@@ -144,3 +141,5 @@ void BoaLexicialAnalyzer::sign (Stream <char>& from, Stream <BoaToken>& to)
 
     if (hash_value) to.push_back ({ hash_value, 0 });
 }
+
+#endif /* BoaLexicialAnalyzer_hpp */

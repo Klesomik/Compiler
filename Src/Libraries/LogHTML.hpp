@@ -1,5 +1,6 @@
 #ifndef LogHTML_hpp
-    #define LogHTML_hpp
+
+#define LogHTML_hpp
 
 #include <cstdio>
 #include <cstring>
@@ -141,13 +142,13 @@ const char* LogHTML::name ()
     return name_;
 }
 
-void Error (LogHTML& log, const std::string& message);
+void LogError (LogHTML& log, const std::string& message);
 
-void Error (LogHTML& log, const std::string& message)
+void LogError (LogHTML& log, const std::string& message)
 {
     log.output ("%s\n", message);
 
     throw message.c_str ();
 }
 
-#endif
+#endif /* LogHTML_hpp */

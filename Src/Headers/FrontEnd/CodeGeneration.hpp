@@ -1,5 +1,6 @@
 #ifndef CodeGeneration_hpp
-    #define CodeGeneration_hpp
+
+#define CodeGeneration_hpp
 
 #include <cstdio>
 #include <iostream>
@@ -19,7 +20,7 @@ class CodeGeneration
     public:
         CodeGeneration (const size_t func);
 
-        void Generate (AstNode& root);
+        void parsing (AstNode& root);
 
     private:
         size_t jmp_;
@@ -49,7 +50,7 @@ class CodeGeneration
         void give_Out                                          (AstNode* current);
 };
 
-CodeGeneration :: CodeGeneration (const size_t func):
+CodeGeneration::CodeGeneration (const size_t func):
     jmp_      (func + 1),
     size_ram_ (0),
     count_    (0),
@@ -57,7 +58,7 @@ CodeGeneration :: CodeGeneration (const size_t func):
 {
 }
 
-void CodeGeneration :: Generate (AstNode& root)
+void CodeGeneration::parsing (AstNode& root)
 {
     const int number_of_main = 0;
 
@@ -72,7 +73,7 @@ void CodeGeneration :: Generate (AstNode& root)
     }
 }
 
-void CodeGeneration :: CreateAsm (AstNode* current)
+void CodeGeneration::CreateAsm (AstNode* current)
 {
     #define DEER(id, name, word, code) case id: { code break; }
 
@@ -86,7 +87,7 @@ void CodeGeneration :: CreateAsm (AstNode* current)
     #undef DEER
 }
 
-void CodeGeneration :: give_Add_Sub_Mul_Div_Mod (AstNode* current, const char* command)
+void CodeGeneration::give_Add_Sub_Mul_Div_Mod (AstNode* current, const char* command)
 {
     BLOCK ("Actions",
     {
@@ -98,7 +99,7 @@ void CodeGeneration :: give_Add_Sub_Mul_Div_Mod (AstNode* current, const char* c
     })
 }
 
-void CodeGeneration :: give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNode* current, const char* if_comand, const char* else_comand)
+void CodeGeneration::give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNode* current, const char* if_comand, const char* else_comand)
 {
     for (int i = current -> size () - 1; i >= 0; i--)
         CreateAsm (current -> children ()[i]);
@@ -127,7 +128,7 @@ void CodeGeneration :: give_Equal_NotEqual_Less_LessEqual_More_MoreEqual (AstNod
     file_.print ("label %d\n",           copy_3);*/
 }
 
-void CodeGeneration :: give_And (AstNode* current)
+void CodeGeneration::give_And (AstNode* current)
 {
     for (size_t i = 0; i < current -> size (); i++)
         CreateAsm (current -> children ()[i]);
@@ -136,7 +137,7 @@ void CodeGeneration :: give_And (AstNode* current)
         file_.print ("mul\n");
 }
 
-void CodeGeneration :: give_Or (AstNode* current)
+void CodeGeneration::give_Or (AstNode* current)
 {
     for (size_t i = 0; i < current -> size (); i++)
         CreateAsm (current -> children ()[i]);
@@ -145,7 +146,7 @@ void CodeGeneration :: give_Or (AstNode* current)
         file_.print ("add\n");
 }
 
-void CodeGeneration :: give_Assignment (AstNode* current)
+void CodeGeneration::give_Assignment (AstNode* current)
 {
     CreateAsm (current -> children ()[current -> children ().size () - 1]);
 
@@ -159,7 +160,7 @@ void CodeGeneration :: give_Assignment (AstNode* current)
     file_.print ("pop\n");
 }
 
-void CodeGeneration :: give_If (AstNode* current)
+void CodeGeneration::give_If (AstNode* current)
 {
     BLOCK ("If",
     {
@@ -202,7 +203,7 @@ void CodeGeneration :: give_If (AstNode* current)
     })
 }
 
-void CodeGeneration :: give_While (AstNode* current)
+void CodeGeneration::give_While (AstNode* current)
 {
     BLOCK ("While",
     {
@@ -242,17 +243,17 @@ void CodeGeneration :: give_While (AstNode* current)
     })
 }
 
-void CodeGeneration :: give_Digit (AstNode* current)
+void CodeGeneration::give_Digit (AstNode* current)
 {
     file_.print ("push %d\n", current -> key ().value);
 }
 
-void CodeGeneration :: give_Name (AstNode* current)
+void CodeGeneration::give_Name (AstNode* current)
 {
     file_.print ("push %%%d\n", current -> key ().value);
 }
 
-void CodeGeneration :: give_Block (AstNode* current)
+void CodeGeneration::give_Block (AstNode* current)
 {
     for (size_t i = 0; i < size_ram_; i++)
     {
@@ -268,7 +269,7 @@ void CodeGeneration :: give_Block (AstNode* current)
     }
 }
 
-void CodeGeneration :: give_DeclFunc (AstNode* current)
+void CodeGeneration::give_DeclFunc (AstNode* current)
 {
     if (current -> size () == 4) //TODO: FIND bug with label++
     {
@@ -305,7 +306,7 @@ void CodeGeneration :: give_DeclFunc (AstNode* current)
     }
 }
 
-void CodeGeneration :: give_DeclVar (AstNode* current)
+void CodeGeneration::give_DeclVar (AstNode* current)
 {
     size_ram_ = current -> children ()[1] -> key ().value;
 
@@ -316,7 +317,7 @@ void CodeGeneration :: give_DeclVar (AstNode* current)
     file_.print ("\n");
 }
 
-void CodeGeneration :: give_Call (AstNode* current)
+void CodeGeneration::give_Call (AstNode* current)
 {
     BLOCK ("Call",
     {
@@ -348,7 +349,7 @@ void CodeGeneration :: give_Call (AstNode* current)
     })
 }
 
-void CodeGeneration :: give_Return (AstNode* current)
+void CodeGeneration::give_Return (AstNode* current)
 {
     BLOCK ("Return",
     {
@@ -361,7 +362,7 @@ void CodeGeneration :: give_Return (AstNode* current)
     })
 }
 
-void CodeGeneration :: give_Out (AstNode* current)
+void CodeGeneration::give_Out (AstNode* current)
 {
     BLOCK ("Out",
     {
@@ -374,4 +375,4 @@ void CodeGeneration :: give_Out (AstNode* current)
 
 #undef BLOCK
 
-#endif
+#endif /* CodeGeneration_hpp */

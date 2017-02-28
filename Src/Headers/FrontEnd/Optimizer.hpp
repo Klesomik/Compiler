@@ -10,6 +10,11 @@ typedef std::pair <int, int> ret_t;
 
 class Optimizer
 {
+    public:
+        Optimizer ();
+
+        void parsing (AstNode& root);
+
     private:
         enum
         {
@@ -20,20 +25,14 @@ class Optimizer
         ret_t detour (AstNode* current);
 
         ret_t check_AddSubMulDiv (AstNode* current, const int default_value, char symbol);
-        void check_Default      (AstNode* current);
-
-    public:
-        Optimizer (AstNode& root);
-
-        void Start (AstNode& root);
+        void check_Default       (AstNode* current);
 };
 
-Optimizer :: Optimizer (AstNode& root)
+Optimizer::Optimizer ()
 {
-    Start (root);
 }
 
-void Optimizer :: Start (AstNode& root)
+void Optimizer::parsing (AstNode& root)
 {
     try
     {
@@ -54,7 +53,7 @@ void Optimizer :: Start (AstNode& root)
     }
 }
 
-ret_t Optimizer :: detour (AstNode* current)
+ret_t Optimizer::detour (AstNode* current)
 {
     switch (current -> key ().type)
     {
@@ -72,7 +71,7 @@ ret_t Optimizer :: detour (AstNode* current)
     return ret_t (NOT_DIGIT, current -> key ().value);
 }
 
-ret_t Optimizer :: check_AddSubMulDiv (AstNode* current, const int default_value, char symbol)
+ret_t Optimizer::check_AddSubMulDiv (AstNode* current, const int default_value, char symbol)
 {
     int answer = default_value;
 
@@ -112,7 +111,7 @@ ret_t Optimizer :: check_AddSubMulDiv (AstNode* current, const int default_value
     return ret_t (NOT_DIGIT, answer);
 }
 
-void Optimizer :: check_Default (AstNode* current)
+void Optimizer::check_Default (AstNode* current)
 {
     for (size_t i = 0; i < current -> size (); i++)
     {

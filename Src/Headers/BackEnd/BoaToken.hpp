@@ -1,14 +1,9 @@
 #ifndef BoaToken_hpp
-    #define BoaToken_hpp
 
-//{==============================================================================
+#define BoaToken_hpp
 
 #include <cstdio>
 #include <iostream>
-
-//}==============================================================================
-
-//{==============================================================================
 
 #define BOA(id, params, name, word, comp, cpu) name = id,
 
@@ -19,10 +14,6 @@ enum BoaLexemes
 
 #undef BOA
 
-//}==============================================================================
-
-//{==============================================================================
-
 struct BoaToken
 {
     int type;
@@ -32,8 +23,6 @@ struct BoaToken
     BoaToken (const int setType);
     BoaToken (const int setType, const int setValue);
 };
-
-//}==============================================================================
 
 BoaToken :: BoaToken ():
     type  (),
@@ -67,4 +56,4 @@ std::ostream& operator << (std::ostream& os, const BoaToken& value)
     #undef BOA
 }
 
-#endif
+#endif /* BoaToken_hpp */

@@ -1,13 +1,9 @@
-//#include "Headers//Cpu.hpp"
-
-#include <bits/stdc++.h>
-
-//{==============================================================================
+#include <cstdio>
+#include <iostream>
+#include "Headers//Cpu.hpp"
 
 inline void Hello_Byte (std::string& example)
 { printf ("Input name of Byte file: "); getline (std::cin, example, '\n'); }
-
-//===============================================================================
 
 int main (int argc, const char* argv[])
 {

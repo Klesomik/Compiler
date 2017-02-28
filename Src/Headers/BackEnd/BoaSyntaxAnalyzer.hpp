@@ -1,3 +1,7 @@
+#ifndef BoaSyntaxAnalyzer_hpp
+
+#define BoaSyntaxAnalyzer_hpp
+
 #include <iostream>
 #include <cstring>
 #include <map>
@@ -146,3 +150,5 @@ void BoaSyntaxAnalyzer::cmd_mov (Stream <BoaToken>& from, std::vector <int>& to)
 
     from++;
 }
+
+#endif /* BoaSyntaxAnalyzer_hpp */

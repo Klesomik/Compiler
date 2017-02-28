@@ -1,3 +1,7 @@
+#ifndef LexicialAnalyzer_hpp
+
+#define LexicialAnalyzer_hpp
+
 #include <iostream>
 #include <cstring>
 #include <map>
@@ -50,7 +54,7 @@ class LexicialAnalyzer
         std::map <std::string, int> names_;
 };
 
-LexicialAnalyzer :: LexicialAnalyzer ():
+LexicialAnalyzer::LexicialAnalyzer ():
     names_ ({ { "main", 0 } })
 {
 }
@@ -89,32 +93,32 @@ void LexicialAnalyzer::parsing (Stream <char>& from, Stream <Token>& to)
     }
 }
 
-bool LexicialAnalyzer :: IsUnary (const char symbol)
+bool LexicialAnalyzer::IsUnary (const char symbol)
 {
-    return symbol == ',' ||
-           symbol == '(' ||
-           symbol == ')' ||
-           symbol == '{' ||
-           symbol == '}' ||
-           symbol == ';';
+    return (symbol == ',') ||
+           (symbol == '(') ||
+           (symbol == ')') ||
+           (symbol == '{') ||
+           (symbol == '}') ||
+           (symbol == ';');
 }
 
-bool LexicialAnalyzer :: IsBinary (const char symbol)
+bool LexicialAnalyzer::IsBinary (const char symbol)
 {
-    return symbol == '=' ||
-           symbol == '!' ||
-           symbol == '&' ||
-           symbol == '|' ||
-           symbol == '<' ||
-           symbol == '>' ||
-           symbol == '-' ||
-           symbol == '+' ||
-           symbol == '*' ||
-           symbol == '/' ||
-           symbol == '%';
+    return (symbol == '=') ||
+           (symbol == '!') ||
+           (symbol == '&') ||
+           (symbol == '|') ||
+           (symbol == '<') ||
+           (symbol == '>') ||
+           (symbol == '-') ||
+           (symbol == '+') ||
+           (symbol == '*') ||
+           (symbol == '/') ||
+           (symbol == '%');
 }
 
-void LexicialAnalyzer :: Skip (Stream <char>& example)
+void LexicialAnalyzer::Skip (Stream <char>& example)
 {
     while (example.check () && IsSpace (example[example.place ()]))
     {
@@ -123,7 +127,7 @@ void LexicialAnalyzer :: Skip (Stream <char>& example)
     }
 }
 
-void LexicialAnalyzer :: Comment (Stream <char>& example)
+void LexicialAnalyzer::Comment (Stream <char>& example)
 {
     std::string name;
 
@@ -149,7 +153,7 @@ void LexicialAnalyzer :: Comment (Stream <char>& example)
     }
 }
 
-void LexicialAnalyzer :: PreProc (Stream <char>& example, Stream <Token>& code)
+void LexicialAnalyzer::PreProc (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
     while (example.check () && IsAlpha (example[example.place ()]))
@@ -177,7 +181,7 @@ void LexicialAnalyzer :: PreProc (Stream <char>& example, Stream <Token>& code)
     }
 }
 
-void LexicialAnalyzer :: Number (Stream <char>& example, Stream <Token>& code)
+void LexicialAnalyzer::Number (Stream <char>& example, Stream <Token>& code)
 {
     int value = 0;
     while (example.check () && IsDigit (example[example.place ()]))
@@ -191,7 +195,7 @@ void LexicialAnalyzer :: Number (Stream <char>& example, Stream <Token>& code)
     code.push_back ({ Digit, value });
 }
 
-void LexicialAnalyzer :: Word (Stream <char>& example, Stream <Token>& code)
+void LexicialAnalyzer::Word (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
     while (example.check () && IsAlpha (example[example.place ()]))
@@ -213,7 +217,7 @@ void LexicialAnalyzer :: Word (Stream <char>& example, Stream <Token>& code)
     }
 }
 
-void LexicialAnalyzer :: OperatorUnary (Stream <char>& example, Stream <Token>& code)
+void LexicialAnalyzer::OperatorUnary (Stream <char>& example, Stream <Token>& code)
 {
     char digit = 0;
     example >> digit;
@@ -226,7 +230,7 @@ void LexicialAnalyzer :: OperatorUnary (Stream <char>& example, Stream <Token>& 
     if (hash_value) code.push_back ({ hash_value, 0 });
 }
 
-void LexicialAnalyzer :: OperatorBinary (Stream <char>& example, Stream <Token>& code)
+void LexicialAnalyzer::OperatorBinary (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
     while (example.check () && IsBinary (example[example.place ()]))
@@ -241,3 +245,5 @@ void LexicialAnalyzer :: OperatorBinary (Stream <char>& example, Stream <Token>&
 
     if (hash_value) code.push_back ({ hash_value, 0 });
 }
+
+#endif /* LexicialAnalyzer_hpp */

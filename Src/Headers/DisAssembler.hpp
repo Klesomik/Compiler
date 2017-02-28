@@ -1,3 +1,9 @@
+#ifndef DisAssembler_hpp
+
+#define DisAssembler_hpp
+
+#include "..//Libraries//Stream.hpp"
+
 class DisAssembler
 {
     public:
@@ -30,3 +36,5 @@ void DisAssembler::run (Stream <int>& in, Stream <BoaToken>& out)
     in.dump ();
     out.dump ();
 }
+
+#endif /* DisAssembler_hpp */
