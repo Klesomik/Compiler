@@ -79,14 +79,11 @@ void FormatBuffer::print (const char* cmd, ...)
 
 void FormatBuffer::to_file (const std::string& name)
 {
-	FILE* file = fopen (name.c_str (), "w");
+    std::ofstream out (name);
 
-	assert (file);
+	assert (in);
 
-	fprintf (file, "%s", buffer_);
-
-	fclose (file);
-			file = nullptr;
+	out << buffer_;
 }
 
 char* FormatBuffer::buffer ()

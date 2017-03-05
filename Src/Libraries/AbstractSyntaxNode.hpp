@@ -1,5 +1,6 @@
-#ifndef ASTNode_INCLUDED
-    #define ASTNode_INCLUDED
+#ifndef AbstractSyntaxNode_hpp
+
+#define AbstractSyntaxNode_hpp
 
 #include <cstdio>
 #include <cstring>
@@ -34,6 +35,9 @@
 
 class AstNode
 {
+    private:
+        using Vector_t = std::vector <AstNode*>;
+
     public:
         AstNode ();
         AstNode (const Token& value);
@@ -48,27 +52,27 @@ class AstNode
 
         void erase ();
 
-        bool empty ();
+        bool empty () const;
 
         AstNode& copy (const AstNode& from);
         AstNode& move (AstNode& from);
 
-        void read (FILE* out);
-        void write (FILE* in);
+        void read (std::ifstream& in);
+        void write (std::ofstream& out);
 
-        bool ok   ();
-        void dump (FILE* out = stdout);
+        bool ok   () const;
+        void dump (std::ostream& out = std::cout) const;
 
-		void render (Dotter::Digraph& tree, const size_t number);
+		void render (Dotter::Digraph& tree, const size_t number) const;
 
-        Token&                  key ();
-        size_t                 size ();
-        std::vector <AstNode*>& children ();
+        Token& key ();
+        size_t size ();
+        Vector_t& children ();
 
     private:
         Token key_;
 
-        std::vector <AstNode*> children_;
+        Vector_t children_;
 
         AstNode (AstNode& from);
 
@@ -82,15 +86,15 @@ class AstNode
 AstNode::AstNode ():
     key_      (),
     children_ ()
-{ 
-	OK_ASTNODE 
+{
+	OK_ASTNODE
 }
 
 AstNode::AstNode (const Token& value):
     key_      (value),
     children_ ()
-{ 
-	OK_ASTNODE 
+{
+	OK_ASTNODE
 }
 
 AstNode::AstNode (AstNode& from):
@@ -146,7 +150,8 @@ int AstNode::position (AstNode* child)
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        if (children_[i] == child) return (int) i;
+        if (children_[i] == child)
+            return (int) i;
     }
 
     OK_ASTNODE
@@ -200,7 +205,7 @@ void AstNode::erase ()
     OK_ASTNODE
 }
 
-bool AstNode::empty ()
+bool AstNode::empty () const
 {
     OK_ASTNODE
 
@@ -247,66 +252,70 @@ AstNode& AstNode::move (AstNode& from)
     return (*this);
 }
 
-void AstNode::read (FILE* out)
+void AstNode::read (std::ifstream& in)
 {
+    char comma = 0; // Needs for scan ','
+
     char start = 0;
 
-    fscanf (out, "%c", &start);
+    in >> start;
 
     assert (start == '<');
 
-    fscanf (out, "%d,%d", &key_.type, &key_.value);
+    in >> key_.type >> comma >> key_.value;
 
     for (char current = 0;;)
     {
-        fscanf (out, "%c", &current);
+        in >> current;
 
-        if (current == '>') break;
+        if (current == '>')
+            break;
 
         else if (current == ',')
         {
-            fscanf (out, "%c", &current);
+            in >> current;
 
             assert (current == '(');
 
             insert ();
 
-            children_[children_.size () - 1] -> read (out);
+            children_.back ()->read (out);
 
-            fscanf (out, "%c", &current);
+            in >> current;
 
             assert (current == ')');
         }
 
-        else assert (false);
+        else
+            assert (false);
     }
 }
 
-void AstNode::write (FILE* in)
+void AstNode::write (std::ofstream& out)
 {
-    fprintf (in, "<");
+    out << "<";
 
-    fprintf (in, "%d,%d", key_.type, key_.value);
+    out << key_.type << "," << key_.value;
 
     if (!children_.empty ())
-        fprintf (in, ",");
+        out << ",";
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        fprintf (in, "(");
+        out << "(";
 
-        children_[i] -> write (in);
+        children_[i]->write (in);
 
-        fprintf (in, ")");
+        out << ")";
 
         if (i != children_.size () - 1)
-            fprintf (in, ",");
+            out << ",";
     }
 
-    fprintf (in, ">");
+    out << ">";
 }
 
-bool AstNode::ok ()
+bool AstNode::ok () const
 {
     for (size_t i = 0; i < children_.size (); i++)
     {
@@ -320,24 +329,20 @@ bool AstNode::ok ()
     return true;
 }
 
-void AstNode::dump (FILE* out /* = stdout */)
+void AstNode::dump (std::ostream& out /* = std::cout */) const
 {
-    fprintf (out, "\n====================DUMP====================\n");
+    out << "\n====================DUMP====================\n";
 
-    fprintf (out, "AstNode (%s) [this = %p]", ok()? "ok" : "ERROR", this);
+    out << "AstNode (" << (ok ()? "ok" : "ERROR") << "):\n";
 
-    std::cout << "[" << key_ << "];\n";
+    out << "\t[this = " << this << "];\n";
+    out << "\t[key  = " << key_ << "];\n";
+    out << "\t[size = " << children_->size () << "];\n";
 
-    for (size_t i = 0; i < children_.size (); i++)
-    {
-        fprintf (out, "    child[%zu] = [%p]", i, children_[i]);
-        std::cout << "[" << children_[i] -> key () << "]\n";
-    }
-
-    fprintf (out, "============================================\n\n");
+    out << "============================================\n\n";
 }
 
-void AstNode::render (Dotter::Digraph& tree, const size_t number)
+void AstNode::render (Dotter::Digraph& tree, const size_t number) const
 {
 	std::string title (BtInf (tree, key_));
 
@@ -369,7 +374,7 @@ size_t AstNode::size ()
     return children_.size ();
 }
 
-std::vector <AstNode*>& AstNode::children ()
+Vector_t& AstNode::children ()
 {
     OK_ASTNODE
 
@@ -396,8 +401,8 @@ void AstNode::clear ()
 bool operator == (const AstNode& a, const AstNode& b);
 bool operator != (const AstNode& a, const AstNode& b);
 
-void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool show);
-void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
+void RenderTree (const AstNode& root, const std::string& file_name, const std::string& render_name, const bool show);
+void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t number);
 
 bool operator == (const AstNode& a, const AstNode& b)
 {
@@ -409,21 +414,23 @@ bool operator != (const AstNode& a, const AstNode& b)
     return !(&a == &b);
 }
 
-void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, bool show)
+void RenderTree (const AstNode& root, const std::string& file_name, const std::string& render_name, const bool show)
 {
+    const std::string path ("Libraries//Dotter");
+
     Dotter::Digraph tree (file_name.c_str (), render_name.c_str ());
 
     tree.open ();
 
     root.render (tree, 0);
 
-    for (size_t i = 0; i < root.children ().size (); i++)
+    for (size_t i = 0; i < root.size (); i++)
         RenderNode (tree, root.children ()[i], 0);
 
-    tree.render ("Libraries//Dotter", show);
+    tree.render (path, show);
 }
 
-void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
+void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t number)
 {
     static size_t count = 0;
                   count++;
@@ -434,8 +441,8 @@ void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number)
 
     size_t copy_count = count;
 
-    for (size_t i = 0; i < current -> children ().size (); i++)
-        RenderNode (tree, current -> children ()[i], copy_count);
+    for (size_t i = 0; i < current->size (); i++)
+        RenderNode (tree, current[i], copy_count);
 }
 
-#endif
+#endif /* AbstractSyntaxNode_hpp */

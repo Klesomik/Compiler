@@ -1,14 +1,17 @@
-#ifndef STREAM_NEW_HPP_INCLUDED
-    #define STREAM_NEW_HPP_INCLUDED
+#ifndef Stream_hpp
 
-#include <bits/stdc++.h>
+#define Stream_hpp
 
-#define Vector_t std::vector <Data_T>
-#define Stream_t Stream <Data_T>
+#include <vector>
+#include <iostream>
 
 template <typename Data_T>
 class Stream : public std::vector <Data_T>
 {
+    private:
+        using Vector_t = std::vector <Data_T>;
+        using Stream_t = Stream <Data_T>;
+
     public:
         Stream ();
         Stream (int size_data);
@@ -17,8 +20,8 @@ class Stream : public std::vector <Data_T>
         Stream (const Vector_t& name, const size_t start);
         Stream (const Stream_t& from);
 
-        bool ok ();
-        void dump ();
+        bool ok () const;
+        void dump (std::ostream& out = std::cout) const;
 
         void seek (const size_t value);
 
@@ -56,14 +59,14 @@ Stream_t::Stream ():
 }
 
 template <typename Data_T>
-Stream <Data_T>::Stream (int size_data):
+Stream_t::Stream (int size_data):
     Vector_t (size_data),
     place_   (0)
 {
 }
 
 template <typename Data_T>
-Stream <Data_T>::Stream (const Data_T* name, const size_t size_data):
+Stream_t::Stream (const Data_T* name, const size_t size_data):
     Vector_t (name, name + size_data),
     place_ (0)
 {
@@ -92,25 +95,26 @@ Stream_t::Stream (const Stream_t& from):
 }
 
 template <typename Data_T>
-bool Stream_t::ok ()
+bool Stream_t::ok () const
 {
-    return true;
+    return place_ < Vector_t::size ();
 }
 
 template <typename Data_T>
-void Stream_t::dump ()
+void Stream_t::dump (std::ostream& out /* = std::cout */) const
 {
-    printf ("\n=============DUMP=============\n");
+    out << "\n=============DUMP=============\n";
 
-    printf ("Stream (%s) [%p]\n\n", ok ()? "ok" : "ERROR", this);
+    out << "Stream (" << (ok ()? "ok" : "ERROR") << "):\n";
 
-    printf ("   size  = %zu;\n", Vector_t::size ());
-    printf ("   place = %zu;\n\n", place_);
+    out << "\t[this  = " << this << "];\n";
+    out << "\t[size  = " << Vector_t::size () << "];\n";
+    out << "\t[place = " << place_ << "];\n";
 
     for (size_t i = 0; i < Vector_t::size (); i++)
-        std::cout << "[" << i << "]" << " " << "=" << " " << "|" << Vector_t::at (i) << "|\n";
+        out << "data[" << i << "]" << " " << "=" << " " << "|" << Vector_t::at (i) << "|\n";
 
-    printf ("==============================\n\n");
+    out << "==============================\n\n";
 }
 
 template <typename Data_T>
@@ -225,9 +229,8 @@ bool Stream_t::check_next (const Data_T next[], const size_t len)
     if (avaliable () < len) return false;
 
     for (size_t i = 0; i < len; i++)
-    {
-        if (Vector_t::operator [] (place_ + i) != next[i]) return false;
-    }
+        if (Vector_t::operator [] (place_ + i) != next[i])
+            return false;
 
     return true;
 }
@@ -235,9 +238,11 @@ bool Stream_t::check_next (const Data_T next[], const size_t len)
 template <typename Data_T>
 bool Stream_t::compare (const Data_T& element, const size_t shift)
 {
-    if (shift < avaliable ()) return false;
+    if (shift < avaliable ())
+        return false;
 
-    if (Vector_t::operator [] (place_ + shift) != element) return false;
+    if (Vector_t::operator [] (place_ + shift) != element)
+        return false;
 
     return true;
 }
@@ -313,7 +318,4 @@ void GetLine (std::istream& in, Stream <char>& example, const char delim)
     example = tmp;
 }
 
-#undef Vector_t
-#undef Stream_t
-
-#endif /* STREAM_NEW_HPP_INCLUDED */
+#endif /* Stream_hpp */

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdarg>
+#include "FormatBuffer.hpp"
 
 class LogHTML
 {
@@ -24,9 +25,10 @@ class LogHTML
 
         void setColor     (const char* color);
         void setFontColor (const char* color);
-        void setSize      (const size_t size);
+        void setSize      (const int size);
         void setStyle     (const char* style);
         void set          (const char* cmd, const char* value);
+        void set          (const char* cmd, const int value);
 
         void picture (const char* src, const char* alt, const int width, const int height, const int hspace, const int vspace);
 
@@ -35,7 +37,7 @@ class LogHTML
         const char* name ();
 
     private:
-        FILE* file_;
+        FormatBuffer file_;
 
         const char* name_;
 
@@ -51,7 +53,7 @@ LogHTML::LogHTML ():
 }
 
 LogHTML::LogHTML (const char* title):
-    file_ (fopen (title, "w")),
+    file_ (),
     name_ (title)
 {
     begin ("pre");
@@ -64,77 +66,80 @@ LogHTML::~LogHTML ()
 
 void LogHTML::open  (const char* title)
 {
-    if (!file_)
-    {
-        file_ = fopen (title, "w");
-        name_ = title;
+    name_ = title;
 
-        assert (file_);
-
-        fprintf (file_, "<pre>\n");
-    }
+    begin ("pre");
 }
 
 void LogHTML::close ()
 {
-    if (file_)
-    {
-        end ("pre");
+    end ("pre");
 
-        fclose (file_);
-                file_ = nullptr;
-    }
+    file_.to_file (name_);
 }
 
 void LogHTML::begin (const char* tag)
 {
-    fprintf (file_, "<%s>\n", tag);
+    file_.print ("<%s>\n", tag);
+    file_.increase ();
 }
 
 void LogHTML::end (const char* tag)
 {
-    fprintf (file_, "</%s>\n", tag);
+    file_.print ("</%s>\n", tag);
+    file_.decrease ();
 }
 
 void LogHTML::setColor (const char* color)
 {
-    fprintf (file_, "<font color = %s>\n", color);
+    set ("font color", color);
 }
 
 void LogHTML::setFontColor (const char* color)
 {
-    fprintf (file_, "<body bgcolor = %s>\n", color);
+    set ("body bgcolor", color);
 }
 
-void LogHTML::setSize (const size_t size)
+void LogHTML::setSize (const int size)
 {
-    fprintf (file_, "<font size = %u>\n", size);
+    set ("font size", size);
 }
 
 void LogHTML::setStyle (const char* style)
 {
-    fprintf (file_, "<font face = %s>\n", style);
+    set ("font face", style);
 }
 
 void LogHTML::set (const char* cmd, const char* value)
 {
-    fprintf (file_, "<%s = %s>\n", cmd, value);
+    file_.print ("<%s = %s>\n", cmd, value);
+}
+
+void LogHTML::set (const char* cmd, const int value)
+{
+    file_.print ("<%s = %d>\n", cmd, value);
 }
 
 void LogHTML::picture (const char* src, const char* alt, const int width, const int height, const int hspace, const int vspace)
 {
-    fprintf (file_, "<img src = %s alt = %s width = %d height = %d hspace = %d vspace = %d />\n", src, alt, width, height, hspace, vspace);
+    file_.print ("<img src = %s alt = %s width = %d height = %d hspace = %d vspace = %d />\n", src, alt, width, height, hspace, vspace);
 }
 
 void LogHTML::output (const char* message, ...)
 {
+    const int size = 1000;
+
+    char data[size] = "";
+
     va_list args;
 
     va_start (args, message);
 
-    vfprintf (file_, message, args);
+    vsprintf (data, message, args);
 
     va_end (args);
+
+    file_.print ("%s", data);
 }
 
 const char* LogHTML::name ()

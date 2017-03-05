@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cstdarg>
 #include "..//FormatBuffer.hpp"
+#include "..//Tools.hpp"
 
 //TODO: Many setters and no getters, add ios::app with Boost streams
 
@@ -166,27 +167,10 @@ void Dotter::Digraph::render (const bool show /* = true */)
     std::string type;
     Dotter::Details::Expansion (photo_, type);
 
-    std::string comand;
-
-    comand += dotter_;
-    comand += " -T";
-    comand += type;
-    comand += " ";
-    comand += text_;
-    comand += " -o ";
-    comand += photo_;
-
-    system (comand.c_str ());
+    Tools::System ("%s -T%s %s -o %s", dotter_, type, text_, photo_);
 
     if (show)
-    {
-        std::string build;
-
-        build += "start ";
-        build += photo_;
-
-        system (build.c_str ());
-    }
+        Tools::System ("start %s", photo_);
 }
 
 FormatBuffer& Dotter::Digraph::file ()
