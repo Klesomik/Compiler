@@ -9,6 +9,7 @@
 #include <vector>
 #include "..//Headers//FrontEnd//Token.hpp"
 #include "..//Libraries//LogHTML.hpp"
+#include "Dotter//Dotter.hpp"
 
 #define DEBUG_ASTNODE
 
@@ -68,6 +69,9 @@ class AstNode
         Token& key ();
         size_t size ();
         Vector_t& children ();
+
+        int& type ();
+        int& value ();
 
     private:
         Token key_;
@@ -279,7 +283,7 @@ void AstNode::read (std::ifstream& in)
 
             insert ();
 
-            children_.back ()->read (out);
+            children_.back ()->read (in);
 
             in >> current;
 
@@ -304,7 +308,7 @@ void AstNode::write (std::ofstream& out)
     {
         out << "(";
 
-        children_[i]->write (in);
+        children_[i]->write (out);
 
         out << ")";
 
@@ -379,6 +383,16 @@ Vector_t& AstNode::children ()
     OK_ASTNODE
 
     return children_;
+}
+
+int& AstNode::type ()
+{
+    return key_.type;
+}
+
+int& AstNode::value ()
+{
+    return key_.value;
 }
 
 void AstNode::clear ()

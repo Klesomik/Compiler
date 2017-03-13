@@ -29,40 +29,43 @@
 
 //}
 
-class SyntaxAnalyzer
+namespace CAP
 {
-    public:
-        SyntaxAnalyzer ();
+    class SyntaxAnalyzer
+    {
+        public:
+            SyntaxAnalyzer ();
 
-        void parsing (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void parsing (Stream <Token>& from, AstNode& to, LogHTML& log);
 
-    private:
-        void Get_Number                        (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Name                          (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Function                      (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Value                         (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Mul_Div_Mod                   (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Add_Sub                       (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Less_LessEqual_More_MoreEqual (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_And                           (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Or                            (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Equal_NotEqual                (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Assignment                    (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_If_Else                       (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_While                         (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_NewVar                        (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Lexem                         (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Block                         (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_ParamsDef                     (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_NewFunc                       (Stream <Token>& from, AstNode& to, LogHTML& log);
-        void Get_Code                          (Stream <Token>& from, AstNode& to, LogHTML& log);
-};
+        private:
+            void Get_Number                        (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Name                          (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Function                      (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Value                         (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Mul_Div_Mod                   (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Add_Sub                       (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Less_LessEqual_More_MoreEqual (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_And                           (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Or                            (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Equal_NotEqual                (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Assignment                    (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_If_Else                       (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_While                         (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_NewVar                        (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Lexem                         (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Block                         (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_ParamsDef                     (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_NewFunc                       (Stream <Token>& from, AstNode& to, LogHTML& log);
+            void Get_Code                          (Stream <Token>& from, AstNode& to, LogHTML& log);
+    };
+}
 
-SyntaxAnalyzer::SyntaxAnalyzer ()
+CAP::SyntaxAnalyzer::SyntaxAnalyzer ()
 {
 }
 
-void SyntaxAnalyzer::parsing (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::parsing (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     try
     {
@@ -81,7 +84,7 @@ void SyntaxAnalyzer::parsing (Stream <Token>& from, AstNode& to, LogHTML& log)
     }
 }
 
-void SyntaxAnalyzer::Get_Number (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Number (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     if (from.check () && IsLexem (from.current (), Digit))
     {
@@ -93,7 +96,7 @@ void SyntaxAnalyzer::Get_Number (Stream <Token>& from, AstNode& to, LogHTML& log
     else LogError (log, "Expected integer");
 }
 
-void SyntaxAnalyzer::Get_Name (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Name (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     if (from.check () && IsLexem (from.current (), Name))
     {
@@ -105,7 +108,7 @@ void SyntaxAnalyzer::Get_Name (Stream <Token>& from, AstNode& to, LogHTML& log)
     else LogError (log, "Expected name of variable");
 }
 
-void SyntaxAnalyzer::Get_Function (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Function (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     if (from.check () && from.check_next ({ Name, OpenBracket }))
     {
@@ -155,7 +158,7 @@ void SyntaxAnalyzer::Get_Function (Stream <Token>& from, AstNode& to, LogHTML& l
     else LogError (log, "Expected name of function");
 }
 
-void SyntaxAnalyzer::Get_Value (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Value (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value; //else with out; throw
 
@@ -217,7 +220,7 @@ void SyntaxAnalyzer::Get_Value (Stream <Token>& from, AstNode& to, LogHTML& log)
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_Mul_Div_Mod (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Mul_Div_Mod (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value;
     Get_Value (from, value, log);
@@ -253,7 +256,7 @@ void SyntaxAnalyzer::Get_Mul_Div_Mod (Stream <Token>& from, AstNode& to, LogHTML
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_Add_Sub (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Add_Sub (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value;
     Get_Mul_Div_Mod (from, value, log);
@@ -288,7 +291,7 @@ void SyntaxAnalyzer::Get_Add_Sub (Stream <Token>& from, AstNode& to, LogHTML& lo
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_Less_LessEqual_More_MoreEqual (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Less_LessEqual_More_MoreEqual (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value;
     Get_Add_Sub (from, value, log);
@@ -325,7 +328,7 @@ void SyntaxAnalyzer::Get_Less_LessEqual_More_MoreEqual (Stream <Token>& from, As
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_Equal_NotEqual (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Equal_NotEqual (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value;
     Get_Less_LessEqual_More_MoreEqual (from, value, log);
@@ -360,7 +363,7 @@ void SyntaxAnalyzer::Get_Equal_NotEqual (Stream <Token>& from, AstNode& to, LogH
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_And (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_And (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value;
     Get_Equal_NotEqual (from, value, log);
@@ -378,7 +381,7 @@ void SyntaxAnalyzer::Get_And (Stream <Token>& from, AstNode& to, LogHTML& log)
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_Or (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Or (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode value;
     Get_And (from, value, log);
@@ -396,7 +399,7 @@ void SyntaxAnalyzer::Get_Or (Stream <Token>& from, AstNode& to, LogHTML& log)
     to.move (value);
 }
 
-void SyntaxAnalyzer::Get_Assignment (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Assignment (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     AstNode operation;
 
@@ -424,7 +427,7 @@ void SyntaxAnalyzer::Get_Assignment (Stream <Token>& from, AstNode& to, LogHTML&
     to.move (operation);
 }
 
-void SyntaxAnalyzer::Get_If_Else (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_If_Else (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     from++;
 
@@ -455,7 +458,7 @@ void SyntaxAnalyzer::Get_If_Else (Stream <Token>& from, AstNode& to, LogHTML& lo
     }
 }
 
-void SyntaxAnalyzer::Get_While (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_While (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     from++;
 
@@ -478,7 +481,7 @@ void SyntaxAnalyzer::Get_While (Stream <Token>& from, AstNode& to, LogHTML& log)
     Get_Lexem (from, to, log);
 }
 
-void SyntaxAnalyzer::Get_NewVar (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_NewVar (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     to.key () = { DeclVar };
 
@@ -512,7 +515,7 @@ void SyntaxAnalyzer::Get_NewVar (Stream <Token>& from, AstNode& to, LogHTML& log
     from++;
 }
 
-void SyntaxAnalyzer::Get_Lexem (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Lexem (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     Stream <Token> tmp;
 
@@ -630,7 +633,7 @@ void SyntaxAnalyzer::Get_Lexem (Stream <Token>& from, AstNode& to, LogHTML& log)
     }
 }
 
-void SyntaxAnalyzer::Get_Block (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Block (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     to.key () = { Block };
 
@@ -647,7 +650,7 @@ void SyntaxAnalyzer::Get_Block (Stream <Token>& from, AstNode& to, LogHTML& log)
     else LogError (log, "Expected '{'");
 }
 
-void SyntaxAnalyzer::Get_ParamsDef (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_ParamsDef (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     do
     {
@@ -675,7 +678,7 @@ void SyntaxAnalyzer::Get_ParamsDef (Stream <Token>& from, AstNode& to, LogHTML& 
     from++;
 }
 
-void SyntaxAnalyzer::Get_NewFunc (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_NewFunc (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     to.key () = { DeclFunc };
 
@@ -708,7 +711,7 @@ void SyntaxAnalyzer::Get_NewFunc (Stream <Token>& from, AstNode& to, LogHTML& lo
     else LogError (log, "Expected ';' or '{'");
 }
 
-void SyntaxAnalyzer::Get_Code (Stream <Token>& from, AstNode& to, LogHTML& log)
+void CAP::SyntaxAnalyzer::Get_Code (Stream <Token>& from, AstNode& to, LogHTML& log)
 {
     if (from.check ())
     {

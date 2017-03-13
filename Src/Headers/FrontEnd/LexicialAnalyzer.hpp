@@ -9,57 +9,60 @@
 #include "..//..//Libraries//Tools.hpp"
 #include "Token.hpp"
 
-class LexicialAnalyzer
+namespace CAP
 {
-    public:
-        LexicialAnalyzer ();
+    class LexicialAnalyzer
+    {
+        public:
+            LexicialAnalyzer ();
 
-        bool IsUnary     (const char symbol);
-        bool IsBinary    (const char symbol);
+            bool IsUnary     (const char symbol);
+            bool IsBinary    (const char symbol);
 
-        void Skip           (Stream <char>& example);
-        void Comment        (Stream <char>& example);
-        void PreProc        (Stream <char>& example, Stream <Token>& code);
-        void Number         (Stream <char>& example, Stream <Token>& code);
-        void Word           (Stream <char>& example, Stream <Token>& code);
-        void OperatorUnary  (Stream <char>& example, Stream <Token>& code);
-        void OperatorBinary (Stream <char>& example, Stream <Token>& code);
-        void Parser         (Stream <char>& example, Stream <Token>& code);
+            void Skip           (Stream <char>& example);
+            void Comment        (Stream <char>& example);
+            void PreProc        (Stream <char>& example, Stream <Token>& code);
+            void Number         (Stream <char>& example, Stream <Token>& code);
+            void Word           (Stream <char>& example, Stream <Token>& code);
+            void OperatorUnary  (Stream <char>& example, Stream <Token>& code);
+            void OperatorBinary (Stream <char>& example, Stream <Token>& code);
+            void Parser         (Stream <char>& example, Stream <Token>& code);
 
-    private:
-        #define DEER(id, name, word, code) { word, id },
+        private:
+            #define DEER(id, name, word, code) { word, id },
 
-        std::map <std::string, int> commands_ = {
-                                                    #include "CList.inl"
-                                                };
+            std::map <std::string, int> commands_ = {
+                                                        #include "CList.inl"
+                                                    };
 
-        #undef DEER
+            #undef DEER
 
-        std::set <std::string> comments_  = { "//", "/*" };
+            std::set <std::string> comments_  = { "//", "/*" };
 
-        std::set <std::string> operators_ = { ",",
-                                              "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "&=", "^=", "|=",
-                                              "||",
-                                              "&&",
-                                              "|",
-                                              "^",
-                                              "&",
-                                              "==", "!=",
-                                              "<", ">", "<=", ">=",
-                                              "<<", ">>",
-                                              "+", "-",
-                                              "*", "/", "%",
-                                              "++", "--", "!", "~"  };
+            std::set <std::string> operators_ = { ",",
+                                                  "=", "+=", "-=", "*=", "/=", "%=", "<<=", ">>=", "&=", "^=", "|=",
+                                                  "||",
+                                                  "&&",
+                                                  "|",
+                                                  "^",
+                                                  "&",
+                                                  "==", "!=",
+                                                  "<", ">", "<=", ">=",
+                                                  "<<", ">>",
+                                                  "+", "-",
+                                                  "*", "/", "%",
+                                                  "++", "--", "!", "~"  };
 
-        std::map <std::string, int> names_;
-};
+            std::map <std::string, int> names_;
+    };
+}
 
-LexicialAnalyzer::LexicialAnalyzer ():
+CAP::LexicialAnalyzer::LexicialAnalyzer ():
     names_ ({ { "main", 0 } })
 {
 }
 
-void LexicialAnalyzer::parsing (Stream <char>& from, Stream <Token>& to)
+void CAP::LexicialAnalyzer::parsing (Stream <char>& from, Stream <Token>& to)
 {
     while (from.check ())
     {
@@ -93,7 +96,7 @@ void LexicialAnalyzer::parsing (Stream <char>& from, Stream <Token>& to)
     }
 }
 
-bool LexicialAnalyzer::IsUnary (const char symbol)
+bool CAP::LexicialAnalyzer::IsUnary (const char symbol)
 {
     return (symbol == ',') ||
            (symbol == '(') ||
@@ -103,7 +106,7 @@ bool LexicialAnalyzer::IsUnary (const char symbol)
            (symbol == ';');
 }
 
-bool LexicialAnalyzer::IsBinary (const char symbol)
+bool CAP::LexicialAnalyzer::IsBinary (const char symbol)
 {
     return (symbol == '=') ||
            (symbol == '!') ||
@@ -118,7 +121,7 @@ bool LexicialAnalyzer::IsBinary (const char symbol)
            (symbol == '%');
 }
 
-void LexicialAnalyzer::Skip (Stream <char>& example)
+void CAP::LexicialAnalyzer::Skip (Stream <char>& example)
 {
     while (example.check () && IsSpace (example[example.place ()]))
     {
@@ -127,7 +130,7 @@ void LexicialAnalyzer::Skip (Stream <char>& example)
     }
 }
 
-void LexicialAnalyzer::Comment (Stream <char>& example)
+void CAP::LexicialAnalyzer::Comment (Stream <char>& example)
 {
     std::string name;
 
@@ -153,7 +156,7 @@ void LexicialAnalyzer::Comment (Stream <char>& example)
     }
 }
 
-void LexicialAnalyzer::PreProc (Stream <char>& example, Stream <Token>& code)
+void CAP::LexicialAnalyzer::PreProc (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
     while (example.check () && IsAlpha (example[example.place ()]))
@@ -181,7 +184,7 @@ void LexicialAnalyzer::PreProc (Stream <char>& example, Stream <Token>& code)
     }
 }
 
-void LexicialAnalyzer::Number (Stream <char>& example, Stream <Token>& code)
+void CAP::LexicialAnalyzer::Number (Stream <char>& example, Stream <Token>& code)
 {
     int value = 0;
     while (example.check () && IsDigit (example[example.place ()]))
@@ -195,7 +198,7 @@ void LexicialAnalyzer::Number (Stream <char>& example, Stream <Token>& code)
     code.push_back ({ Digit, value });
 }
 
-void LexicialAnalyzer::Word (Stream <char>& example, Stream <Token>& code)
+void CAP::LexicialAnalyzer::Word (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
     while (example.check () && IsAlpha (example[example.place ()]))
@@ -217,7 +220,7 @@ void LexicialAnalyzer::Word (Stream <char>& example, Stream <Token>& code)
     }
 }
 
-void LexicialAnalyzer::OperatorUnary (Stream <char>& example, Stream <Token>& code)
+void CAP::LexicialAnalyzer::OperatorUnary (Stream <char>& example, Stream <Token>& code)
 {
     char digit = 0;
     example >> digit;
@@ -230,7 +233,7 @@ void LexicialAnalyzer::OperatorUnary (Stream <char>& example, Stream <Token>& co
     if (hash_value) code.push_back ({ hash_value, 0 });
 }
 
-void LexicialAnalyzer::OperatorBinary (Stream <char>& example, Stream <Token>& code)
+void CAP::LexicialAnalyzer::OperatorBinary (Stream <char>& example, Stream <Token>& code)
 {
     std::string value;
     while (example.check () && IsBinary (example[example.place ()]))

@@ -81,7 +81,7 @@ void CodeGeneration::CreateAsm (AstNode* current)
     {
         #include "CList.inl"
 
-        default: { std::cout << current -> key ().type << "\n"; throw "default: error"; }
+        default: { std::cout << current->key ().type << "\n"; throw "default: error"; }
     }
 
     #undef DEER

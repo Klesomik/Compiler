@@ -32,38 +32,41 @@ FunctionMember::FunctionMember (const int setType, const int setName, const int 
 {
 }
 
-class SemanticAnalyzer
+namespace CAP
 {
-    public:
-        SemanticAnalyzer (AstNode& root, LogHTML& log);
+    class SemanticAnalyzer
+    {
+        public:
+            SemanticAnalyzer (AstNode& root, LogHTML& log);
 
-        void parsing ();
+            void parsing ();
 
-    private:
-        std::vector <int> data_;
-        std::vector <FunctionMember> func_;
+        private:
+            std::vector <int> data_;
+            std::vector <FunctionMember> func_;
 
-        size_t label_;
+            size_t label_;
 
-        void Detour (AstNode* current, LogHTML& log);
+            void Detour (AstNode* current, LogHTML& log);
 
-        void Check_Block    (AstNode* current, LogHTML& log);
-        void Check_DeclVar  (AstNode* current, LogHTML& log);
-        void Check_Name     (AstNode* current, LogHTML& log);
-        void Check_DeclFunc (AstNode* current, LogHTML& log);
-        void Check_Call     (AstNode* current, LogHTML& log);
+            void Check_Block    (AstNode* current, LogHTML& log);
+            void Check_DeclVar  (AstNode* current, LogHTML& log);
+            void Check_Name     (AstNode* current, LogHTML& log);
+            void Check_DeclFunc (AstNode* current, LogHTML& log);
+            void Check_Call     (AstNode* current, LogHTML& log);
 
-        size_t size ();
-};
+            size_t size ();
+    };
+}
 
-SemanticAnalyzer::SemanticAnalyzer (AstNode& root, LogHTML& log):
+CAP::SemanticAnalyzer::SemanticAnalyzer (AstNode& root, LogHTML& log):
     data_  (),
     func_  (),
     label_ (0)
 {
 }
 
-void SemanticAnalyzer::parsing ()
+void CAP::SemanticAnalyzer::parsing ()
 {
     try
     {
@@ -79,7 +82,7 @@ void SemanticAnalyzer::parsing ()
     }
 }
 
-void SemanticAnalyzer::Detour (AstNode* current, LogHTML& log)
+void CAP::SemanticAnalyzer::Detour (AstNode* current, LogHTML& log)
 {
     switch (current->key ().type)
     {
@@ -99,7 +102,7 @@ void SemanticAnalyzer::Detour (AstNode* current, LogHTML& log)
     }
 }
 
-void SemanticAnalyzer::Check_Block (AstNode* current, LogHTML& log)
+void CAP::SemanticAnalyzer::Check_Block (AstNode* current, LogHTML& log)
 {
     data_.push_back (-1);
     label_++;
@@ -113,7 +116,7 @@ void SemanticAnalyzer::Check_Block (AstNode* current, LogHTML& log)
     label_--;
 }
 
-void SemanticAnalyzer::Check_DeclVar (AstNode* current, LogHTML& log)
+void CAP::SemanticAnalyzer::Check_DeclVar (AstNode* current, LogHTML& log)
 {
     int deskriptor = current[1]->key ().value;
 
@@ -129,7 +132,7 @@ void SemanticAnalyzer::Check_DeclVar (AstNode* current, LogHTML& log)
     if (current[2]) Detour (current[2], log);
 }
 
-void SemanticAnalyzer::Check_Name (AstNode* current, LogHTML& log)
+void CAP::SemanticAnalyzer::Check_Name (AstNode* current, LogHTML& log)
 {
     int deskriptor = current->key ().value;
 
@@ -153,7 +156,7 @@ void SemanticAnalyzer::Check_Name (AstNode* current, LogHTML& log)
         LogError (log, "Variable wasn't declared before\n");
 }
 
-void SemanticAnalyzer::Check_DeclFunc (AstNode* current, LogHTML& log)
+void CAP::SemanticAnalyzer::Check_DeclFunc (AstNode* current, LogHTML& log)
 {
     int  typeVal = current[0]->key ().type;
     int  nameVal = current[1]->key ().value;
@@ -197,7 +200,7 @@ void SemanticAnalyzer::Check_DeclFunc (AstNode* current, LogHTML& log)
     label_--;
 }
 
-void SemanticAnalyzer::Check_Call (AstNode* current, LogHTML& log)
+void CAP::SemanticAnalyzer::Check_Call (AstNode* current, LogHTML& log)
 {
     int nameVal = current[0]->key ().value;
     int argsVal = current[1]->children ().size ();
@@ -220,7 +223,7 @@ void SemanticAnalyzer::Check_Call (AstNode* current, LogHTML& log)
         LogError (log, "Function wasn't declared before\n");
 }
 
-size_t SemanticAnalyzer::size ()
+size_t CAP::SemanticAnalyzer::size ()
 {
     return func_.size ();
 }

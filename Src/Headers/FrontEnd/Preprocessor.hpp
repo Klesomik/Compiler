@@ -2,33 +2,36 @@
 #include "..//..//Libraries//Stream.hpp"
 #include "..//..//Libraries//Tools.hpp"
 
-class Preprocessor
+namespace CAP
 {
-    public:
-        Preprocessor ();
+    class Preprocessor
+    {
+        public:
+            Preprocessor ();
 
-        void parsing (Stream <char>& from, Stream <char>& to);
+            void parsing (Stream <char>& from, Stream <char>& to);
 
-    private:
-        std::map <std::string, std::string> data;
+        private:
+            std::map <std::string, std::string> data;
 
-        bool check (Stream <char>& text, const std::string& pattern, int i); // I want to learn more about iterators and replace it into check (iteartor it, string pattern)
-        void name (Stream <char>& from, std::string& to, const char delim, int& i);
+            bool check (Stream <char>& text, const std::string& pattern, int i); // I want to learn more about iterators and replace it into check (iteartor it, string pattern)
+            void name (Stream <char>& from, std::string& to, const char delim, int& i);
 
-        void include (Stream <char>& from, Stream <char>& to, int& i);
-        void define (Stream <char>& from, int& i);
-        void undef (Stream <char>& from, int& i);
-        void commentary (Stream <char>& from, int& i, const std::string& delim);
+            void include (Stream <char>& from, Stream <char>& to, int& i);
+            void define (Stream <char>& from, int& i);
+            void undef (Stream <char>& from, int& i);
+            void commentary (Stream <char>& from, int& i, const std::string& delim);
 
-        void other (Stream <char>& from, Stream <char>& to, int& i);
-};
+            void other (Stream <char>& from, Stream <char>& to, int& i);
+    };
+}
 
-Preprocessor::Preprocessor ():
+CAP::Preprocessor::Preprocessor ():
     data ()
 {
 }
 
-void Preprocessor::parsing (Stream <char>& from, Stream <char>& to)
+void CAP::Preprocessor::parsing (Stream <char>& from, Stream <char>& to)
 {
     for (int i = 0; i < from.size ();)
     {
@@ -43,7 +46,7 @@ void Preprocessor::parsing (Stream <char>& from, Stream <char>& to)
     }
 }
 
-bool Preprocessor::check (Stream <char>& text, const std::string& pattern, int i)
+bool CAP::Preprocessor::check (Stream <char>& text, const std::string& pattern, int i)
 {
     if (text.size () - i < pattern.size ())
         return false;
@@ -55,7 +58,7 @@ bool Preprocessor::check (Stream <char>& text, const std::string& pattern, int i
     return true;
 }
 
-void Preprocessor::name (Stream <char>& from, std::string& to, const char delim, int& i)
+void CAP::Preprocessor::name (Stream <char>& from, std::string& to, const char delim, int& i)
 {
     for (; i < from.size (); i++)
     {
@@ -66,7 +69,7 @@ void Preprocessor::name (Stream <char>& from, std::string& to, const char delim,
     }
 }
 
-void Preprocessor::include (Stream <char>& from, Stream <char>& to, int& i)
+void CAP::Preprocessor::include (Stream <char>& from, Stream <char>& to, int& i)
 {
     i++; // ' '
     i++; // '"'
@@ -89,7 +92,7 @@ void Preprocessor::include (Stream <char>& from, Stream <char>& to, int& i)
     parsing (content, to);
 }
 
-void Preprocessor::define (Stream <char>& from, int& i)
+void CAP::Preprocessor::define (Stream <char>& from, int& i)
 {
     i++; // ' '
 
@@ -101,7 +104,7 @@ void Preprocessor::define (Stream <char>& from, int& i)
     data.insert ({ first, second });
 }
 
-void Preprocessor::undef (Stream <char>& from, int& i)
+void CAP::Preprocessor::undef (Stream <char>& from, int& i)
 {
     i++; // ' '
 
@@ -113,7 +116,7 @@ void Preprocessor::undef (Stream <char>& from, int& i)
     data.erase (first);
 }
 
-void Preprocessor::commentary (Stream <char>& from, int& i, const std::string& delim)
+void CAP::Preprocessor::commentary (Stream <char>& from, int& i, const std::string& delim)
 {
     for (; i < from.size (); i++)
         if (check (from, delim, i))
@@ -122,7 +125,7 @@ void Preprocessor::commentary (Stream <char>& from, int& i, const std::string& d
     i += delim.size () + 1;
 }
 
-void Preprocessor::other (Stream <char>& from, Stream <char>& to, int& i)
+void CAP::Preprocessor::other (Stream <char>& from, Stream <char>& to, int& i)
 {
     std::string word;
 
