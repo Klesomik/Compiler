@@ -64,7 +64,7 @@ class AstNode
         bool ok   () const;
         void dump (std::ostream& out = std::cout) const;
 
-		void render (Dotter::Digraph& tree, const size_t number) const;
+		void render (Dotter::Digraph& tree, const size_t number, const bool information = false) const;
 
         Token& key ();
         size_t size ();
@@ -346,20 +346,19 @@ void AstNode::dump (std::ostream& out /* = std::cout */) const
     out << "============================================\n\n";
 }
 
-void AstNode::render (Dotter::Digraph& tree, const size_t number) const
+void AstNode::render (Dotter::Digraph& tree, const size_t number, const bool information /* = false */) const
 {
 	std::string title (BtInf (tree, key_));
 
-    #ifdef TEST_ASTNODE
-
+    if (information)
+    {
         char extra[640] = "";
 
         for (size_t i = 0; i < children_.size (); i++)
             sprintf (extra, "child[%d] = %p\n", i, children_[i]);
 
         title += extra;
-
-    #endif /* DEBUG_ASTNODE */
+    }
 
     tree.node (number, title.c_str ());
 }
