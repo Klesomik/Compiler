@@ -2,17 +2,17 @@
 #include <cstring>
 #include <iostream>
 #include "Headers//InputInformation.hpp"
-#include "Headers//Compiler.hpp"
-#include "Headers//Assembler.hpp"
+//#include "Headers//Compiler.hpp"
+//#include "Headers//Assembler.hpp"
 
-void CmdLineInfo (InputInformation& scan);
+//void CmdLineInfo (InputInformation& scan);
 
 int main (int argc, const char* argv[])
 {
     try
     {
-        InputInformation scan;
-        CmdLineInfo (scan);
+        //InputInformation scan;
+        //CmdLineInfo (scan);
 
         //Compiler compiler (scan);
 
@@ -37,14 +37,14 @@ int main (int argc, const char* argv[])
     return 0;
 }
 
-void CmdLineInfo (InputInformation& scan)
+/*void CmdLineInfo (InputInformation& scan)
 {
     Stream <char> cmd_line;
 
     GetLine (cmd_line, '\n');
 
     scan.parse (cmd_line);
-}
+}*/
 
 /*void write (FILE* bit)
 {

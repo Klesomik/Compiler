@@ -45,7 +45,7 @@ class AstNode
 
         ~AstNode ();
 
-        AstNode* operator [] (const size_t child);
+        AstNode* operator [] (const size_t child) const;
 
         AstNode& insert ();
         AstNode& insert (const Token& value);
@@ -55,11 +55,11 @@ class AstNode
 
         bool empty () const;
 
-        AstNode& copy (const AstNode& from);
+        AstNode copy () const;
         AstNode& move (AstNode& from);
 
         void read (std::ifstream& in);
-        void write (std::ofstream& out);
+        void write (std::ofstream& out) const;
 
         bool ok   () const;
         void dump (std::ostream& out = std::cout) const;
@@ -133,7 +133,7 @@ AstNode& AstNode::operator = (AstNode& from)
     return (*this);
 }
 
-AstNode* AstNode::operator [] (const size_t child)
+AstNode* AstNode::operator [] (const size_t child) const
 {
     OK_ASTNODE
 
@@ -216,18 +216,19 @@ bool AstNode::empty () const
     return children_.empty ();
 }
 
-/*AstNode& AstNode::copy (const AstNode& from)
+AstNode AstNode::copy () const
 {
     OK_ASTNODE
 
-    AstNode current (from.key_);
+    AstNode current (key_);
 
-    for (size_t i = 0; i < from.children_.size (); i++) current.insert (copy (children_[i]));
+    for (size_t i = 0; i < children_.size (); i++)
+        current.insert (children_[i]->copy ());
 
     OK_ASTNODE
 
     return current;
-}*/
+}
 
 AstNode& AstNode::move (AstNode& from)
 {
@@ -245,8 +246,8 @@ AstNode& AstNode::move (AstNode& from)
 
     for (size_t i = 0; i < children_.size (); i++)
     {
-        children_[i] = from.children_[i];
-        from.children_[i] = nullptr;
+        children_[i] = from[i];
+        from[i] = nullptr;
     }
 
     from.children_.clear ();
@@ -295,7 +296,7 @@ void AstNode::read (std::ifstream& in)
     }
 }
 
-void AstNode::write (std::ofstream& out)
+void AstNode::write (std::ofstream& out) const
 {
     out << "<";
 
@@ -443,19 +444,16 @@ void RenderTree (const AstNode& root, const std::string& file_name, const std::s
     tree.render (path, show);
 }
 
-void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t number)
+void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t from)
 {
-    static size_t count = 0;
-                  count++;
+    const size_t to = from + 1;
 
-    current->render (tree, count);
+    current->render (tree, to);
 
-    tree.link (number, count, "");
-
-    size_t copy_count = count;
+    tree.link (from, to, "");
 
     for (size_t i = 0; i < current->size (); i++)
-        RenderNode (tree, current[i], copy_count);
+        RenderNode (tree, current[i], to);
 }
 
 #endif /* AbstractSyntaxNode_hpp */

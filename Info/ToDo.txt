@@ -22,3 +22,6 @@ in computer -> phone
 // Smirnov's project Balls. Rebuilding AngryBalls
 // Mandelbrot's set
 // Long Arifmetics
+
+libjit
+linker

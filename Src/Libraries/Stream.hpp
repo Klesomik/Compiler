@@ -4,13 +4,17 @@
 
 #include <vector>
 #include <iostream>
+#include <initializer_list>
+
+#define Vector_t std::vector <Data_T>
+#define Stream_t Stream <Data_T>
 
 template <typename Data_T>
 class Stream : public std::vector <Data_T>
 {
     private:
-        using Vector_t = std::vector <Data_T>;
-        using Stream_t = Stream <Data_T>;
+        /*using Vector_t = std::vector <Data_T>;
+        using Stream_t = Stream <Data_T>;*/
 
     public:
         Stream ();
