@@ -25,3 +25,5 @@ in computer -> phone
 
 libjit
 linker
+
+OpenGL, OpenAL, DirectX

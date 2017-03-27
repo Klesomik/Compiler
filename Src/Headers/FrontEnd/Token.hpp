@@ -56,7 +56,6 @@ std::ostream& operator << (std::ostream& os, const Token& m);
 std::string BtInf (Dotter::Digraph& tree, const Token& value);
 
 bool IsLexem (const Token& example, const int token);
-void FillStream (Stream <Token>& from, Stream <Token>& to, const int delim);
 
 bool operator == (const Token& a, const Token& b)
 {
@@ -88,7 +87,7 @@ std::string BtInf (Dotter::Digraph& tree, const Token& value)
     #define DEER(id, name, word, code, fontcolor, color, fillcolor, shape, style) \
     case id:\
     {\
-	tree.set ("fontcolor", fontcolor);\
+        tree.set ("fontcolor", fontcolor);\
         tree.set ("color",     color);\
         tree.set ("fillcolor", fillcolor);\
         tree.set ("shape",     shape);\
@@ -110,16 +109,6 @@ std::string BtInf (Dotter::Digraph& tree, const Token& value)
 bool IsLexem (const Token& example, const int token)
 {
     return (example.type == token);
-}
-
-void FillStream (Stream <Token>& from, Stream <Token>& to, const int delim)
-{
-    while (from.check () && !IsLexem (from.current (), delim))
-    {
-        to.push_back (from.current ());
-
-        from++;
-    }
 }
 
 #endif /* Token_hpp */

@@ -7,7 +7,6 @@
 #include "..//Libraries//Stream.hpp"
 #include "..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//Libraries//LogHTML.hpp"
-//#include "InputInformation.hpp"
 //#include "FrontEnd//LexicialAnalyzer.hpp"
 //#include "FrontEnd//Preprocessor.hpp"
 //#include "FrontEnd//SyntaxAnalyzer.hpp"
@@ -18,11 +17,11 @@
 class Compiler
 {
     public:
-        Compiler (const InputInformation& scan);
+        Compiler ();
 
         ~Compiler ();
 
-        void run (const InputInformation& scan, Stream <char>& to);
+        void run (Stream <char>& to);
 
         void Lexicial     (Stream <char>& from, Stream <Token>& to);
         void Preproc      (Stream <Token>& from);
@@ -38,7 +37,7 @@ class Compiler
         AstNode& root ();
         LogHTML& log ();
 
-    private:
+    //private:
         Stream <char> first;   // code_c
         Stream <Token> second; // token_c
 
@@ -56,11 +55,11 @@ class Compiler
         void log_error (LogHTML& log, const char* message);
 };
 
-Compiler::Compiler (const InputInformation& scan):
+Compiler::Compiler ():
     first  (),
     second (),
     root   ({ Block }),
-    log_   (scan.name_log.c_str ()),
+    log_   ("Log.html"),
     begin  (clock ()),
     end    ()
 {
@@ -74,23 +73,21 @@ Compiler::~Compiler ()
     log_end (log_, begin, end);
 }
 
-void Compiler::run (const InputInformation& scan, Stream <char>& to)
+void Compiler::run (Stream <char>& to)
 {
-    ScanFile (first, scan.name_source);
-
-    if (scan.lexicial) Lexicial (first, second);
-    if (scan.preprocessor) Preproc (second);
-    if (scan.syntax) Syntax   (second, root);
-    if (scan.semantic) Semantic (root);
-    if (scan.optimiser) Optimize (root); //
-    if (scan.generator) Generate (root, to);
+    Lexicial (first, second);
+    Preproc (second);
+    Syntax (second, root);
+    Semantic (root);
+    Optimize (root); //
+    Generate (root, to);
 }
 
 void Compiler::Lexicial (Stream <char>& from, Stream <Token>& to)
 {
-    //LexicialAnalyzer lexicial;
+    LexicialAnalyzer lexicial;
 
-    //lexicial.parsing (from, to);
+    lexicial.parsing (from, to);
 }
 
 void Compiler::Preproc (Stream <Token>& from)

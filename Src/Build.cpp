@@ -1,22 +1,26 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "Headers//InputInformation.hpp"
-//#include "Headers//Compiler.hpp"
-//#include "Headers//Assembler.hpp"
-
-//void CmdLineInfo (InputInformation& scan);
+#include "Headers//Compiler.hpp"
+#include "Headers//Assembler.hpp"
 
 int main (int argc, const char* argv[])
 {
     try
     {
-        //InputInformation scan;
-        //CmdLineInfo (scan);
+        std::string file;
+        std::getline (std::cin, file, '\n');
 
-        //Compiler compiler (scan);
+        Compiler compiler;
 
-        //Assembler assembler (scan);
+        Tools::Read (compiler.first, file);
+
+        Stream <char> to;
+
+        compiler.run (to);
+
+        Assembler assembler;
+                  assembler.run (to);
     }
     catch (std::exception& message)
     {
@@ -36,31 +40,3 @@ int main (int argc, const char* argv[])
 
     return 0;
 }
-
-/*void CmdLineInfo (InputInformation& scan)
-{
-    Stream <char> cmd_line;
-
-    GetLine (cmd_line, '\n');
-
-    scan.parse (cmd_line);
-}*/
-
-/*void write (FILE* bit)
-{
-    #define BOA(id, params, name, word, comp, cpu) case id: { for (int j = 0; j < params; j++) { i++; fprintf (bit, "%d ", code_[i]); } break; }
-
-    for (size_t i = 0; i < code_.size (); i++)
-    {
-        fprintf (bit, "%d ", code_[i]);
-
-        switch (code_[i])
-        {
-            #include "BoaList.hpp"
-
-            default: { break; }
-        }
-    }
-
-    #undef BOA
-}*/

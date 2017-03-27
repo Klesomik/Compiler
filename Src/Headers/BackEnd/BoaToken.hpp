@@ -48,7 +48,7 @@ std::ostream& operator << (std::ostream& os, const BoaToken& value)
 
     switch (value.type)
     {
-        #include "BoaList.hpp"
+        #include "BoaList.inl"
 
         default: { throw "operator << was broken"; }
     }

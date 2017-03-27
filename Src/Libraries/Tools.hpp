@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <iostream>
 #include <map>
+#include <fstream>
 #include "Stream.hpp"
 
 namespace Tools
@@ -12,11 +13,8 @@ namespace Tools
     bool IsAlpha (const char symbol);
     bool IsDigit (const char symbol);
     bool IsSpace (const char symbol);
-    bool IsConfigComment (const char symbol);
     bool IsAssemblerComment (const char symbol);
     bool IsExtraSymbol (const char symbol);
-    bool IsOption (const char symbol);
-    bool IsFile (const char symbol);
     bool IsPreProc (const char symbol);
     bool IsQuotation (const char symbol);
 
@@ -30,6 +28,8 @@ namespace Tools
 
     template <typename Data_T>
     void Write (const Stream <Data_T>& from, const std::string& name);
+
+    void FillStream (Stream <Token>& from, Stream <Token>& to, const int delim);
 }
 
 bool Tools::IsAlpha (const char symbol)
@@ -47,11 +47,6 @@ bool Tools::IsSpace (const char symbol)
     return (iscntrl (symbol) || (symbol == ' '));
 }
 
-bool Tools::IsConfigComment (const char symbol)
-{
-    return symbol == '#';
-}
-
 bool Tools::IsAssemblerComment (const char symbol)
 {
     return symbol == ';';
@@ -60,16 +55,6 @@ bool Tools::IsAssemblerComment (const char symbol)
 bool Tools::IsExtraSymbol (const char symbol)
 {
     return symbol == '%' || symbol == '$' || symbol == ',';
-}
-
-bool Tools::IsOption (const char symbol)
-{
-    return symbol == '-';
-}
-
-bool Tools::IsFile (const char symbol)
-{
-    return symbol == '@';
 }
 
 bool Tools::IsPreProc (const char symbol)
@@ -133,6 +118,16 @@ void Tools::Write (const Stream <Data_T>& from, const std::string& name)
 
     for (int i = 0; i < from.size (); i++)
         out << from[i];
+}
+
+void Tools::FillStream (Stream <Token>& from, Stream <Token>& to, const int delim)
+{
+    while (from.check () && !IsLexem (from.current (), delim))
+    {
+        to.push_back (from.current ());
+
+        from++;
+    }
 }
 
 #endif
