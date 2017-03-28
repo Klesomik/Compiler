@@ -16,20 +16,11 @@ namespace CAP
         public:
             LexicialAnalyzer ();
 
-            bool IsUnary     (const char symbol);
-            bool IsBinary    (const char symbol);
-
-            void Skip           (Stream <char>& example);
-            void Comment        (Stream <char>& example);
-            void PreProc        (Stream <char>& example, Stream <Token>& code);
-            void Number         (Stream <char>& example, Stream <Token>& code);
-            void Word           (Stream <char>& example, Stream <Token>& code);
-            void OperatorUnary  (Stream <char>& example, Stream <Token>& code);
-            void OperatorBinary (Stream <char>& example, Stream <Token>& code);
-            void Parser         (Stream <char>& example, Stream <Token>& code);
+            void parsing (Stream <char>& example, Stream <Token>& code);
 
         private:
-            #define DEER(id, name, word, code) { word, id },
+            #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
+             { word, id },
 
             std::map <std::string, int> commands_ = {
                                                         #include "CList.inl"
@@ -54,6 +45,17 @@ namespace CAP
                                                   "++", "--", "!", "~"  };
 
             std::map <std::string, int> names_;
+
+            bool IsUnary     (const char symbol);
+            bool IsBinary    (const char symbol);
+
+            void Skip           (Stream <char>& example);
+            void Comment        (Stream <char>& example);
+            void PreProc        (Stream <char>& example, Stream <Token>& code);
+            void Number         (Stream <char>& example, Stream <Token>& code);
+            void Word           (Stream <char>& example, Stream <Token>& code);
+            void OperatorUnary  (Stream <char>& example, Stream <Token>& code);
+            void OperatorBinary (Stream <char>& example, Stream <Token>& code);
     };
 }
 

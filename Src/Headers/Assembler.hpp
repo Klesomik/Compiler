@@ -1,5 +1,6 @@
 #ifndef Assembler_hpp
-    #define Assembler_hpp
+
+#define Assembler_hpp
 
 #include <cstdio>
 #include <iostream>
@@ -35,4 +36,4 @@ void Assembler::run (Stream <char>& asm_code, std::vector <int>& cpu_code)
                       syntax.parsing (boa_token, cpu_code);
 }
 
-#endif
+#endif /* Assembler_hpp */

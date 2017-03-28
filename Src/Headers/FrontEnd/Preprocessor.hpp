@@ -1,3 +1,7 @@
+#ifndef Preprocessor_hpp
+
+#define Preprocessor_hpp
+
 #include <bits/stdc++.h>
 #include "..//..//Libraries//Stream.hpp"
 #include "..//..//Libraries//Tools.hpp"
@@ -148,3 +152,5 @@ void CAP::Preprocessor::other (Stream <char>& from, Stream <char>& to, int& i)
     else
         to += word;
 }
+
+#endif /* Preprocessor_hpp */

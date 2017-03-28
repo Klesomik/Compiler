@@ -75,7 +75,8 @@ void CodeGeneration::parsing (AstNode& root)
 
 void CodeGeneration::CreateAsm (AstNode* current)
 {
-    #define DEER(id, name, word, code) case id: { code break; }
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
+    case id: { code break; }
 
     switch (current -> key ().type)
     {

@@ -1,6 +1,6 @@
-#ifndef TreeCheck_hpp
+#ifndef SemanticAnalyzer_hpp
 
-#define TreeCheck_hpp
+#define SemanticAnalyzer_hpp
 
 #include <vector>
 #include "..//..//Libraries//AbstractSyntaxNode.hpp"
@@ -228,4 +228,4 @@ size_t CAP::SemanticAnalyzer::size ()
     return func_.size ();
 }
 
-#endif
+#endif /* SemanticAnalyzer_hpp */

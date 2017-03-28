@@ -1,5 +1,6 @@
 #ifndef Compiler_hpp
-    #define Compiler_hpp
+
+#define Compiler_hpp
 
 #include <cstdio>
 #include <ctime>
@@ -7,7 +8,7 @@
 #include "..//Libraries//Stream.hpp"
 #include "..//Libraries//AbstractSyntaxNode.hpp"
 #include "..//Libraries//LogHTML.hpp"
-//#include "FrontEnd//LexicialAnalyzer.hpp"
+#include "FrontEnd//LexicialAnalyzer.hpp"
 //#include "FrontEnd//Preprocessor.hpp"
 //#include "FrontEnd//SyntaxAnalyzer.hpp"
 //#include "FrontEnd//SemanticAnalyzer.hpp"
@@ -32,10 +33,10 @@ class Compiler
         void Generate     (AstNode& from, Stream <char>& to);
         void DisGenerator (Stream <char>& from, AstNode& to);
 
-        Stream <char>& first ();
+        /*Stream <char>& first ();
         Stream <Token>& second ();
         AstNode& root ();
-        LogHTML& log ();
+        LogHTML& log ();*/
 
     //private:
         Stream <char> first;   // code_c
@@ -76,8 +77,8 @@ Compiler::~Compiler ()
 void Compiler::run (Stream <char>& to)
 {
     Lexicial (first, second);
-    Preproc (second);
-    Syntax (second, root);
+    Preproc  (second);
+    Syntax   (second, root);
     Semantic (root);
     Optimize (root); //
     Generate (root, to);
@@ -85,47 +86,61 @@ void Compiler::run (Stream <char>& to)
 
 void Compiler::Lexicial (Stream <char>& from, Stream <Token>& to)
 {
-    LexicialAnalyzer lexicial;
+    CAP::LexicialAnalyzer lexicial;
 
     lexicial.parsing (from, to);
 }
 
 void Compiler::Preproc (Stream <Token>& from)
 {
-    //Preprocessor preprocessor (code, log_);
+    /*CAP::Preprocessor preprocessor (code, log_);
+
+    preprocessor.parsing ();*/
 }
 
 void Compiler::Syntax (Stream <Token>& from, AstNode& to)
 {
-    //SyntaxAnalyzer syntax;
+    /*CAP::SyntaxAnalyzer syntax;
 
-    //syntax.parsing (from, to, log_);
+    syntax.parsing (from, to, log_);*/
 }
 
 void Compiler::DisSyntax (AstNode& from, Stream <Token>& to)
 {
+    /*CAP::DisSyntax dis_syntax;
+
+    dis_syntax.parsing ();*/
 }
 
 void Compiler::Semantic (AstNode& from)
 {
-    //SemanticAnalyzer semantic_analyzer (root, log_);
+    /*CAP::SemanticAnalyzer semantic_analyzer (root, log_);
+
+    semantic_analyzer.parsing ();*/
 }
 
 void Compiler::Optimize (AstNode& from)
 {
-    //Optimizer optimizer (root);
+    /*CAP::Optimizer optimizer (root);
+
+    optimizer.parsing ();*/
 }
 
 void Compiler::Generate (AstNode& from, Stream <char>& to)
 {
-    //CodeGeneration code_generation (root, file_asm, 1);
+    /*CAP::CodeGeneration code_generation (root, file_asm, 1);
+
+    code_generation.parsing ();*/
 }
 
 void Compiler::DisGenerator (Stream <char>& from, AstNode& to)
 {
+    /*CAP::DisGenerator dis_generator;
+
+    dis_generator.parsing ();*/
 }
 
-Stream <char>& Compiler::first ()
+/*Stream <char>& Compiler::first ()
 {
     return first;
 }
@@ -143,7 +158,7 @@ AstNode& Compiler::root ()
 LogHTML& Compiler::log ()
 {
     return log_;
-}
+}*/
 
 void Compiler::log_begin (LogHTML& log, const char* version)
 {
@@ -177,4 +192,4 @@ void Compiler::log_error (LogHTML& log, const char* message)
     throw message;
 }
 
-#endif
+#endif /* Compiler_hpp */

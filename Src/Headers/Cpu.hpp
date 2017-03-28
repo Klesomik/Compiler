@@ -1,5 +1,6 @@
-#ifndef CPU_HPP_INCLUDED
-    #define CPU_HPP_INCLUDED
+#ifndef Cpu_hpp
+
+#define Cpu_hpp
 
 #include <cstdio>
 #include <cassert>
@@ -130,4 +131,4 @@ void Cpu::parsing (const std::vector <int>& from)
     }
 }
 
-#endif /* CPU_HPP_INCLUDED */
+#endif /* Cpu_hpp */

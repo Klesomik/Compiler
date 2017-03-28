@@ -34,10 +34,12 @@
 
 #endif
 
+#define Vector_t std::vector <AstNode*>
+
 class AstNode
 {
     private:
-        using Vector_t = std::vector <AstNode*>;
+        //using Vector_t = std::vector <AstNode*>;
 
     public:
         AstNode ();
@@ -49,7 +51,7 @@ class AstNode
 
         AstNode& insert ();
         AstNode& insert (const Token& value);
-        AstNode& insert (AstNode& example);
+        AstNode& insert (const AstNode& example); //
 
         void erase ();
 
@@ -78,7 +80,7 @@ class AstNode
 
         Vector_t children_;
 
-        AstNode (AstNode& from);
+        AstNode (const AstNode& from); //
 
         AstNode& operator =  (AstNode& from);
 
@@ -101,11 +103,11 @@ AstNode::AstNode (const Token& value):
 	OK_ASTNODE
 }
 
-AstNode::AstNode (AstNode& from):
+AstNode::AstNode (const AstNode& from): //
     key_      (from.key_),
     children_ (from.children_)
 {
-	from.children_.clear ();
+	//from.children_.clear ();
 
     OK_ASTNODE
 }
@@ -185,7 +187,7 @@ AstNode& AstNode::insert (const Token& value)
     return insert (from);
 }
 
-AstNode& AstNode::insert (AstNode& from)
+AstNode& AstNode::insert (const AstNode& from) //
 {
     OK_ASTNODE
 
@@ -193,7 +195,7 @@ AstNode& AstNode::insert (AstNode& from)
 
     children_.push_back (example);
 
-    from.clear ();
+    //from.clear ();
 
     OK_ASTNODE
 
@@ -247,7 +249,7 @@ AstNode& AstNode::move (AstNode& from)
     for (size_t i = 0; i < children_.size (); i++)
     {
         children_[i] = from[i];
-        from[i] = nullptr;
+        //from[i] = nullptr;
     }
 
     from.children_.clear ();
@@ -342,7 +344,7 @@ void AstNode::dump (std::ostream& out /* = std::cout */) const
 
     out << "\t[this = " << this << "];\n";
     out << "\t[key  = " << key_ << "];\n";
-    out << "\t[size = " << children_->size () << "];\n";
+    out << "\t[size = " << children_.size () << "];\n";
 
     out << "============================================\n\n";
 }
@@ -415,8 +417,8 @@ void AstNode::clear ()
 bool operator == (const AstNode& a, const AstNode& b);
 bool operator != (const AstNode& a, const AstNode& b);
 
-void RenderTree (const AstNode& root, const std::string& file_name, const std::string& render_name, const bool show);
-void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t number);
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, const bool show);
+void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t number);
 
 bool operator == (const AstNode& a, const AstNode& b)
 {
@@ -428,11 +430,15 @@ bool operator != (const AstNode& a, const AstNode& b)
     return !(&a == &b);
 }
 
-void RenderTree (const AstNode& root, const std::string& file_name, const std::string& render_name, const bool show)
+void RenderTree (AstNode& root, const std::string& file_name, const std::string& render_name, const bool show)
 {
     const std::string path ("Libraries//Dotter");
 
-    Dotter::Digraph tree (file_name.c_str (), render_name.c_str ());
+    Dotter::Digraph tree;
+
+    tree.dotter () = path;
+    tree.text () = file_name;
+    tree.photo () = render_name;
 
     tree.open ();
 
@@ -441,10 +447,10 @@ void RenderTree (const AstNode& root, const std::string& file_name, const std::s
     for (size_t i = 0; i < root.size (); i++)
         RenderNode (tree, root.children ()[i], 0);
 
-    tree.render (path, show);
+    tree.render (show);
 }
 
-void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t from)
+void RenderNode (Dotter::Digraph& tree, AstNode* current, const size_t from)
 {
     const size_t to = from + 1;
 
@@ -455,5 +461,7 @@ void RenderNode (Dotter::Digraph& tree, const AstNode* current, const size_t fro
     for (size_t i = 0; i < current->size (); i++)
         RenderNode (tree, current[i], to);
 }
+
+#undef Vector_t
 
 #endif /* AbstractSyntaxNode_hpp */

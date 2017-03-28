@@ -4,9 +4,10 @@
 
 #include <cstdio>
 #include <iostream>
-#include "..//..//Libraries//Dotter.hpp"
+#include "..//..//Libraries//Dotter//Dotter.hpp"
 
-#define DEER(id, name, word, code, fontcolor, color, fillcolor, shape, style) name = id,
+#define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
+name = id,
 
 enum Lexemes
 {
@@ -69,7 +70,7 @@ bool operator != (const Token& a, const Token& b)
 
 std::ostream& operator << (std::ostream& os, const Token& value)
 {
-    #define DEER(id, name, word, code, fontcolor, color, fillcolor, shape, style) \
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
     case id: { return os << std::string (word); }
 
     switch (value.type)
@@ -84,7 +85,7 @@ std::ostream& operator << (std::ostream& os, const Token& value)
 
 std::string BtInf (Dotter::Digraph& tree, const Token& value)
 {
-    #define DEER(id, name, word, code, fontcolor, color, fillcolor, shape, style) \
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
     case id:\
     {\
         tree.set ("fontcolor", fontcolor);\
@@ -98,7 +99,7 @@ std::string BtInf (Dotter::Digraph& tree, const Token& value)
 
     switch (value.type)
     {
-        #include "..//Headers//FrontEnd//CList.inl"
+        #include "CList.inl"
 
         default: { throw "BtInf was broken"; }
     }

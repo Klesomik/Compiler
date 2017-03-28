@@ -32,7 +32,8 @@ void CAP::DisSyntaxAnalyzer::parsing (AstNode& from, Stream <char>& to)
 
 void CAP::DisSyntaxAnalyzer::check (AstNode* from, Stream <char>& to)
 {
-    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) case id: { dis_syntax_analyzer break; }
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
+    case id: { dis_syntax_analyzer break; }
 
     switch (from->key ().type)
     {
@@ -46,7 +47,8 @@ void CAP::DisSyntaxAnalyzer::check (AstNode* from, Stream <char>& to)
 
 void CAP::DisSyntaxAnalyzer::get (AstNode* from, Stream <char>& to)
 {
-    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) case id: { to += word; break; }
+    #define DEER(id, name, word, fontcolor, color, fillcolor, shape, style, code_generation, dis_syntax_analyzer) \
+    case id: { to += word; break; }
 
     switch (from->key ().type)
     {

@@ -2,7 +2,7 @@
 #include <cstring>
 #include <iostream>
 #include "Headers//Compiler.hpp"
-#include "Headers//Assembler.hpp"
+//#include "Headers//Assembler.hpp"
 
 int main (int argc, const char* argv[])
 {
@@ -19,8 +19,8 @@ int main (int argc, const char* argv[])
 
         compiler.run (to);
 
-        Assembler assembler;
-                  assembler.run (to);
+        //Assembler assembler;
+                  //assembler.run (to);
     }
     catch (std::exception& message)
     {

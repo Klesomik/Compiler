@@ -322,4 +322,7 @@ void GetLine (std::istream& in, Stream <char>& example, const char delim)
     example = tmp;
 }
 
+#undef Vector_t
+#undef Stream_t
+
 #endif /* Stream_hpp */

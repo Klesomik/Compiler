@@ -24,17 +24,17 @@ struct BoaToken
     BoaToken (const int setType, const int setValue);
 };
 
-BoaToken :: BoaToken ():
+BoaToken::BoaToken ():
     type  (),
     value ()
     {}
 
-BoaToken :: BoaToken (const int setType):
+BoaToken::BoaToken (const int setType):
     type  (setType),
     value ()
     {}
 
-BoaToken :: BoaToken (const int setType, const int setValue):
+BoaToken::BoaToken (const int setType, const int setValue):
     type  (setType),
     value (setValue)
     {}
